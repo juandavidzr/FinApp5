@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.EnrrutarCartera"
+             Title="Enrrutar Cartera">
+
+    <StackLayout Orientation="Horizontal" Margin="10">
+        <ListView x:Name="lstCreditos"  ItemSelected="lstCreditos_ItemSelected" Grid.Row="0" Grid.Column="0">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Text="{Binding nombreCliente}" Grid.Row="0" Grid.Column="0" TextColor="Black"/>
+                            <Label Text="{Binding NumPrestamo}" Grid.Row="0"  Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button Text=">>" Clicked="Button_Clicked" />
+        <ListView x:Name="lstCreditos1"  ItemSelected="lstCreditos1_ItemSelected" Grid.Row="0" Grid.Column="1" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Text="{Binding nombreCliente}" Grid.Row="0" Grid.Column="0" TextColor="Black"/>
+                            <Label Text="{Binding NumPrestamo}" Grid.Row="0"  Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </StackLayout>
+</ContentPage>

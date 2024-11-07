@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.Balance"
+             Title="BALANCE - DATOS DE HOY">
+    <ContentPage.Content>
+
+        <ScrollView>
+            <StackLayout Margin="10" >
+
+                <Grid VerticalOptions="Start" >
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Fecha actual:" VerticalOptions="Start"/>
+                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" x:Name="txtFecha" Text="{Binding TxtFecha}" VerticalOptions="FillAndExpand" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Debido cobrar ruta:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDebidoRuta" Text="{Binding TxtDebidoRuta}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Debido cobrar dia:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDebidoDia" Text="{Binding TxtDebidoDia}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Recaudos:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtRecaudo" Text="{Binding TxtRecaudo}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Microseguros:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="4" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtMicroseguro" Text="{Binding TxtMicroseguro}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Desembolsos:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="5" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDesembolsos" Text="{Binding TxtDesembolsos}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Gastos:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="6" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtGastos" Text="{Binding TxtGastos}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Entradas de efectivo:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="7" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtEntradas" Text="{Binding TxtEntradas }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Salidas de efectivo:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="8" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtSalidas" Text="{Binding TxtSalidas}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="9" Grid.Column="0" Text="Sueldos:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="9" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtSueldos" Text="{Binding TxtSueldos}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="10" Grid.Column="0" Text="Resultado (ing-egr):" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="10" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtResultado" Text="{Binding TxtResultado }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="11" Grid.Column="0" Text="Creditos en ruta:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="11" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtCreditos" Text="{Binding TxtCreditos }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="12" Grid.Column="0" Text="Creditos visitados:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="12" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtVisitados" Text="{Binding TxtVisitados}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="13" Grid.Column="0" Text="Creditos sin visitar:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="13" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtSinVisitar" Text="{Binding TxtSinVisitar }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="14" Grid.Column="0" Text="Clientes nuevos:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="14" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtPrimeraVez" Text="{Binding TxtPrimeraVez }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="15" Grid.Column="0" Text="Creditos cancelados:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="15" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtCancelados" Text="{Binding TxtCancelados }" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="16" Grid.Column="0" Text="Caja Anterior:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="16" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtCajaAnterior" Text="{Binding TxtCajaAnterior}" VerticalOptions="End" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="17" Grid.Column="0" Text="Total Actual:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="17" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtTotal" Text="{Binding TxtTotal }" VerticalOptions="End" IsEnabled="False" />
+                </Grid>
+
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+
+</ContentPage>

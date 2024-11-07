@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.Transacciones"
+             Title="Transacciones"
+             >
+
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"  >
+
+        <Grid IsVisible="{Binding IsBusy}" >
+            <ActivityIndicator x:Name="acti"  HeightRequest="15" WidthRequest="15"
+                    IsRunning="{Binding IsBusy}" Color="Red" IsVisible="True"
+                    />    
+        </Grid>
+        
+        <Grid RowDefinitions="*,*"
+              ColumnDefinitions="*,*"
+              RowSpacing="5"
+              ColumnSpacing="5"
+              HorizontalOptions="Center">
+            <ImageButton Grid.Column="0"
+                         Source="credito.png"
+                         Aspect="AspectFit"
+                         BorderColor="Black"
+                         BorderWidth="0"
+                         CornerRadius="10"
+                         Padding="5"
+                         IsEnabled="True"
+                         Command="{Binding ListarClientesCommand}" 
+                         WidthRequest="200" HeightRequest="200" 
+                         BackgroundColor="White">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="White"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="LightGray"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </ImageButton>
+            <ImageButton Grid.Column="1"
+                         Source="recaudo.png"
+                         Aspect="AspectFit"
+                         BorderColor="Black"
+                         BorderWidth="0"
+                         CornerRadius="10"
+                         Padding="5"
+                         IsEnabled="True"
+                         Command="{Binding ListarCreditosCommand}" 
+                         WidthRequest="200" HeightRequest="200" 
+                         BackgroundColor="White" Clicked="ImageButton_Clicked"
+                         >
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="White"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="LightGray"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </ImageButton>
+        </Grid>
+
+        <Grid RowDefinitions="*,*"
+              ColumnDefinitions="*,*"
+              RowSpacing="5"
+              ColumnSpacing="5"
+              HorizontalOptions="Center">
+            <ImageButton Grid.Column="0"
+                             Source="enrutar.png"
+                             Aspect="AspectFit"
+                             BorderColor="Black"
+                             BorderWidth="0"
+                             CornerRadius="10"
+                             Padding="5"
+                             IsEnabled="True"
+                             Command="{Binding EnrrutarCommand}" 
+                             WidthRequest="200" HeightRequest="200" 
+                             BackgroundColor="White">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="White"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="LightGray"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </ImageButton>
+            <ImageButton Grid.Column="1"
+                        Source="gastos.png"
+                         Aspect="AspectFit"
+                         BorderColor="Black"
+                         BorderWidth="0"
+                         CornerRadius="10"
+                         Padding="5"
+                         IsEnabled="True"
+                         Command="{Binding RegistarGastosCommand}" 
+                         WidthRequest="200" HeightRequest="200" 
+                         BackgroundColor="White">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="White"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="LightGray"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </ImageButton>
+        </Grid>
+
+    </VerticalStackLayout>
+</ContentPage>

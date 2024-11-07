@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Frame xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       BackgroundColor="{x:StaticResource Primary}"
+       CornerRadius="5"
+       Padding="10"
+       x:Class="FinApp5.CustomControls.ButtonControl">
+    <HorizontalStackLayout>
+        <ActivityIndicator Color="White" IsRunning="{Binding Source={x:Reference this}, Path=IsInProgress}" 
+                           />
+        <Label x:Name="lblButtonText" Text="{Binding Source={x:Reference this}, Path=Text}" VerticalTextAlignment="Center"  HorizontalTextAlignment="Center" FontSize="18"/>
+        
+        
+    </HorizontalStackLayout>
+
+    <Frame.Triggers>
+        <DataTrigger TargetType="Frame" Binding="{Binding Source={x:Reference this}, Path=IsInProgress}" Value="True">
+            <Setter Property="IsEnabled" Value="False" />
+        </DataTrigger>
+
+        <DataTrigger TargetType="Frame" Binding="{Binding Source={x:Reference this}, Path=IsInProgress}" Value="False">
+            <Setter Property="IsEnabled" Value="True" />
+        </DataTrigger>
+    </Frame.Triggers>
+
+    <Frame.GestureRecognizers>
+        <TapGestureRecognizer   Command="{Binding Source={x:Reference this}, Path=Command}"
+                                Tapped="TapGestureRecognizer_Tapped" />
+    </Frame.GestureRecognizers>
+</Frame>

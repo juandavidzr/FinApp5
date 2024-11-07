@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.MenuPpal"
+             Title="Menu Principal">
+    <VerticalStackLayout VerticalOptions="Center" >
+
+        <ImageButton Source="maestros.png"
+                     Aspect="AspectFit"
+                     BorderColor="Black"
+                     BorderWidth="0"
+                     CornerRadius="10"
+                     Padding="5"
+                     IsEnabled="True"
+                     Command="{Binding subMenuClientesCommand}" 
+                     WidthRequest="300" HeightRequest="200" 
+                     BackgroundColor="White">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="White"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGray"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+        </ImageButton>
+
+        <ImageButton Source="transacciones.png"
+                     Aspect="AspectFit"
+                     BorderColor="Black"
+                     BorderWidth="0"
+                     CornerRadius="10"
+                     Padding="5"
+                     IsEnabled="True"
+                     Command="{Binding IrATransaccionesCommand}" 
+                     WidthRequest="300" HeightRequest="200" 
+                     BackgroundColor="White">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="White"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGray"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+        </ImageButton>
+
+        <ImageButton Source="reportes.png"
+                     Aspect="AspectFit"
+                     BorderColor="Black"
+                     BorderWidth="0"
+                     CornerRadius="10"
+                     Padding="5"
+                     IsEnabled="True"
+                     Command="{Binding IrAReportesCommand}" 
+                     WidthRequest="300" HeightRequest="200" 
+                     BackgroundColor="White">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="White"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightGray"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+        </ImageButton>
+
+    </VerticalStackLayout>
+</ContentPage>

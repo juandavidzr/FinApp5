@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.Clientes"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="Clientes"
+             xmlns:local="clr-namespace:FinApp5.ViewModels">
+    <ContentPage.BindingContext>
+        <local:BaseViewModel/>
+    </ContentPage.BindingContext>
+    
+    <ScrollView Margin="20">
+        
+        <VerticalStackLayout VerticalOptions="StartAndExpand" 
+                             HorizontalOptions="FillAndExpand">
+            
+            <Label Text="Numero de identificación" />
+            <Entry Text="{Binding TxtId}" x:Name="TxtId" Unfocused="TxtId_Unfocused" >
+                <!--<Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="Unfocused" Command="{Binding ConsultarClienteCommand}"/>
+                </Entry.Behaviors>-->
+            </Entry>
+            <Label Text="Nombre Completo" />
+            <Entry x:Name="TxtNombre" Text="{Binding TxtNombre}" Focused="Nombre_Focused"/>
+            <Label Text="Dirección de domicilio"/>
+            <Entry x:Name="TxtDirDomicilio" Text="{Binding TxtDirDomicilio}" />
+            <Label Text="Barrio de domicilio"/>
+
+            <Picker x:Name="cmbBarrioDom" 
+                Title="Seleccione el barrio de Domicilio" 
+                ItemsSource="{Binding barrio}"
+                ItemDisplayBinding="{Binding NombreBarrio}"
+                SelectedItem="{Binding IdBarrio}"
+                FontAutoScalingEnabled="False"
+                SelectedIndexChanged="cmbBarrioDom_SelectedIndexChanged">
+            </Picker>
+
+            <Label x:Name="TxtBarrioDom" />
+            
+
+            <Label Text="Direccion de cobro"/>
+            <Entry x:Name="TxtDirCobro" Text="{Binding TxtDirCobro}"/>
+            <Label Text="Barrio de Cobro"/>
+
+            <Picker x:Name="cmbBarrioCobro" 
+                    Title="Seleccione el barrio de cobro" 
+                    ItemsSource="{Binding barrio}"
+                    ItemDisplayBinding="{Binding NombreBarrio}"
+                    SelectedItem="{Binding IdBarrio}"
+                    FontAutoScalingEnabled="False"
+                    SelectedIndexChanged="cmbBarrioCobro_SelectedIndexChanged">
+            </Picker>
+            <Label x:Name="TxtBarrioCobro" />
+
+            <Label Text="Latitud"/>
+            <Entry x:Name="TxtLatitud" Text="{Binding TxtLatitud}" IsReadOnly="True"/>
+            <Label Text="Longitud"/>
+            <Entry x:Name="TxtLongitud" Text="{Binding TxtLongitud}" IsReadOnly="True" />
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >
+                <Button Text="Cargar ubicacion" WidthRequest="150" Margin="1,1,10,1" Command="{Binding BtnUbicacionCommand}"/>
+                <Button Text="Navegar" WidthRequest="150" Command="{Binding BtnNavegarCommand}"/>
+            </StackLayout>
+            <Label Text="Telefono 1" />
+            <Entry x:Name="TxtTelefono1" Text="{Binding TxtTelefono1}"/>
+            <Button Text="WhatsApp" Command="{Binding BtnWhatsAppCommand}" />
+            <Label Text="Telefono 2" />
+            <Entry x:Name="TxtTelefono2" Text="{Binding TxtTelefono2}"/>
+            <Label Text="Notas Generales" />
+            <Entry x:Name="TxtNotas" Text="{Binding TxtNotas}" />
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >
+                <Button x:Name="BtnLimpiar" Text="Limpiar" WidthRequest="150" Margin="1,1,10,1" Clicked="BtnLimpiar_Clicked"/>
+                <Button x:Name="BtnGuardar" Text="Grabar" WidthRequest="150" Clicked="Button_Clicked_Guardar" />
+            </StackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

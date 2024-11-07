@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.ListaCreditos"
+             Title="Lista Creditos">
+
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout>
+                <Button x:Name="btnInicio" Text="Ir al inicio" Clicked="btnInicio_Clicked"></Button>
+                <Label Text="Ordernar por: "></Label>
+                <Picker x:Name="cmbOrden"
+                ItemsSource="{Binding OrdenList}"
+                ItemDisplayBinding="{Binding orden}"
+                SelectedItem="{Binding id}"
+                SelectedIndex="0"
+                Title="Seleccione una opción"
+                VerticalOptions="Start"
+                FontSize="20"
+                SelectedIndexChanged="cmbOrden_SelectedIndexChanged">
+                </Picker>
+                <Label Text="Escriba el nombre que desea buscar: "></Label>
+                <SearchBar Placeholder="Buscar por nombre" Keyboard="Chat" TextChanged="SearchBar_TextChanged" MaxLength="20" 
+                            FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" />
+
+                <Button x:Name="btnBuscar" Text="Buscar"></Button>
+                <Label Text="ID CLIENTE                | NOMBRE CLIENTE | ID CREDITO"/>
+                <Label Text="FECHA PRESTAMO   |        CANTIDAD       | ULTIMO PAGO"/>
+                <Label Text="------------------------------------------------------------------------------------------" />
+                <ListView x:Name="lstCreditos" ItemSelected="lstCreditos_ItemSelected" Margin="5">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="100" />
+                                        
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding idCliente}"        Grid.Row="0" Grid.Column="0" TextColor="Black"/>
+                                    <Label Text="{Binding nombreCliente}"    Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding NumPrestamo}"      Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding fechaPrestamo}"    Grid.Row="1" Grid.Column="0" TextColor="Black"/>
+                                    <Label Text="{Binding cantidadPrestada}" Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding valUltPag}"        Grid.Row="1" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End"/>
+
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+
+
+</ContentPage>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.Abonos"
+             Title="Abonos">
+    <ContentPage.Content>
+        <ScrollView Margin="30">
+            <StackLayout >
+                <Label Text="Información de el cliente" HorizontalTextAlignment="Center" FontSize="30"></Label>
+
+                <Grid VerticalOptions="Start">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Id: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtId" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Nombre: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" x:Name="txtNombre" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Dirección: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" x:Name="txtDireccion" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Telefono: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" x:Name="txtTelefono" VerticalOptions="Start" IsEnabled="False"/>
+                </Grid>
+
+                <Label Text="Información del credito" HorizontalTextAlignment="Center" FontSize="30"/>
+
+                <Grid VerticalOptions="Start">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Id Credito: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtIdCredito" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Cuotas Atrasadas: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" x:Name="txtAtrasadas" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Fecha Credito: " VerticalOptions="StartAndExpand"/>
+                    <DatePicker FontSize="20" Grid.Row="2" Grid.Column="1" x:Name="txtFechaCredito" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Ultimo Pago: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" x:Name="txtUltimoPago" VerticalOptions="Start" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Valor Cuota: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="4" Grid.Column="1" x:Name="txtValorCuota" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Dia (semana): " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="5" Grid.Column="1" x:Name="txtDia" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Cuotas pendientes: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="6" Grid.Column="1" x:Name="txtCuotasPendientes" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Saldo: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="7" Grid.Column="1" x:Name="txtSaldo" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Forma Pago: " VerticalOptions="StartAndExpand"/>
+                    <Picker FontSize="20" Grid.Row="8" Grid.Column="1" x:Name="cmbFormaPago" VerticalOptions="Start" IsEnabled="False"
+                        ItemsSource="{Binding formasPagos}" ItemDisplayBinding="{Binding formaPago}"/>
+
+                    <Label FontSize="20" Grid.Row="9" Grid.Column="0" Text="Tipo de abono: " VerticalOptions="StartAndExpand"/>
+                    <Picker FontSize="20" Grid.Row="9" Grid.Column="1" x:Name="cmbTipoAbono" VerticalOptions="Start" IsEnabled="False" 
+                        ItemsSource="{Binding tiposAbonos}" ItemDisplayBinding="{Binding tipoAbono}"/>
+
+                    <Label FontSize="20" Grid.Row="10" Grid.Column="0" Text="Abono: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="10" Grid.Column="1" x:Name="txtAbono" VerticalOptions="Start" Keyboard="Numeric"/>
+
+                    <Label FontSize="20" Grid.Row="11" Grid.Column="0" Text="Observaciones: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="11" Grid.Column="1" x:Name="txtObservaciones" VerticalOptions="Start"/>
+
+                </Grid>
+
+                <!--<Button x:Name="btnPagos" Grid.Row="13" Grid.Column="0" Text="Ver abonos" Clicked="btnPagos_Clicked"></Button>-->
+                <Button x:Name="btnGrabar" Grid.Row="13" Grid.Column="1" Text="Grabar" Clicked="btnGrabar_Clicked" Margin="5"/>
+                <Button x:Name="btnRetaque" Grid.Row="13" Grid.Column="2" Text="Retacar" Clicked="btnRetaque_Clicked" Margin="5"/>
+
+            </StackLayout>
+            
+        </ScrollView>
+        
+    </ContentPage.Content>
+</ContentPage>

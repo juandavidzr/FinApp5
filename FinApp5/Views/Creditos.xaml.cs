@@ -1,0 +1,329 @@
+
+using FinApp5.Conexiones;
+using FinApp5.Modelo;
+using Microsoft.Data.SqlClient;
+using Microsoft.Maui.Controls.PlatformConfiguration;
+using System.Data;
+
+
+namespace FinApp5.Views;
+
+public partial class Creditos : ContentPage
+{
+    Musuarios Usuario = new Musuarios();
+    public Creditos(Mcliente cliente, Musuarios usuario)
+	{
+		InitializeComponent();
+        txtidCliente.Text = cliente.cteNumIdenti;
+        txtNombreCli.Text = cliente.cteNombApel;
+        PlazoList = GetPlazos();
+        cmbPlazo.ItemsSource = PlazoList;
+        diasList = GetDias();
+        cmbDias.ItemsSource = diasList;
+        Usuario = usuario;
+        llenarRuta();
+    }
+
+    private void llenarRuta()
+    {
+        try
+        {
+            var codigoRuta = Usuario.CodigoCobr;
+            CONEXIONMAESTRA.Abrir();
+            SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
+
+            SqlDataReader rdr = cmd.ExecuteReader();
+            int intIndice = 1;
+            List<Mruta> rutaList = new List<Mruta>();
+
+            rutaList.Add(new Mruta { nombreCliente = "De Primero", posicion = -1 });
+            rutaList.Add(new Mruta { nombreCliente = "Posición Actual", posicion = -2 });
+            rutaList.Add(new Mruta { nombreCliente = "De Ultimo", posicion = -3 });
+            
+            while (rdr.Read())
+            {
+                rutaList.Add( new Mruta { nombreCliente = rdr["cteNombApel"].ToString().Trim() + " - " + 
+                                                               rdr["pmoPosRutCre"].ToString().Trim(),
+                                                               posicion = intIndice});
+                intIndice++;
+            }
+            cmbPosicion.ItemsSource = rutaList;
+        }
+        catch (Exception strExcepcion)
+        {
+            
+        }
+        finally { CONEXIONMAESTRA.Cerrar(); }
+    }
+
+    public class Plazo
+    {
+        public string idPlazo { get; set; }
+        public string nombrePlazo { get; set; }
+    }
+
+    public class Dias
+    {
+        public int idDia { get; set; }
+        public string nombreDia { get; set; }
+    }
+    public List<Plazo> PlazoList { get; set; }
+    public List<Plazo> GetPlazos()
+    {
+        var plazos = new List<Plazo>()
+            {
+                new Plazo(){idPlazo = "01", nombrePlazo="Diario"},
+                new Plazo(){idPlazo = "02", nombrePlazo="Semanal"},
+                new Plazo(){idPlazo = "03", nombrePlazo="Quincenal"},
+                new Plazo(){idPlazo = "04", nombrePlazo="Mensual"}
+            };
+
+        return plazos;
+    }
+
+    public List<Dias> diasList { get; set; }
+    public List<Dias> GetDias()
+    {
+        var dias = new List<Dias>
+            {
+                new Dias(){idDia = 1, nombreDia = "Todos"},
+                new Dias(){idDia = 2, nombreDia = "Lunes"},
+                new Dias(){idDia = 3, nombreDia = "Martes"},
+                new Dias(){idDia = 4, nombreDia = "Miercoles"},
+                new Dias(){idDia = 5, nombreDia = "Jueves"},
+                new Dias(){idDia = 6, nombreDia = "Viernes"},
+                new Dias(){idDia = 7, nombreDia = "Sabado"},
+                new Dias(){idDia = 8, nombreDia = "Domingo"}
+            };
+        return dias;
+    }
+
+    private void cmbPlazo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void cmbDias_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void btnGrabar_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var codigoRuta = Usuario.CodigoCobr;
+            
+            if (validarDatos())
+            {
+                btnGrabar.IsEnabled = false;
+                var intNumeroCuotas = 0;
+                var intSaldoActualCre = 0;
+                var intNumCuoPag = 0; 
+                var dblValCuoPag = 0;
+                var intNumCuoPen = 0; 
+                DateTime dteFechaVenCre = DateTime.MinValue; 
+                var dblValorCuoPen = 0; 
+                var intPosCredito = 0;
+                DateTime dteFechaUltCreOto = DateTime.Today; 
+                string strCodPlaCre = string.Empty;
+                int found = 0;
+                var strPosicion = string.Empty;
+
+                intSaldoActualCre = (Convert.ToInt32(txtDesembolso.Text) * Convert.ToInt32(txtInteres.Text) / 100) + Convert.ToInt32(txtDesembolso.Text);
+
+                switch (cmbPlazo.SelectedIndex)
+                {
+                    case 0: //Diario
+                        strCodPlaCre = "01";
+                        intNumeroCuotas = Convert.ToInt32(txtTiempo.Text);
+                        break;
+
+                    case 1: //Semanal
+                        strCodPlaCre = "02";
+                        intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 7;
+                        break;
+
+                    case 2: //Quincenal
+                        strCodPlaCre = "03";
+                        intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 15;
+                        break;
+
+                    case 3: //Mensual
+                        strCodPlaCre = "04";
+                        intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 30;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if (intNumeroCuotas < 1)
+                    intNumeroCuotas = 1;
+
+                dblValCuoPag = intSaldoActualCre / intNumeroCuotas;
+                intNumCuoPen = intSaldoActualCre / dblValCuoPag;
+
+                dblValorCuoPen = intSaldoActualCre; // - Convert.ToInt32(txtAbono.Text);
+
+
+                switch (cmbPosicion.SelectedIndex)
+                {
+                    case 0://primero
+                        intPosCredito = 1;
+                        break;
+                    case 1://pos actual
+                        intPosCredito = BuscarPosicionActualDelCreditoEnRuta();
+                        break;
+                    case 2: //ultimo
+                        intPosCredito = cmbPosicion.Items.Count + 1;
+                        break;
+
+                    default:
+                        int intIndice = cmbPosicion.SelectedIndex;
+                        var cadena = cmbPosicion.Items[intIndice];
+                        string[] info = { cadena };
+                        foreach (string s in info)
+                        {
+                            found = s.IndexOf("-");
+                            strPosicion = s.Substring(found + 2);
+                        }
+                        intPosCredito = Convert.ToInt32(strPosicion);
+                        break;
+                }
+                dteFechaVenCre = DateTime.Today.AddDays(Convert.ToInt16(txtTiempo.Text.Trim()));
+
+                NetworkAccess accessType = Connectivity.Current.NetworkAccess;
+
+                if (accessType == NetworkAccess.Internet)
+                {
+                    var dblNetoEnCre = Convert.ToInt64(txtDesembolso.Text.Trim());
+                    var dblPorIntCre = Convert.ToInt64(txtInteres.Text.Trim());
+
+                    Double dblTotPagCre = (((dblNetoEnCre * dblPorIntCre) / 100) + dblNetoEnCre);
+                    CONEXIONMAESTRA.Abrir();
+                    SqlCommand cmd = new SqlCommand("GrabaCredito", CONEXIONMAESTRA.conectar);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCodigRut" , Usuario.CodigoCobr); // "00001"); // 
+                    cmd.Parameters.AddWithValue("@strNumIdeCte", txtidCliente.Text.Trim()); //   "01"); // txtidCliente.Text.Trim());//2
+                    cmd.Parameters.AddWithValue("@dblNetoEnCre", dblNetoEnCre); //  dblNetoEnCre);//3
+                    cmd.Parameters.AddWithValue("@dblPorIntCre", dblPorIntCre); //  dblPorIntCre);//4
+                    cmd.Parameters.AddWithValue("@strCodPlaPac", strCodPlaCre); //   "01"); // cmbPlazo.SelectedIndex.ToString()); //5
+                    cmd.Parameters.AddWithValue("@intNumCuoCre", intNumeroCuotas); //  intNumeroCuotas);//6
+                    cmd.Parameters.AddWithValue("@intNumCreVig", "0"); //   0);//7
+                    cmd.Parameters.AddWithValue("@dblSaldoAcCr", dblNetoEnCre); //  dblNetoEnCre);//8
+                    cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag); //  intNumCuoPag);//9
+                    cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen); //  intNumCuoPen);//10
+                    cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd")); //  DateTime.Today.ToString("yyyy-MM-dd"));//11
+                    cmd.Parameters.AddWithValue("@dblValUltPag", "0"); //   0);//12
+                    cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd")); //  dteFechaVenCre);//13
+                    cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito); //  intPosCredito);//14
+                    cmd.Parameters.AddWithValue("@intTieDiaCre", "0"); //   0);//15
+                    cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex]); //  txtGuiaPago);//16
+                    cmd.Parameters.AddWithValue("@dblValMicSeg", "0"); //   0);//17
+                    cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre); //  dblTotPagCre);//18
+                    cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd")); //  DateTime.Today.ToString("yyyy-MM-dd"));//19
+                    cmd.Parameters.AddWithValue("@dblValCuoPag", dblValCuoPag); //  dblValCuoPag);//20
+                    cmd.Parameters.AddWithValue("@intNumDiaPPC", "0"); //   0);//21
+                    cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre); //  dblTotPagCre);//22
+                    cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim()); //  txtNombreCli.Text.Trim());//23
+                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);  //24
+                    cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim()); //  txtNotas.Text.Trim()); //24
+
+                    cmd.ExecuteReader();
+                    CONEXIONMAESTRA.Cerrar();
+                    DisplayAlert("Credito creado", "Credito creado", "OK");
+                }
+                else
+                {
+                    DisplayAlert("Verifique la conexión a internet", "Verifique la conexión a internet", "OK");
+                }
+
+            }
+            else
+            {
+                DisplayAlert("Validar datos", "Por favor verifique que toda la información ingresada este completa y sea correcta", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("error", ex.Message, "OK");
+
+        }
+        finally { CONEXIONMAESTRA.Cerrar(); }
+    }
+
+
+
+
+    protected int BuscarPosicionActualDelCreditoEnRuta()
+    {
+        int intResult = 1;
+        int found;
+        var strPosicion = string.Empty;
+        try
+        {
+            for (int intIndice = 1; intIndice < cmbPosicion.Items.Count; intIndice++)
+            {
+                cmbPosicion.SelectedIndex = intIndice;
+                if (cmbPosicion.Items[intIndice].ToString().ToLower().Contains(txtNombreCli.Text.Trim().ToLower()))
+                {
+                    var cadena = cmbPosicion.Items[intIndice];
+                    string[] info = { cadena };
+                    var nombre = string.Empty;
+                    foreach (string s in info)
+                    {
+                        found = s.IndexOf("-");
+                        nombre = s.Substring(0,found).Trim();
+                        if (nombre.Trim().ToLower() == txtNombreCli.Text.Trim().ToLower())
+                        {
+                            strPosicion = s.Substring(found + 2);
+                            intResult = Convert.ToInt32(strPosicion);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("error", ex.Message, "OK");
+            intResult = 1;
+        }
+        return intResult;
+    }
+
+    private bool validarDatos()
+    {
+        bool respuesta;
+        if (
+                string.IsNullOrEmpty(txtidCliente.Text) ||
+                string.IsNullOrEmpty(txtDesembolso.Text) ||
+                Convert.ToInt32(txtDesembolso.Text) <= 0 ||
+                string.IsNullOrEmpty(txtInteres.Text) ||
+                Convert.ToDouble(txtInteres.Text) < 0 ||
+                Convert.ToDouble(txtInteres.Text) > 100 ||
+                string.IsNullOrEmpty(txtTiempo.Text) ||
+                cmbDias.SelectedItem.Equals(-1) ||
+                cmbPlazo.SelectedItem.Equals(-1)
+
+            )
+            respuesta = false;
+        else
+            respuesta = true;
+
+        return respuesta;
+    }
+
+    private void btnRegresar_Clicked(object sender, EventArgs e)
+    {
+
+    }
+
+    private void cmbPosicion_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+}

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.Creditos"
+             Title="Creditos">
+
+    <ContentPage.Content>
+
+        <ScrollView Margin="20,20,20,20">
+            <StackLayout Margin="20">
+                <Label Text="Información de el cliente" HorizontalTextAlignment="Center" FontSize="20"></Label>
+
+                <Grid VerticalOptions="Start">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Id Cliente:"  VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtidCliente" Text="" VerticalOptions="Start" IsEnabled="False" />
+
+                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Nombre:" VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" x:Name="txtNombreCli" Text="" VerticalOptions="Start" IsEnabled="False" />
+
+                </Grid>
+
+                <Label Text="Información del credito" HorizontalTextAlignment="Center" FontSize="20" />
+
+                <Grid VerticalOptions="Start" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label  FontSize="20" Grid.Row="0" Grid.Column="0" Text="Desembolso: $"  VerticalOptions="StartAndExpand"  VerticalTextAlignment="Center"/>
+                    <Entry x:Name="txtDesembolso" FontSize="20" Grid.Row="0" Grid.Column="1" Text="0" VerticalOptions="Start" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Keyboard="Numeric"/>
+
+                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Interes (%):"  VerticalOptions="StartAndExpand" VerticalTextAlignment="Center"/>
+                    <Entry x:Name="txtInteres" FontSize="20" Grid.Row="1" Grid.Column="1" Text="20" VerticalOptions="Start" Keyboard="Numeric"/>
+
+                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Tiempo en dias:"  VerticalOptions="StartAndExpand"/>
+                    <Entry x:Name="txtTiempo" FontSize="20" Grid.Row="2" Grid.Column="1" Text="30" VerticalOptions="Start" Keyboard="Numeric"/>
+
+                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Plazo: "  VerticalOptions="StartAndExpand"/>
+                    <Picker x:Name="cmbPlazo" 
+                            ItemsSource="{Binding plazoList}"
+                            ItemDisplayBinding="{Binding nombrePlazo}"
+                            SelectedItem="{Binding idPlazo}"
+                            SelectedIndexChanged="cmbPlazo_SelectedIndexChanged"
+                            FontSize="20" Grid.Row="3" Grid.Column="1" 
+                            VerticalOptions="Start"
+                            Title="--Seleccione el plazo--">
+                    </Picker>
+
+                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Dia de pago: "  VerticalOptions="StartAndExpand"/>
+                    <Picker x:Name="cmbDias"
+                            ItemsSource="{Binding diasList}"
+                            ItemDisplayBinding="{Binding nombreDia}"
+                            SelectedItem="{Binding idDia}"
+                            SelectedIndexChanged="cmbDias_SelectedIndexChanged"
+                            FontSize="20" Grid.Row="4" Grid.Column="1" 
+                            Title="--Seleccione el dia de pago--">
+                    </Picker>
+
+                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Guia de pago: "  VerticalOptions="StartAndExpand"/>
+                    <Entry x:Name="txtGuiaPago" FontSize="20" Grid.Row="5" Grid.Column="1" Text="" VerticalOptions="Start" />
+
+                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Posicion: "  VerticalOptions="StartAndExpand"/>
+                    <Picker x:Name="cmbPosicion"
+                            FontSize="20"
+                            ItemsSource="{Binding rutaList}"
+                            ItemDisplayBinding="{Binding nombreCliente}"
+                            SelectedItem="{Binding posicion}"
+                            SelectedIndexChanged="cmbPosicion_SelectedIndexChanged"
+                            Grid.Row="6" Grid.Column="1"  
+                            Title="-- Seleccione una posicion --">
+                        <!--<Picker.Items>
+                            <x:String>De primero</x:String>
+                            <x:String>De ultimo</x:String>
+                            <x:String>Posicion Actual</x:String>
+                        </Picker.Items>-->
+                    </Picker>
+
+                    <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Notas: "  VerticalOptions="StartAndExpand"/>
+                    <Entry x:Name="txtNotas" FontSize="20" Grid.Row="7" Grid.Column="1" Text="" VerticalOptions="Start" />
+
+                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Fecha credito" VerticalOptions="StartAndExpand"/>
+                    <DatePicker FontSize="20" Grid.Row="8" Grid.Column="1" x:Name="txtFechaNuevoCre" VerticalOptions="Start" IsEnabled="False"/>
+
+                </Grid>
+
+                <Grid VerticalOptions="Start">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                </Grid>
+                <Button x:Name="btnGrabar" Grid.Row="0" Grid.Column="1" Text="Grabar" Clicked="btnGrabar_Clicked"></Button>
+                
+            </StackLayout>
+        </ScrollView>
+
+    </ContentPage.Content>
+
+
+</ContentPage>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.RegistarGastos"
+             Title="Registar Gastos">
+
+    <VerticalStackLayout Margin="20" Spacing="15">
+        <Label Text="Seleccione un concepto de gasto" />
+        <Picker x:Name="cmbConceptos" Title="Seleccione una opción" 
+                ItemsSource="{Binding conceptosList}"
+                ItemDisplayBinding="{Binding claDescripcion}"
+                SelectedItem="{Binding claCodigo}"
+                
+                >
+        </Picker>
+        <Label Text="Digite el valor del gasto"  />
+        <Entry x:Name="txtValor" Placeholder="Valor" ></Entry>
+        <Label Text="Justificación del gasto" />
+        <Entry x:Name="txtJustificacion" Placeholder="Justificación" ></Entry>
+        <Button Text="Limpiar" />
+        <Button Text="Grabar" Clicked="Button_Clicked" />
+    </VerticalStackLayout>
+</ContentPage>

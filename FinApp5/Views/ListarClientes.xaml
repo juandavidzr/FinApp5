@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinApp5.Views.ListarClientes"
+             Title="Clientes para credito">
+    <ContentPage.Content>
+        <StackLayout>
+            
+            <SearchBar  Placeholder="Buscar por nombre" Keyboard="Chat" 
+                        TextChanged="SearchBar_TextChanged" MaxLength="20" 
+                        FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black"/>
+            <Label Text="ID CLIENTE | NOMBRE CLIENTE"   Grid.Row="0" Grid.Column="0"/>
+            <Label Text="TELEFONO   | DIRECCION"        Grid.Row="0" Grid.Column="1"/>
+            <ListView x:Name="lstClientes" ItemSelected= "lstClientes_ItemSelected">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Text="{Binding cteNumIdenti}"  Grid.Row="0" Grid.Column="0" TextColor="Blue"/>
+                                <Label Text="{Binding cteNombApel}"   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray"/>
+                                <Label Text="{Binding cteTeleCelu}"   Grid.Row="1" Grid.Column="0" TextColor="Orange"/>
+                                <Label Text="{Binding cteDirCobCte}"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>
