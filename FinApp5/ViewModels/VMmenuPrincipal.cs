@@ -35,8 +35,6 @@ namespace FinApp5.ViewModels
                     SyncRuta(usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
                     SyncCobros(usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
                     GetClientes(usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
-
-                    
                 }
                 else
                 {
