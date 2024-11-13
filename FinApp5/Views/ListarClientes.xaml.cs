@@ -13,14 +13,14 @@ public partial class ListarClientes : ContentPage
     private List<Mcliente> ListaFinCtes = new List<Mcliente>();
     Musuarios Usuario = new Musuarios();
     public ListarClientes(Musuarios usuario)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         llenarDatos(usuario);
         Usuario = usuario;
         BindingContext = new VMTransacciones(Navigation, usuario);
 
     }
-    
+
     private async void llenarDatos(Musuarios usuario)
     {
 
@@ -34,34 +34,58 @@ public partial class ListarClientes : ContentPage
 
             clientsCollection.Clear();
 
-            CONEXIONMAESTRA.Abrir();
-            cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
-            cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
-            cmd.Parameters.AddWithValue("@strCriterio", criterio);
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
-            SqlDataReader rdr = cmd.ExecuteReader();
-
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                clientsCollection.Add(new Mcliente()
+
+                CONEXIONMAESTRA.Abrir();
+                cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
+                cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
+                cmd.Parameters.AddWithValue("@strCriterio", criterio);
+                if (cmd.Connection.State == ConnectionState.Closed)
+                    cmd.Connection.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
                 {
-                    cteNumIdenti = rdr["cteNumIdenti"].ToString(),
-                    cteNombApel = rdr["cteNombApel"].ToString(),
-                    cteTeleCelu = rdr["cteTeleCelu"].ToString(),
-                    cteTeleFijo = rdr["cteTeleFijo"].ToString(),
-                    cteDirCobCte = rdr["cteDirCobCte"].ToString(),
-                    
-                });
+                    clientsCollection.Add(new Mcliente()
+                    {
+                        cteNumIdenti = rdr["cteNumIdenti"].ToString(),
+                        cteNombApel = rdr["cteNombApel"].ToString(),
+                        cteTeleCelu = rdr["cteTeleCelu"].ToString(),
+                        cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+                        cteDirCobCte = rdr["cteDirCobCte"].ToString(),
+
+                    });
+
+                }
+
+                lstClientes.ItemsSource = clientsCollection;
+
+                if (cmd.Connection.State == ConnectionState.Open)
+                    cmd.Connection.Close();
 
             }
+            else
+            {
+                //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 72)", "OK");
+                var clienteList = await App.SQLiteDB.GetClientesAsync();
+                if (clienteList != null)
+                {
+                    lstClientes.ItemsSource = clienteList;
+                    clientsCollection.Clear();
+                    foreach (var cliente in clienteList)
+                    {
+                        clientsCollection.Add(cliente);
+                    }
+                    if (clientsCollection != null)
+                    {
+                        lstClientes.ItemsSource = clientsCollection;
+                    }
+                }
+            }
 
-            lstClientes.ItemsSource = clientsCollection;
-            
-            if (cmd.Connection.State == ConnectionState.Open)
-                cmd.Connection.Close();
         }
         catch (Exception)
         {
@@ -71,10 +95,9 @@ public partial class ListarClientes : ContentPage
         }
         finally
         {
-            if (cmd.Connection.State == ConnectionState.Open)
-                cmd.Connection.Close();
+           
         }
-        
+
     }
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
@@ -95,7 +118,7 @@ public partial class ListarClientes : ContentPage
 
             throw;
         }
-        
+
     }
 
     private void lstClientes_ItemSelected(object sender, SelectedItemChangedEventArgs e)
@@ -114,6 +137,6 @@ public partial class ListarClientes : ContentPage
             DisplayAlert("Error", "Error" + ex.Message, "OK");
             throw;
         }
-        
+
     }
 }

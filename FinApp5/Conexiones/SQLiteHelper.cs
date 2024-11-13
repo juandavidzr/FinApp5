@@ -16,6 +16,7 @@ namespace FinApp5.Data
             db.CreateTableAsync<Mruta>().Wait();
             db.CreateTableAsync<Prestamos>().Wait();
             db.CreateTableAsync<Mmovimiento>().Wait();
+            db.CreateTableAsync<Musuarios>().Wait();
             //db.CreateTableAsync<Abono>().Wait();
         }
 
@@ -311,6 +312,19 @@ namespace FinApp5.Data
             return count;
         }
 
+        public void saveUsuario(Musuarios usuario)
+        {
+            db.InsertAsync(usuario);
+        }
 
+        public Task<Musuarios> GetUsuarioById(string? codigoCobr)
+        {
+            return db.Table<Musuarios>().Where(c => c.CodigoCobr == codigoCobr).FirstOrDefaultAsync();
+        }
+
+        public Task<Musuarios> GetUsuarioByIdandPw(string TxtUsuario, string TxtPw)
+        {
+            return db.Table<Musuarios>().Where(c => c.NombApel == TxtUsuario && c.pw == TxtPw).FirstOrDefaultAsync();
+        }
     }
 }

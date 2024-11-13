@@ -38,53 +38,6 @@ namespace FinApp5.ViewModels
         #endregion
 
         #region PROCESOS
-
-        private async void SincronizarClientes() //inserta los nuevos clientes en el servidor
-        {
-            Mcliente cliente = new Mcliente();
-            try
-            {
-                SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                var clienteList = await App.SQLiteDB.GetClientesNew();
-                if (clienteList.Count > 0)
-                {
-                    foreach (var a in clienteList)
-                    {
-                        cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteCodTipIde);
-                        if (cliente != null)
-                        {
-                            cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteCodTipIde);
-                            cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
-                            cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
-                            cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
-                            cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
-                            cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
-                            cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
-                            cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
-                            cmd.Parameters.AddWithValue("@strCodigoRut", a.cteCodRutReg);
-                            cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
-
-                            CONEXIONMAESTRA.Abrir();
-
-                            cmd.ExecuteReader();
-                            cmd.Parameters.Clear();
-                        }
-                        cliente.nuevo = 0;
-                        await App.SQLiteDB.UpdateClienteAsync(cliente);
-                    }
-                }
-                CONEXIONMAESTRA.Cerrar();
-            }
-            catch (Exception ex)
-            {
-                _ = DisplayAlert("error", ex.Message, "OK");
-                //cliente.nuevo = 0;
-                //await App.SQLiteDB.UpdateClienteAsync(cliente);
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
-
         public async void ingresar()
         {
             if (String.IsNullOrEmpty(TxtUsuario) || String.IsNullOrEmpty(TxtPw))
@@ -94,22 +47,22 @@ namespace FinApp5.ViewModels
             else
             {
                 bool Estado = CONEXIONMAESTRA.VerificarCon();
+                bool aut = false;
                 if (Estado)
-                {
-                    bool aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
-                    if (aut)
-                    {
-                        await Navigation.PushAsync(new MenuPpal(usuario));
-                    }
-                    else
-                    {
-                        await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
-                    }
-                }
+                    aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
                 else
                 {
-                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion", "OK");
+                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion (55)", "OK");
+                    Musuarios usuario = await App.SQLiteDB.GetUsuarioByIdandPw(TxtUsuario.Trim(), TxtPw.Trim());
+                    if (usuario != null)
+                    {
+                        aut = true;
+                    }
                 }
+                if (aut)
+                    await Navigation.PushAsync(new MenuPpal(usuario));
+                else
+                    await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
             }
             //Application.Current.MainPage = new NavigationPage(new MenuPpal());
         }
@@ -120,7 +73,7 @@ namespace FinApp5.ViewModels
                 CONEXIONMAESTRA.Abrir();
                 SqlCommand cmd =
                     new SqlCommand
-                    ("SELECT cbrCodigoCobr, cbrNombApel, cbrNumIdenti " +
+                    ("SELECT cbrCodigoCobr, cbrNombApel, cbrNumIdenti, cbrIndicadorPeReAb " +
                     " FROM tbl_Cobradores WHERE cbrLogAppRut = '" + login + "' and cbrPasUniRut = '" + pass + "'", CONEXIONMAESTRA.conectar);
 
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -130,7 +83,10 @@ namespace FinApp5.ViewModels
                     usuario.CodigoCobr = rdr["cbrCodigoCobr"].ToString();
                     usuario.NombApel = rdr["cbrNombApel"].ToString();
                     usuario.NumIdenti = rdr["cbrNumIdenti"].ToString();
+                    usuario.PermisoAbonar = rdr["cbrIndicadorPeReAb"].ToString();
+                    usuario.pw = pass.Trim();
                     usuario.Usuario = login.Trim();
+                    App.SQLiteDB.saveUsuario(usuario);
                     rdr.Close();
                     return true;
                 }

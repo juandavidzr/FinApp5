@@ -6,8 +6,6 @@ namespace FinApp5
 {
     public partial class MainPage : ContentPage
     {
-        
-        
         public MainPage()
         {
             InitializeComponent();
@@ -15,17 +13,9 @@ namespace FinApp5
 
             BindingContext = new VMingresar(Navigation);
         }
-
         private void SetFocus()
         {
             TxtUsuario.Focus();
         }
-
-        //private void OnCounterClicked(object sender, EventArgs e)
-        //{
-        //    count++;
-        //}
-
     }
-
 }

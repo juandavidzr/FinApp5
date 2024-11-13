@@ -7,10 +7,11 @@
         <StackLayout>
             
             <SearchBar  Placeholder="Buscar por nombre" Keyboard="Chat" 
-                        TextChanged="SearchBar_TextChanged" MaxLength="20" 
-                        FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black"/>
-            <Label Text="ID CLIENTE | NOMBRE CLIENTE"   Grid.Row="0" Grid.Column="0"/>
-            <Label Text="TELEFONO   | DIRECCION"        Grid.Row="0" Grid.Column="1"/>
+                        TextChanged="SearchBar_TextChanged" MaxLength="30" 
+                        FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="5"/>
+            
+            <Label Text="ID CLIENTE              | NOMBRE CLIENTE"   Grid.Row="0" Grid.Column="0"/>
+            <Label Text="TELEFONO               | DIRECCION"        Grid.Row="0" Grid.Column="1"/>
             <ListView x:Name="lstClientes" ItemSelected= "lstClientes_ItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>
