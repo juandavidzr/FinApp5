@@ -47,8 +47,6 @@ namespace FinApp5.Datos
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-
-
         public Mcliente? ConsultarCliente(string txtId)
         {
             try

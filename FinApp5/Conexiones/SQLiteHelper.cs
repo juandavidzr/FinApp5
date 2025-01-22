@@ -105,9 +105,9 @@ namespace FinApp5.Data
             return db.InsertAsync(prestamo);
         }
 
-        public Task<List<Mruta>> getRutaAsync()
+        public async Task<List<Mruta>> getRutaAsync()
         {
-            return db.Table<Mruta>().OrderBy(x => x.posicion).ToListAsync();
+            return db.Table<Mruta>().OrderBy(x => x.posicion).ToListAsync().Result;
         }
 
         public Task<int> DeleteAbonos<T>()
@@ -324,7 +324,7 @@ namespace FinApp5.Data
 
         public Task<Musuarios> GetUsuarioByIdandPw(string TxtUsuario, string TxtPw)
         {
-            return db.Table<Musuarios>().Where(c => c.NombApel == TxtUsuario && c.pw == TxtPw).FirstOrDefaultAsync();
+            return db.Table<Musuarios>().Where(c => c.Usuario == TxtUsuario && c.pw == TxtPw).FirstOrDefaultAsync();
         }
     }
 }

@@ -1,4 +1,3 @@
-
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
@@ -11,9 +10,15 @@ namespace FinApp5.Views;
 public partial class Creditos : ContentPage
 {
     Musuarios Usuario = new Musuarios();
+    private const string DePrimero = "De Primero";
+    private const string PosiciónActual = "Posición Actual";
+    private const string DeUltimo = "De Ultimo";
+
     public Creditos(Mcliente cliente, Musuarios usuario)
 	{
-		InitializeComponent();
+            
+
+        InitializeComponent();
         txtidCliente.Text = cliente.cteNumIdenti;
         txtNombreCli.Text = cliente.cteNombApel;
         PlazoList = GetPlazos();
@@ -21,35 +26,53 @@ public partial class Creditos : ContentPage
         diasList = GetDias();
         cmbDias.ItemsSource = diasList;
         Usuario = usuario;
+
         llenarRuta();
+
+        cmbPosicion.SelectedIndex = 0;
+        cmbPlazo.SelectedIndex = 0;
+        cmbDias.SelectedIndex = 0;
     }
 
-    private void llenarRuta()
+    private async void llenarRuta()
     {
         try
         {
             var codigoRuta = Usuario.CodigoCobr;
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
-
-            SqlDataReader rdr = cmd.ExecuteReader();
-            int intIndice = 1;
-            List<Mruta> rutaList = new List<Mruta>();
-
-            rutaList.Add(new Mruta { nombreCliente = "De Primero", posicion = -1 });
-            rutaList.Add(new Mruta { nombreCliente = "Posición Actual", posicion = -2 });
-            rutaList.Add(new Mruta { nombreCliente = "De Ultimo", posicion = -3 });
-            
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                rutaList.Add( new Mruta { nombreCliente = rdr["cteNombApel"].ToString().Trim() + " - " + 
-                                                               rdr["pmoPosRutCre"].ToString().Trim(),
-                                                               posicion = intIndice});
-                intIndice++;
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
+
+                SqlDataReader rdr = cmd.ExecuteReader();
+                int intIndice = 1;
+                List<Mruta> rutaList = new List<Mruta>();
+
+                rutaList.Add(new Mruta { nombreCliente = DePrimero, posicion = -1 });
+                rutaList.Add(new Mruta { nombreCliente = PosiciónActual, posicion = -2 });
+                rutaList.Add(new Mruta { nombreCliente = DeUltimo, posicion = -3 });
+
+                while (rdr.Read())
+                {
+                    rutaList.Add(new Mruta
+                    {
+                        nombreCliente = rdr["cteNombApel"].ToString().Trim() + " - " +
+                                        rdr["pmoPosRutCre"].ToString().Trim(),
+                        posicion = intIndice
+                    });
+                    intIndice++;
+                }
+                cmbPosicion.ItemsSource = rutaList;
             }
-            cmbPosicion.ItemsSource = rutaList;
+            else
+            {
+                var rutaList = App.SQLiteDB.getRutaAsync().Result;
+
+                if (rutaList != null)
+                    cmbPosicion.ItemsSource = rutaList;
+            }
         }
         catch (Exception strExcepcion)
         {
@@ -238,13 +261,58 @@ public partial class Creditos : ContentPage
                 }
                 else
                 {
-                    DisplayAlert("Verifique la conexión a internet", "Verifique la conexión a internet", "OK");
-                }
+                    DisplayAlert("Sin internet", "Esta trabajando sin internet", "OK");
 
+                    var rowid = LastRowID();
+
+                    Prestamos prestamo = new Prestamos
+                    {
+                        rowid = rowid,
+                        NumPrestamo = rowid,
+                        idCliente = txtidCliente.Text,
+                        nombreCliente = txtNombreCli.Text,
+                        fechaPrestamo = DateTime.Today.ToString("yyyy-MM-dd"),
+                        codigoRuta = Helpers.Settings.CodigoRuta,
+                        cantidadPrestada = Convert.ToDouble(txtDesembolso.Text),
+                        interes = Convert.ToDouble(txtInteres.Text),
+                        codigoPlan = strCodPlaCre,
+                        numeroCuotas = intNumeroCuotas,
+                        observaciones = txtNotas.Text,
+                        vigente = 1,
+                        activo = 1,
+                        saldoActualCre = intSaldoActualCre,
+                        numCuoPag = intNumCuoPag,
+                        numCuoPen = intNumCuoPen,
+                        fecUltPag = DateTime.Today.ToString("yyyy-MM-dd"),
+                        valUltPag = 0, //Convert.ToDouble(txtAbono.Text),
+                        fecVenCre = dteFechaVenCre.ToString("yyyy-MM-dd"),
+                        numCuoAtra = 0,
+                        valorAtrazo = 0,
+                        valorCuoPen = dblValorCuoPen,
+                        posRutCre = intPosCredito,
+                        tiempoDias = Convert.ToInt32(txtTiempo.Text),
+                        desDiaPago = cmbDias.Items[cmbDias.SelectedIndex],
+                        valorMicroSeg = 0, // Convert.ToDouble(txtMicroSeguro.Text),
+                        salTotPenCte = intSaldoActualCre,
+                        fechaUltCreOto = dteFechaUltCreOto.ToString("yyyy-MM-dd"),
+                        valCuotaPag = dblValCuoPag,
+                        diaProPagCre = DateTime.Today.Day,
+                        marAboCreDia = 0,
+                        totalPagCre = Convert.ToDouble(txtDesembolso.Text) * (1 + Convert.ToDouble(txtInteres.Text) / 100),
+                        verificado = 0,
+                        IndicaRetaque = 0,
+                        DiaSemana = cmbDias.Items[cmbDias.SelectedIndex],
+                        nuevo = 1
+                    };
+                    App.SQLiteDB.SavePrestamoAsync(prestamo);
+                    DisplayAlert("Credito creado", "Credito creado localmente", "OK");
+                    //btnGrabar.IsEnabled = true;
+                }
             }
             else
             {
                 DisplayAlert("Validar datos", "Por favor verifique que toda la información ingresada este completa y sea correcta", "OK");
+                btnGrabar.IsEnabled = true;
             }
         }
         catch (Exception ex)
@@ -254,10 +322,11 @@ public partial class Creditos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-
-
-
-
+    private int LastRowID()
+    {
+        var id = App.SQLiteDB.LastRowID() + 1;
+        return id;
+    }
     protected int BuscarPosicionActualDelCreditoEnRuta()
     {
         int intResult = 1;

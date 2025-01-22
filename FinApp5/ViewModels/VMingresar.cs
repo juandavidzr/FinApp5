@@ -40,6 +40,7 @@ namespace FinApp5.ViewModels
         #region PROCESOS
         public async void ingresar()
         {
+            
             if (String.IsNullOrEmpty(TxtUsuario) || String.IsNullOrEmpty(TxtPw))
             {
                 await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
@@ -49,22 +50,27 @@ namespace FinApp5.ViewModels
                 bool Estado = CONEXIONMAESTRA.VerificarCon();
                 bool aut = false;
                 if (Estado)
+                {
                     aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
+                    if (aut)
+                        await Navigation.PushAsync(new MenuPpal(usuario));
+                    else
+                        await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
+                }
                 else
                 {
-                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion (55)", "OK");
-                    Musuarios usuario = await App.SQLiteDB.GetUsuarioByIdandPw(TxtUsuario.Trim(), TxtPw.Trim());
+                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion (62)", "OK");
+                    usuario = await App.SQLiteDB.GetUsuarioByIdandPw(TxtUsuario.Trim(), TxtPw.Trim());
                     if (usuario != null)
                     {
                         aut = true;
+                        await Navigation.PushAsync(new MenuPpal(usuario));
                     }
+                    else
+                        await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
                 }
-                if (aut)
-                    await Navigation.PushAsync(new MenuPpal(usuario));
-                else
-                    await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
+                
             }
-            //Application.Current.MainPage = new NavigationPage(new MenuPpal());
         }
         private bool Autenticar(string login, string pass)
         {

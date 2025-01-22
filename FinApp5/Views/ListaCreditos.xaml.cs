@@ -13,6 +13,7 @@ public partial class ListaCreditos : ContentPage
     Musuarios Usuario = new Musuarios();
     public ListaCreditos(Musuarios usuario)
     {
+
         InitializeComponent();
         Usuario = usuario;
         //CargarCreditosAsync();
@@ -64,6 +65,7 @@ public partial class ListaCreditos : ContentPage
             if (cmbOrden.SelectedIndex == 3)
                 filtro = "Reta";
 
+            //aqui verificar con
             
             SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", CONEXIONMAESTRA.conectar);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -102,6 +104,7 @@ public partial class ListaCreditos : ContentPage
                                                                                 p.marAboCreDia == 0)
                                                             .OrderBy(p => p.posRutCre).ToList();
             }
+
         }
         catch (Exception ex)
         {
@@ -149,9 +152,17 @@ public partial class ListaCreditos : ContentPage
 
     private void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
     {
-        CargarCreditosAsync();
+        //desde aqui
+        if (CONEXIONMAESTRA.VerificarCon())
+        {
+            CargarCreditosAsync();
+        }
+        else
+        {
+            //sin conexion
+        }
 
-        if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
+            if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
                                                                    p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
