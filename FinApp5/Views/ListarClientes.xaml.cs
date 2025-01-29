@@ -17,8 +17,9 @@ public partial class ListarClientes : ContentPage
         InitializeComponent();
         Usuario = usuario;
         if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+        {
             App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
-        
+        }
 
         llenarDatos(usuario);
         

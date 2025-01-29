@@ -69,11 +69,8 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
-
         public Task<List<Prestamos>> GetCreditos()
         {
-
             return db.Table<Prestamos>().Where(c => c.nuevo != 1).ToListAsync();
         }
 
