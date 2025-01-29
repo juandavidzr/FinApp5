@@ -272,7 +272,7 @@ public partial class Creditos : ContentPage
                         idCliente = txtidCliente.Text,
                         nombreCliente = txtNombreCli.Text,
                         fechaPrestamo = DateTime.Today.ToString("yyyy-MM-dd"),
-                        codigoRuta = Helpers.Settings.CodigoRuta,
+                        codigoRuta = codigoRuta,
                         cantidadPrestada = Convert.ToDouble(txtDesembolso.Text),
                         interes = Convert.ToDouble(txtInteres.Text),
                         codigoPlan = strCodPlaCre,

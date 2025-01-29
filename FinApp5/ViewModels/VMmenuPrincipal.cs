@@ -53,7 +53,7 @@ namespace FinApp5.ViewModels
         #endregion
         #region PROCESOS
 
-        private async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
+        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
         {
             Mcliente cliente = new Mcliente();
             try
@@ -284,7 +284,6 @@ namespace FinApp5.ViewModels
                         };
                         //await App.SQLiteDB.SaveClienteAsync(cli);
                         App.SQLiteDB.SaveClienteAsync(cli);
-
                     }
 
                     rdr.Close();
@@ -299,7 +298,6 @@ namespace FinApp5.ViewModels
 
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
-
         }
 
         public async Task ProcesoAsyncrono()

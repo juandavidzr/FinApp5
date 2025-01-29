@@ -89,6 +89,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.DebidoRuta(Usuario);
             if (mbalance != null)
                 TxtDebidoRuta = mbalance.DebidoRuta;
+            else
+                TxtDebidoRuta = 0;
         }
         public void DebidoDia()
         {
@@ -97,6 +99,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.DebidoDia(Usuario);
             if (mbalance != null)
                 TxtDebidoDia = mbalance.DebidoDia;
+            else
+                TxtDebidoDia = 0;
         }
         public void Recaudo()
         {
@@ -105,6 +109,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Recaudo(Usuario);
             if (mbalance != null)
                 TxtRecaudo = mbalance.Recaudo;
+            else
+                TxtRecaudo = 0;
         }
         public void Microseguro()
         {
@@ -113,8 +119,9 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Microseguro(Usuario);
             if (mbalance != null)
                 TxtMicroseguro = mbalance.Microseguro;
+            else
+                TxtMicroseguro = 0;
         }
-
         public void Desembolsos()
         {
             Mbalance? mbalance = new Mbalance();
@@ -122,6 +129,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Desembolsos(Usuario);
             if (mbalance != null)
                 TxtDesembolsos = mbalance.Desembolsos;
+            else
+                TxtDesembolsos = 0;
         }
         public void Gastos()
         {
@@ -130,6 +139,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Gastos(Usuario);
             if (mbalance != null)
                 TxtGastos = mbalance.Gastos;
+            else
+                TxtGastos = 0;
         }
         public void Entradas()
         {
@@ -138,6 +149,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Entradas(Usuario);
             if (mbalance != null)
                 TxtEntradas = mbalance.Entradas;
+            else
+                TxtEntradas = 0;
         }
         public void Salidas()
         {
@@ -146,6 +159,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Salidas(Usuario);
             if (mbalance != null)
                 TxtSalidas = mbalance.Salidas;
+            else
+                TxtSalidas = 0;
         }
         public void Sueldos()
         {
@@ -154,6 +169,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Sueldos(Usuario);
             if (mbalance != null)
                 TxtSueldos = mbalance.Sueldos;
+            else
+                TxtSueldos = 0;
         }
         public async void Resultado()
         {
@@ -166,6 +183,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Creditos(Usuario);
             if (mbalance != null)
                 TxtCreditos = mbalance.Creditos;
+            else
+                TxtCreditos = 0;
         }
         public void Visitados()
         {
@@ -174,6 +193,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Visitados(Usuario);
             if (mbalance != null)
                 TxtVisitados = mbalance.Visitados;
+            else
+                TxtVisitados = 0;
         }
         public async void SinVisitar()
         {
@@ -186,6 +207,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.PrimeraVez(Usuario);
             if (mbalance != null)
                 TxtPrimeraVez = mbalance.PrimeraVez;
+            else
+                TxtPrimeraVez = 0;
         }
         public void Cancelados()
         {
@@ -194,6 +217,8 @@ namespace FinApp5.ViewModels
             mbalance = funcion.Cancelados(Usuario);
             if (mbalance != null)
                 TxtCancelados = mbalance.Cancelados;
+            else
+                TxtCancelados = 0;
         }
 
         public void CajaAnterior()
@@ -203,6 +228,9 @@ namespace FinApp5.ViewModels
             mbalance = funcion.CajaAnterior(Usuario);
             if (mbalance != null)
                 TxtCajaAnterior = mbalance.CajaAnterior;
+            else
+                TxtCajaAnterior = 0;
+
         }
         public void CajaActual()
         {

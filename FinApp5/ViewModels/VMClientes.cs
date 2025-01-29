@@ -257,6 +257,7 @@ namespace FinApp5.ViewModels
         public ICommand BtnNavegarCommand => new Command(BtnNavegar);
         public ICommand BtnWhatsAppCommand => new Command(BtnWhatsApp);
         public ICommand BtnLimpiarCommand => new Command(BtnLimpiar);
+
         //public ICommand ConsultarClienteCommand => new Command(ConsultarCliente);
         public ICommand BtnGrabarCommand => new Command(BtnGrabar);
         #endregion

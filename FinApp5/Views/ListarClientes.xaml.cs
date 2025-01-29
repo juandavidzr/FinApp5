@@ -15,8 +15,13 @@ public partial class ListarClientes : ContentPage
     public ListarClientes(Musuarios usuario)
     {
         InitializeComponent();
-        llenarDatos(usuario);
         Usuario = usuario;
+        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+            App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
+        
+
+        llenarDatos(usuario);
+        
         BindingContext = new VMTransacciones(Navigation, usuario);
 
     }
@@ -36,7 +41,6 @@ public partial class ListarClientes : ContentPage
 
             if (CONEXIONMAESTRA.VerificarCon())
             {
-
                 CONEXIONMAESTRA.Abrir();
                 cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -58,14 +62,11 @@ public partial class ListarClientes : ContentPage
                         cteDirCobCte = rdr["cteDirCobCte"].ToString(),
 
                     });
-
                 }
-
                 lstClientes.ItemsSource = clientsCollection;
 
                 if (cmd.Connection.State == ConnectionState.Open)
                     cmd.Connection.Close();
-
             }
             else
             {
@@ -97,7 +98,6 @@ public partial class ListarClientes : ContentPage
         {
            
         }
-
     }
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
