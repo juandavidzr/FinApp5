@@ -22,7 +22,7 @@ namespace FinApp5.Data
             //db.CreateTableAsync<Abono>().Wait();
         }
 
-        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
+        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
         {
             Mcliente cliente = new Mcliente();
             try
