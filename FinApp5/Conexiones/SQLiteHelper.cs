@@ -80,9 +80,9 @@ namespace FinApp5.Data
         /// Obtener todos los creditos
         /// </summary>
         /// <returns></returns>
-        public Task<List<Prestamos>> GetAllCredit()
+        public Task<List<Prestamos>> GetAllCredit(string? code)
         {
-            return db.Table<Prestamos>().ToListAsync();
+            return db.Table<Prestamos>().Where(c => c.codigoRuta.Equals(code)).OrderBy( o => o.posRutCre).ToListAsync();
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
