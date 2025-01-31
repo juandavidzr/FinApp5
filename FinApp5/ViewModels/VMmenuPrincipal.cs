@@ -24,22 +24,26 @@ namespace FinApp5.ViewModels
         {
             Navigation = navigation;
             Usuario = usuario;
-            if (usuario.CodigoCobr != null)
+
+            if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
-                if (CONEXIONMAESTRA.VerificarCon())
-                {
 
-                    SincronizarClientes(usuario.CodigoCobr);
+                GetBarrios(Usuario.CodigoCobr); //Trae todos los barrio del servidor
+                SyncRuta(Usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
+                SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
+                GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
 
-                    GetBarrios(usuario.CodigoCobr); //Trae todos los barrio del servidor
-                    SyncRuta(usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
-                    SyncCobros(usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
-                    GetClientes(usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
-                }
+                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor
+                if (Usuario?.Usuario != null)
+                    App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
                 else
-                {
-                    DisplayAlert("Conexion", "Esta trabajando sin conexion", "OK");
-                }
+                    Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
+
+
+            }
+            else
+            {
+                //DisplayAlert("Conexion", "Esta trabajando sin conexion", "OK");
             }
         }
 
@@ -52,54 +56,54 @@ namespace FinApp5.ViewModels
         }
         #endregion
         #region PROCESOS
+        // se centralizo en helper
+        //public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
+        //{
+        //    Mcliente cliente = new Mcliente();
+        //    try
+        //    {
+        //        SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        List<Mcliente>? clienteList = await App.SQLiteDB.GetClientesNew();
+        //        if (clienteList.Count > 0)
+        //        {
+        //            foreach (var a in clienteList)
+        //            {
+        //                cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteNumIdenti);
+        //                if (cliente != null)
+        //                {
+        //                    cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteNumIdenti);
+        //                    cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
+        //                    cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
+        //                    cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
+        //                    cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
+        //                    cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
+        //                    cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
+        //                    cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
+        //                    cmd.Parameters.AddWithValue("@strCodigoRut", CodigoRuta);
+        //                    cmd.Parameters.AddWithValue("@longitud", "0");
+        //                    cmd.Parameters.AddWithValue("@latitud", "0");
+        //                    cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
 
-        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
-        {
-            Mcliente cliente = new Mcliente();
-            try
-            {
-                SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                List<Mcliente>? clienteList = await App.SQLiteDB.GetClientesNew();
-                if (clienteList.Count > 0)
-                {
-                    foreach (var a in clienteList)
-                    {
-                        cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteNumIdenti);
-                        if (cliente != null)
-                        {
-                            cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteNumIdenti);
-                            cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
-                            cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
-                            cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
-                            cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
-                            cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
-                            cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
-                            cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
-                            cmd.Parameters.AddWithValue("@strCodigoRut", CodigoRuta);
-                            cmd.Parameters.AddWithValue("@longitud", "0");
-                            cmd.Parameters.AddWithValue("@latitud", "0");
-                            cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
+        //                    CONEXIONMAESTRA.Abrir();
 
-                            CONEXIONMAESTRA.Abrir();
-
-                            cmd.ExecuteReader();
-                            cmd.Parameters.Clear();
-                        }
-                        cliente.nuevo = 0;
-                        await App.SQLiteDB.UpdateClienteAsync(cliente);
-                    }
-                }
-                CONEXIONMAESTRA.Cerrar();
-            }
-            catch (Exception ex)
-            {
-                _ = DisplayAlert("error", ex.Message, "OK");
-                //cliente.nuevo = 0;
-                //await App.SQLiteDB.UpdateClienteAsync(cliente);
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
+        //                    cmd.ExecuteReader();
+        //                    cmd.Parameters.Clear();
+        //                }
+        //                cliente.nuevo = 0;
+        //                await App.SQLiteDB.UpdateClienteAsync(cliente);
+        //            }
+        //        }
+        //        CONEXIONMAESTRA.Cerrar();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _ = DisplayAlert("error", ex.Message, "OK");
+        //        //cliente.nuevo = 0;
+        //        //await App.SQLiteDB.UpdateClienteAsync(cliente);
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
 
 
         private void SyncCobros(string ruta, string filtro)
@@ -175,7 +179,7 @@ namespace FinApp5.ViewModels
         }
         private void SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
         {
-           
+
             try
             {
                 CONEXIONMAESTRA.Abrir();
@@ -183,7 +187,7 @@ namespace FinApp5.ViewModels
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
                 SqlDataReader rdr = cmd.ExecuteReader();
-               
+
 
                 App.SQLiteDB.DeleteRutaAsync<Task>();
 
@@ -244,7 +248,7 @@ namespace FinApp5.ViewModels
             catch (Exception ex)
             {
                 DisplayAlert("error", ex.Message, "OK");
-                
+
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
@@ -306,7 +310,7 @@ namespace FinApp5.ViewModels
         }
         public async void SubMenuClientes()
         {
-           Navigation.PushAsync(new SubMenuClientes(Usuario));
+            Navigation.PushAsync(new SubMenuClientes(Usuario));
         }
         private void IrATransacciones()
         {

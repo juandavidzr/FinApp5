@@ -19,7 +19,7 @@ namespace FinApp5.ViewModels
         #region CONSTRUCTOR
         public VMingresar(INavigation? navigation)
         {
-            
+
             Navigation = navigation;
         }
         #endregion
@@ -40,14 +40,16 @@ namespace FinApp5.ViewModels
         #region PROCESOS
         public async void ingresar()
         {
-            
+
             if (String.IsNullOrEmpty(TxtUsuario) || String.IsNullOrEmpty(TxtPw))
             {
                 await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
             }
             else
             {
-                bool Estado = CONEXIONMAESTRA.VerificarCon();
+                //bool Estado = CONEXIONMAESTRA.VerificarCon();
+                //var Estado = CONEXIONMAESTRA.VerificarConexionAsync();
+                bool Estado = await CONEXIONMAESTRA.VerificarConexionAsync();
                 bool aut = false;
                 if (Estado)
                 {
@@ -69,7 +71,7 @@ namespace FinApp5.ViewModels
                     else
                         await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
                 }
-                
+
             }
         }
         private bool Autenticar(string login, string pass)
