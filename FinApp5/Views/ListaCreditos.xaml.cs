@@ -115,9 +115,10 @@ public partial class ListaCreditos : ContentPage
     }
 
 
-    public async Task<object> GetAllCredit()
+    public Task<List<Prestamos>> GetAllCredit()
     {
-        return null;
+        
+        return App.SQLiteDB.GetAllCredit();
     }
 
 
@@ -166,7 +167,7 @@ public partial class ListaCreditos : ContentPage
         }
         else
         {
-            await GetAllCredit();
+          var Lis =  await GetAllCredit();
             //sin conexion
         }
 
