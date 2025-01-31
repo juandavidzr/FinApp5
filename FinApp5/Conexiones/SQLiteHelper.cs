@@ -76,6 +76,14 @@ namespace FinApp5.Data
 
             return db.Table<Prestamos>().Where(c => c.nuevo != 1).ToListAsync();
         }
+        /// <summary>
+        /// Obtener todos los creditos
+        /// </summary>
+        /// <returns></returns>
+        public Task<List<Prestamos>> GetAllCredit()
+        {
+            return db.Table<Prestamos>().ToListAsync();
+        }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
         {

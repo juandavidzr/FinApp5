@@ -113,7 +113,14 @@ public partial class ListaCreditos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-    
+
+
+    public async Task<object> GetAllCredit()
+    {
+        return null;
+    }
+
+
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         try
@@ -150,7 +157,7 @@ public partial class ListaCreditos : ContentPage
         Navigation.PushAsync(new MenuPpal(Usuario));
     }
 
-    private void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
+    private async void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
     {
         //desde aqui
         if (CONEXIONMAESTRA.VerificarCon())
@@ -159,6 +166,7 @@ public partial class ListaCreditos : ContentPage
         }
         else
         {
+            await GetAllCredit();
             //sin conexion
         }
 
