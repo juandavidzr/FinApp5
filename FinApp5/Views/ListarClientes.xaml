@@ -12,6 +12,7 @@
             
             <Label Text="ID CLIENTE              | NOMBRE CLIENTE"   Grid.Row="0" Grid.Column="0"/>
             <Label Text="TELEFONO               | DIRECCION"        Grid.Row="0" Grid.Column="1"/>
+            <Label HorizontalTextAlignment="Center" Text="--------------------------------------------------------------------------------------" />
             <ListView x:Name="lstClientes" ItemSelected= "lstClientes_ItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>

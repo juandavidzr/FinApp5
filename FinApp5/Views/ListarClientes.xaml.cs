@@ -1,4 +1,4 @@
-using FinApp5.Conexiones;
+﻿using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using FinApp5.ViewModels;
 using Microsoft.Data.SqlClient;
@@ -17,18 +17,20 @@ public partial class ListarClientes : ContentPage
         InitializeComponent();
         Usuario = usuario;
         if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
-            App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
-        
+        {
+            App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+            if (Usuario?.Usuario != null)
+                App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
+            else
+                Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
+        }
 
         llenarDatos(usuario);
-        
-        BindingContext = new VMTransacciones(Navigation, usuario);
 
+        //BindingContext = new VMTransacciones(Navigation, usuario);
     }
-
     private async void llenarDatos(Musuarios usuario)
     {
-
         SqlCommand cmd = new SqlCommand();
         try
         {
@@ -60,7 +62,6 @@ public partial class ListarClientes : ContentPage
                         cteTeleCelu = rdr["cteTeleCelu"].ToString(),
                         cteTeleFijo = rdr["cteTeleFijo"].ToString(),
                         cteDirCobCte = rdr["cteDirCobCte"].ToString(),
-
                     });
                 }
                 lstClientes.ItemsSource = clientsCollection;
@@ -70,7 +71,7 @@ public partial class ListarClientes : ContentPage
             }
             else
             {
-                //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 72)", "OK");
+                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 72)", "OK");
                 var clienteList = await App.SQLiteDB.GetClientesAsync();
                 if (clienteList != null)
                 {
@@ -86,7 +87,6 @@ public partial class ListarClientes : ContentPage
                     }
                 }
             }
-
         }
         catch (Exception)
         {
@@ -94,12 +94,12 @@ public partial class ListarClientes : ContentPage
                 cmd.Connection.Close();
             throw;
         }
-        finally
-        {
-           
-        }
+        //finally
+        //{
+        //    if (cmd.Connection.State == ConnectionState.Open)
+        //        cmd.Connection.Close();
+        //}
     }
-
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         try
@@ -110,7 +110,11 @@ public partial class ListarClientes : ContentPage
             }
             else
             {
-                lstClientes.ItemsSource = clientsCollection.Where(i => i.cteNombApel.ToLower().Contains(e.NewTextValue.ToLower()));
+                //lstClientes.ItemsSource = clientsCollection.Where(i => i.cteNombApel.ToLower().Contains(e.NewTextValue.ToLower()));
+                lstClientes.ItemsSource = clientsCollection
+                                            .Where(i => (i.cteNombApel?.ToLower() ?? "").Contains(e.NewTextValue.ToLower()))
+                                            .ToList();
+
             }
         }
         catch (Exception)
@@ -118,9 +122,7 @@ public partial class ListarClientes : ContentPage
 
             throw;
         }
-
     }
-
     private void lstClientes_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         try
@@ -137,6 +139,5 @@ public partial class ListarClientes : ContentPage
             DisplayAlert("Error", "Error" + ex.Message, "OK");
             throw;
         }
-
     }
 }

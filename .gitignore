@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/FinApp5/Platforms/Android/AndroidManifest.xml
+/FinApp5/Resources/Splash
+/FinApp5/Resources/Splash

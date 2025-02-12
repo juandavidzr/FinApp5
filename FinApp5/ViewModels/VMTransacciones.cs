@@ -72,10 +72,22 @@ namespace FinApp5.ViewModels
         }
         public async void ListarCreditos()
         {
-            UserDialogs.Instance.Loading();
-            await Task.Delay(3000);
+            //UserDialogs.Instance.Loading();
+            //Task.Delay(20000);
+            //await Navigation.PushAsync(new ListaCreditos(Usuario));
+            //UserDialogs.Instance.HideHud();
+
+            //UserDialogs.Instance.ShowLoading("Cargando...");
+
+            //await Task.Run(async () =>
+            //{
+            //    await Task.Delay(5000); // Simulación de carga de datos
+            //});
+
             await Navigation.PushAsync(new ListaCreditos(Usuario));
-            UserDialogs.Instance.HideHud();
+
+            //UserDialogs.Instance.HideHud();
+
         }
 
         public async void RegistarGastos(object obj)

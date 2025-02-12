@@ -3,6 +3,7 @@ using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Data;
+using System.Globalization;
 
 
 namespace FinApp5.Views;
@@ -16,11 +17,10 @@ public partial class Creditos : ContentPage
 
     public Creditos(Mcliente cliente, Musuarios usuario)
 	{
-            
-
         InitializeComponent();
         txtidCliente.Text = cliente.cteNumIdenti;
         txtNombreCli.Text = cliente.cteNombApel;
+        ConsultarCliente(cliente.cteNumIdenti, usuario.CodigoCobr);
         PlazoList = GetPlazos();
         cmbPlazo.ItemsSource = PlazoList;
         diasList = GetDias();
@@ -32,6 +32,66 @@ public partial class Creditos : ContentPage
         cmbPosicion.SelectedIndex = 0;
         cmbPlazo.SelectedIndex = 0;
         cmbDias.SelectedIndex = 0;
+    }
+
+    private void ConsultarCliente(string? cteNumIdenti, string? CodigoCobr)
+    {
+        try
+        {
+            double dblSalAcuCte = 0;
+            int intCanCreVigCte = 0;
+            double dblMonto = 0;
+            double dblSaldo = 0;
+            DateTime dteFechaAux = DateTime.Now;
+            DateTime dteFecUltCre = DateTime.Now;
+            string strFormatoNum = string.Empty;
+
+            CONEXIONMAESTRA.Abrir();
+            SqlCommand cmd = new SqlCommand("FiltrarInformacionPersonalDeCliente", CONEXIONMAESTRA.conectar);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@strCedulaCteOC", cteNumIdenti);
+            cmd.Parameters.AddWithValue("@strCodigoRuta", CodigoCobr);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.HasRows)
+            {
+                while (rdr.Read())
+                {
+                    dblMonto = Convert.ToDouble(rdr["pmoCantidadPre"].ToString().Trim());
+                    dteFecUltCre = Convert.ToDateTime(rdr["pmoFechaUltCreOto"].ToString().Trim());
+                    dteFechaAux = Convert.ToDateTime(rdr["pmoFecUltPag"].ToString().Trim());
+                    if ((Convert.ToInt16(rdr["pmoVigente"].ToString().Trim()) == 1) &&
+                        ((Convert.ToInt16(rdr["pmoActivo"].ToString().Trim()) == 1)))
+                    {
+                        dblSaldo = Convert.ToDouble(rdr["pmoSaldoActualCte"].ToString().Trim());
+                        dblSalAcuCte += dblSaldo;
+                        intCanCreVigCte++;
+                    }
+                }
+                txtCreditos.Text = intCanCreVigCte.ToString().Trim();
+                
+                if (dblSalAcuCte >= 1000)
+                    strFormatoNum = "{0:0,0}";
+                else
+                    strFormatoNum = "{0,0}";
+                this.txtDeuda.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblSalAcuCte));
+                this.txtFechaUltimo.Text = dteFecUltCre.ToString("yyyy-MM-dd");
+                if (dblMonto >= 1000)
+                    strFormatoNum = "{0:0,0}";
+                else
+                    strFormatoNum = "{0,0}";
+                this.txtValorUltimo.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblMonto));
+                this.txtUltimoPago.Text = dteFechaAux.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                DisplayAlert("No hay datos", "No hay datos", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("error", ex.Message, "OK");
+        }
+        finally { CONEXIONMAESTRA.Cerrar(); }
     }
 
     private async void llenarRuta()
@@ -74,7 +134,7 @@ public partial class Creditos : ContentPage
                     cmbPosicion.ItemsSource = rutaList;
             }
         }
-        catch (Exception strExcepcion)
+        catch (Exception ex)
         {
             
         }
