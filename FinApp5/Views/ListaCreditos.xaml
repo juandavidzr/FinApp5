@@ -26,7 +26,7 @@
                 <Button x:Name="btnBuscar" Text="Buscar"></Button>
                 <Label Text="ID CLIENTE                | NOMBRE CLIENTE | ID CREDITO"/>
                 <Label Text="FECHA PRESTAMO   |        CANTIDAD       | ULTIMO PAGO"/>
-                <Label Text="------------------------------------------------------------------------------------------" />
+                <Label HorizontalTextAlignment="Center" Text="--------------------------------------------------------------------------------------" />
                 <ListView x:Name="lstCreditos" ItemSelected="lstCreditos_ItemSelected" Margin="5">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -37,14 +37,14 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="100" />
-                                        
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="80"/>
                                     </Grid.ColumnDefinitions>
+                                    
                                     <Label Text="{Binding idCliente}"        Grid.Row="0" Grid.Column="0" TextColor="Black"/>
                                     <Label Text="{Binding nombreCliente}"    Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding NumPrestamo}"      Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding NumPrestamo}"      Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End"/>
                                     <Label Text="{Binding fechaPrestamo}"    Grid.Row="1" Grid.Column="0" TextColor="Black"/>
                                     <Label Text="{Binding cantidadPrestada}" Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
                                     <Label Text="{Binding valUltPag}"        Grid.Row="1" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End"/>
