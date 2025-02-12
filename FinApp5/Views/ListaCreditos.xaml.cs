@@ -114,7 +114,10 @@ public partial class ListaCreditos : ContentPage
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
 
-
+    /// <summary>
+    /// Cargar Creditos offLine
+    /// </summary>
+    /// <returns></returns>
     public async Task CargarCreditos()
     {
         creditosCollection.Clear();
