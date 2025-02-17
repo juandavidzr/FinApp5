@@ -21,7 +21,7 @@ public partial class ListaCreditos : ContentPage
         cmbOrden.ItemsSource = OrdenList;
         if (cmbOrden.SelectedIndex == -1)
             cmbOrden.SelectedIndex = 0;
-        
+
     }
 
     public class Orden
@@ -51,7 +51,7 @@ public partial class ListaCreditos : ContentPage
             creditosCollection.Clear();
             var prestamos = new List<Prestamos>();
             //prestamos = await App.SQLiteDB.GetCreditos();
-            
+
             var ruta = Usuario.CodigoCobr;
             var filtro = string.Empty;
             if (cmbOrden.SelectedIndex == -1)
@@ -66,7 +66,7 @@ public partial class ListaCreditos : ContentPage
                 filtro = "Reta";
 
             //aqui verificar con
-            
+
             SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", CONEXIONMAESTRA.conectar);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
@@ -92,9 +92,9 @@ public partial class ListaCreditos : ContentPage
                     saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
                     IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
                     fecVenCre = rdr["pmoFecVenCre"].ToString(),
-                    cantidadPrestada = Convert.ToInt32( rdr["pmoSaldoActualCte"]),
+                    cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
                     totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
-                    marAboCreDia = Convert.ToInt16 (rdr["pmoMarAboCreDia"].ToString()),
+                    marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
                 });
             }
 
@@ -108,12 +108,37 @@ public partial class ListaCreditos : ContentPage
         }
         catch (Exception ex)
         {
-           await DisplayAlert("error", ex.Message, "OK");
+            await DisplayAlert("error", ex.Message, "OK");
             throw;
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-    
+
+    /// <summary>
+    /// Cargar Creditos offLine
+    /// </summary>
+    /// <returns></returns>
+    public async Task CargarCreditos()
+    {
+        creditosCollection.Clear();
+        creditosCollection = await GetAllCredit(Usuario.CodigoCobr);
+        lstCreditos.ItemsSource = creditosCollection;
+    }
+
+    public async Task<ObservableCollection<Prestamos>> GetAllCredit(string? code)
+    {
+        try
+        {
+            creditosCollection = await App.SQLiteDB.GetAllCredit(code);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "Error" + ex.Message, "OK");
+        }
+        return creditosCollection;
+    }
+
+
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         try
@@ -150,27 +175,30 @@ public partial class ListaCreditos : ContentPage
         Navigation.PushAsync(new MenuPpal(Usuario));
     }
 
-    private void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
+    private async void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
     {
         //desde aqui
         if (CONEXIONMAESTRA.VerificarCon())
         {
-            CargarCreditosAsync();
-        }
-        else
-        {
-            //sin conexion
-        }
+            await CargarCreditosAsync();
 
             if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
-            lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
-                                                                   p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+                lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+                                                                       p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+        }
+        else //sin conexion
+        {
+            //ToDo para commit 
+            await CargarCreditos();
+
+        }
+        
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
         {
             var fecha = DateTime.Today.AddDays(-60);
             lstCreditos.ItemsSource = creditosCollection.Where(p => Convert.ToDateTime(p.fecUltPag) < fecha).ToList();
         }
-        
+
         if (cmbOrden.SelectedIndex == 2) //creditos con abonos le dia de hoy
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.marAboCreDia == 1).ToList();
 
