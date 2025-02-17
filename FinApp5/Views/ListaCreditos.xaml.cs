@@ -188,6 +188,7 @@ public partial class ListaCreditos : ContentPage
         }
         else //sin conexion
         {
+            //ToDo para commit 
             await CargarCreditos();
 
         }
