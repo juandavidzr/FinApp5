@@ -215,13 +215,10 @@ public partial class Abonos : ContentPage
         }
         finally {  }
     }
-
     private void btnPagos_Clicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
     }
-
-    
     private void Button_WhatsApp(object sender, EventArgs e)
     {
         try
@@ -236,7 +233,6 @@ public partial class Abonos : ContentPage
         }
         
     }
-
     private async void WhatsApp(string phoneNumber, string? message)
     {
         try

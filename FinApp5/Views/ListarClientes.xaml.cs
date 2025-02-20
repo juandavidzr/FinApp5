@@ -142,4 +142,9 @@ public partial class ListarClientes : ContentPage
             throw;
         }
     }
+
+    private void btnTransacciones_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new Transacciones(Usuario));
+    }
 }
