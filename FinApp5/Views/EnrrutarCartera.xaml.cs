@@ -126,6 +126,4 @@ public partial class EnrrutarCartera : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-
-    
 }

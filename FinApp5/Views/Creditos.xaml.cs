@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Data;
 using System.Globalization;
+using System.Threading.Tasks;
 
 
 namespace FinApp5.Views;
@@ -11,6 +12,7 @@ namespace FinApp5.Views;
 public partial class Creditos : ContentPage
 {
     Musuarios Usuario = new Musuarios();
+    Mcliente Cliente = new Mcliente();
     private const string DePrimero = "De Primero";
     private const string PosiciónActual = "Posición Actual";
     private const string DeUltimo = "De Ultimo";
@@ -18,14 +20,16 @@ public partial class Creditos : ContentPage
     public Creditos(Mcliente cliente, Musuarios usuario)
 	{
         InitializeComponent();
+        Usuario = usuario;
+        Cliente = cliente;
         txtidCliente.Text = cliente.cteNumIdenti;
         txtNombreCli.Text = cliente.cteNombApel;
-        ConsultarCliente(cliente.cteNumIdenti, usuario.CodigoCobr);
+        ConsultarCliente(cliente.cteNumIdenti, usuario.CodigoCobr, Cliente);
         PlazoList = GetPlazos();
         cmbPlazo.ItemsSource = PlazoList;
         diasList = GetDias();
         cmbDias.ItemsSource = diasList;
-        Usuario = usuario;
+        
 
         llenarRuta();
 
@@ -34,7 +38,7 @@ public partial class Creditos : ContentPage
         cmbDias.SelectedIndex = 0;
     }
 
-    private void ConsultarCliente(string? cteNumIdenti, string? CodigoCobr)
+    private async Task ConsultarCliente(string? cteNumIdenti, string? CodigoCobr, Mcliente cliente)
     {
         try
         {
@@ -45,47 +49,56 @@ public partial class Creditos : ContentPage
             DateTime dteFechaAux = DateTime.Now;
             DateTime dteFecUltCre = DateTime.Now;
             string strFormatoNum = string.Empty;
-
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("FiltrarInformacionPersonalDeCliente", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCedulaCteOC", cteNumIdenti);
-            cmd.Parameters.AddWithValue("@strCodigoRuta", CodigoCobr);
-            SqlDataReader rdr = cmd.ExecuteReader();
-            if (rdr.HasRows)
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                while (rdr.Read())
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("FiltrarInformacionPersonalDeCliente", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCedulaCteOC", cteNumIdenti);
+                cmd.Parameters.AddWithValue("@strCodigoRuta", CodigoCobr);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
                 {
-                    dblMonto = Convert.ToDouble(rdr["pmoCantidadPre"].ToString().Trim());
-                    dteFecUltCre = Convert.ToDateTime(rdr["pmoFechaUltCreOto"].ToString().Trim());
-                    dteFechaAux = Convert.ToDateTime(rdr["pmoFecUltPag"].ToString().Trim());
-                    if ((Convert.ToInt16(rdr["pmoVigente"].ToString().Trim()) == 1) &&
-                        ((Convert.ToInt16(rdr["pmoActivo"].ToString().Trim()) == 1)))
+                    while (rdr.Read())
                     {
-                        dblSaldo = Convert.ToDouble(rdr["pmoSaldoActualCte"].ToString().Trim());
-                        dblSalAcuCte += dblSaldo;
-                        intCanCreVigCte++;
+                        dblMonto = Convert.ToDouble(rdr["pmoCantidadPre"].ToString().Trim());
+                        dteFecUltCre = Convert.ToDateTime(rdr["pmoFechaUltCreOto"].ToString().Trim());
+                        dteFechaAux = Convert.ToDateTime(rdr["pmoFecUltPag"].ToString().Trim());
+                        if ((Convert.ToInt16(rdr["pmoVigente"].ToString().Trim()) == 1) &&
+                            ((Convert.ToInt16(rdr["pmoActivo"].ToString().Trim()) == 1)))
+                        {
+                            dblSaldo = Convert.ToDouble(rdr["pmoSaldoActualCte"].ToString().Trim());
+                            dblSalAcuCte += dblSaldo;
+                            intCanCreVigCte++;
+                        }
                     }
                 }
-                txtCreditos.Text = intCanCreVigCte.ToString().Trim();
-                
-                if (dblSalAcuCte >= 1000)
-                    strFormatoNum = "{0:0,0}";
                 else
-                    strFormatoNum = "{0,0}";
-                this.txtDeuda.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblSalAcuCte));
-                this.txtFechaUltimo.Text = dteFecUltCre.ToString("yyyy-MM-dd");
-                if (dblMonto >= 1000)
-                    strFormatoNum = "{0:0,0}";
-                else
-                    strFormatoNum = "{0,0}";
-                this.txtValorUltimo.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblMonto));
-                this.txtUltimoPago.Text = dteFechaAux.ToString("yyyy-MM-dd");
+                {
+                    //DisplayAlert("No hay datos", "No hay datos", "OK");
+                }
             }
             else
             {
-                DisplayAlert("No hay datos", "No hay datos", "OK");
+               await DisplayAlert("Sin Internet", "Esta trabajando sin internet (83)", "OK");
+                App.SQLiteDB.FiltrarInformacionPersonalDeCliente(cliente.cteNumIdenti, CodigoCobr, out dblSalAcuCte, 
+                    out intCanCreVigCte, out dblMonto, out dteFecUltCre, out dteFechaAux);
             }
+
+            txtCreditos.Text = intCanCreVigCte.ToString().Trim();
+            if (dblSalAcuCte >= 1000)
+                strFormatoNum = "{0:0,0}";
+            else
+                strFormatoNum = "{0,0}";
+
+            this.txtDeuda.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblSalAcuCte));
+            this.txtFechaUltimo.Text = dteFecUltCre.ToString("yyyy-MM-dd");
+            if (dblMonto >= 1000)
+                strFormatoNum = "{0:0,0}";
+            else
+                strFormatoNum = "{0,0}";
+            this.txtValorUltimo.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblMonto));
+            this.txtUltimoPago.Text = dteFechaAux.ToString("yyyy-MM-dd");
         }
         catch (Exception ex)
         {
@@ -125,6 +138,7 @@ public partial class Creditos : ContentPage
                     intIndice++;
                 }
                 cmbPosicion.ItemsSource = rutaList;
+                CONEXIONMAESTRA.Cerrar();
             }
             else
             {
@@ -136,9 +150,9 @@ public partial class Creditos : ContentPage
         }
         catch (Exception ex)
         {
-            
+            Console.WriteLine(ex.Message);
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
+        finally {  }
     }
 
     public class Plazo
@@ -193,6 +207,7 @@ public partial class Creditos : ContentPage
 
     }
 
+    //private async Task btnGrabar_Clicked(object sender, EventArgs e)
     private void btnGrabar_Clicked(object sender, EventArgs e)
     {
         try
@@ -321,7 +336,7 @@ public partial class Creditos : ContentPage
                 }
                 else
                 {
-                    DisplayAlert("Sin internet", "Esta trabajando sin internet", "OK");
+                    //DisplayAlert("Sin internet", "Esta trabajando sin internet (338)", "OK");
 
                     var rowid = LastRowID();
 
@@ -368,12 +383,14 @@ public partial class Creditos : ContentPage
                     DisplayAlert("Credito creado", "Credito creado localmente", "OK");
                     //btnGrabar.IsEnabled = true;
                 }
+                Navigation.PushAsync(new ListarClientes(Usuario));
             }
             else
             {
                 DisplayAlert("Validar datos", "Por favor verifique que toda la información ingresada este completa y sea correcta", "OK");
                 btnGrabar.IsEnabled = true;
             }
+            
         }
         catch (Exception ex)
         {
@@ -455,4 +472,6 @@ public partial class Creditos : ContentPage
     {
 
     }
+
+    
 }

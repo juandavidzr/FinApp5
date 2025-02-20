@@ -1,5 +1,4 @@
-﻿
-using CommunityToolkit.Maui;
+﻿using CommunityToolkit.Maui;
 using Controls.UserDialogs.Maui;
 using FinApp5.ViewModels;
 using Microsoft.Extensions.Logging;
@@ -9,8 +8,6 @@ namespace FinApp5
 {
     public static class MauiProgram
     {
-
-
         public static MauiApp CreateMauiApp()
         {
 
@@ -22,11 +19,11 @@ namespace FinApp5
                 {
                     //setup your default styles for dialogs
                     AlertConfig.DefaultBackgroundColor = Colors.Purple;
-                    #if ANDROID
+                #if ANDROID
                     AlertConfig.DefaultMessageFontFamily = "OpenSans-Regular.ttf";
-                    #else
+                #else
                     AlertConfig.DefaultMessageFontFamily = "OpenSans-Regular";
-                    #endif
+                #endif
 
                     ToastConfig.DefaultCornerRadius = 15;
                 })
@@ -45,9 +42,9 @@ namespace FinApp5
 
 
 
-#if DEBUG
+        #if DEBUG
             builder.Logging.AddDebug();
-#endif
+        #endif
 
             return builder.Build();
         }

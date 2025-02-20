@@ -131,7 +131,7 @@ namespace FinApp5.Conexiones
             catch (Exception ex)
             {
                 //_ = DisplayAlert("error", ex.Message, "OK");
-
+                Console.WriteLine(ex.Message);
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }

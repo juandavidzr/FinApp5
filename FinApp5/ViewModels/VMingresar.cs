@@ -105,6 +105,7 @@ namespace FinApp5.ViewModels
             }
             catch (System.Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
             finally { CONEXIONMAESTRA.Cerrar(); }

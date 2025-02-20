@@ -58,7 +58,7 @@ namespace FinApp5.ViewModels
             }
             else
             {
-                DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 115)", "OK");
+                //DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 115)", "OK");
                 Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
                 if (usuario.PermisoAbonar != null)
                 {

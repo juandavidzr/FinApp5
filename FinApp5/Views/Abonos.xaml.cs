@@ -63,7 +63,7 @@ public partial class Abonos : ContentPage
             {
                 btnGrabar.IsEnabled = false;
                 GrabarAbono(p);
-                await DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
+                
                 
                 await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
@@ -100,7 +100,9 @@ public partial class Abonos : ContentPage
                 cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
                 cmd.Parameters.AddWithValue("@strComentAbo", "abono desde iphone");
                 cmd.ExecuteReader();
+                DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
             }
+            
             else
             {
                 DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
@@ -205,12 +207,14 @@ public partial class Abonos : ContentPage
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@lngNumeroCredito", txtIdCredito.Text);
             cmd.ExecuteReader();
+            CONEXIONMAESTRA.Cerrar();
+            Navigation.PushAsync(new ListaCreditos(Usuario));
         }
         catch (Exception ex)
         {
             throw ex;
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
+        finally {  }
     }
 
     private void btnPagos_Clicked(object sender, EventArgs e)
@@ -285,9 +289,9 @@ public partial class Abonos : ContentPage
                 }
             }
         }
-        catch (Exception expControlErr)
+        catch (Exception ex)
         {
-            
+            Console.WriteLine(ex.Message);
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }

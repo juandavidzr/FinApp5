@@ -10,6 +10,11 @@ namespace FinApp5.Data
     {
 
         SQLiteAsyncConnection db;
+
+        private string dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3");
+
+        //(var connection = new SQLiteConnection(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3")))
+
         public SQLiteHelper(string dbPath)
         {
             db = new SQLiteAsyncConnection(dbPath);
@@ -20,6 +25,59 @@ namespace FinApp5.Data
             db.CreateTableAsync<Mmovimiento>().Wait();
             db.CreateTableAsync<Musuarios>().Wait();
             //db.CreateTableAsync<Abono>().Wait();
+        }
+        public void FiltrarInformacionPersonalDeCliente(string cteNumIdenti, string CodigoCobr,
+        out double dblSalAcuCte, out int intCanCreVigCte, out double dblMonto,
+        out DateTime dteFecUltCre, out DateTime dteFechaAux)
+        {
+            dblSalAcuCte = 0;
+            intCanCreVigCte = 0;
+            dblMonto = 0;
+            dteFecUltCre = DateTime.MinValue;
+            dteFechaAux = DateTime.MinValue;
+
+            try
+            {
+                using (var db = new SQLiteConnection(dbPath))
+                {
+                    //string query = @"
+                    //SELECT pmoCantidadPre, pmoFechaUltCreOto, pmoFecUltPag, pmoVigente, pmoActivo, pmoSaldoActualCte 
+                    //FROM Clientes 
+                    //WHERE strCedulaCteOC = ? AND strCodigoRuta = ?";
+
+                    string query = @"
+                        SELECT	cantidadPrestada, saldoActualCre, fechaUltCreOto, fecUltPag, vigente, activo, desDiaPago
+	                    FROM	Prestamos 
+	                    WHERE   Prestamos.idCliente = ? 
+			                    AND codigoRuta = ? and
+			                    vigente = 1
+			                    and activo = 1
+	                            order by NumPrestamo";
+
+                    var result = db.Query<Prestamos>(query, cteNumIdenti, CodigoCobr);
+
+                    if (result.Count > 0)
+                    {
+                        foreach (var row in result)
+                        {
+                            dblMonto = Convert.ToDouble(row.cantidadPrestada);
+                            dteFecUltCre = Convert.ToDateTime(row.fechaUltCreOto);
+                            dteFechaAux = Convert.ToDateTime(row.fecUltPag);
+
+                            if (row.vigente == 1 && row.activo == 1)
+                            {
+                                double dblSaldo = Convert.ToDouble(row.saldoActualCre);
+                                dblSalAcuCte += dblSaldo;
+                                intCanCreVigCte++;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al consultar la base de datos: " + ex.Message);
+            }
         }
 
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
@@ -77,7 +135,7 @@ namespace FinApp5.Data
             catch (Exception ex)
             {
                 //_ = DisplayAlert("error", ex.Message, "OK");
-
+                Console.WriteLine(ex.Message);
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
@@ -94,35 +152,40 @@ namespace FinApp5.Data
                 {
                     foreach (var a in clienteList)
                     {
-                        cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteNumIdenti);
-                        if (cliente != null)
+                        if (a.cteNumIdenti != null) // Verificar si cteNumIdenti no es nulo
                         {
-                            cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteNumIdenti);
-                            cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
-                            cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
-                            cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
-                            cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
-                            cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
-                            cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
-                            cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
-                            cmd.Parameters.AddWithValue("@strCodigoRut", CodigoRuta);
-                            cmd.Parameters.AddWithValue("@longitud", "0");
-                            cmd.Parameters.AddWithValue("@latitud", "0");
-                            cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
+                            cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteNumIdenti);
+                            if (cliente != null)
+                            {
+                                cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteNumIdenti);
+                                cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
+                                cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
+                                cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
+                                cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
+                                cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
+                                cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
+                                cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
+                                cmd.Parameters.AddWithValue("@strCodigoRut", CodigoRuta);
+                                cmd.Parameters.AddWithValue("@longitud", "0");
+                                cmd.Parameters.AddWithValue("@latitud", "0");
+                                cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
 
-                            CONEXIONMAESTRA.Abrir();
+                                CONEXIONMAESTRA.Abrir();
 
-                            cmd.ExecuteReader();
-                            cmd.Parameters.Clear();
+                                cmd.ExecuteReader();
+                                cmd.Parameters.Clear();
+                                cliente.nuevo = 0;
+                                await App.SQLiteDB.UpdateClienteAsync(cliente);
+                            }
+
                         }
-                        cliente.nuevo = 0;
-                        await App.SQLiteDB.UpdateClienteAsync(cliente);
                     }
                 }
                 CONEXIONMAESTRA.Cerrar();
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //_ = DisplayAlert("error", ex.Message, "OK");
                 //cliente.nuevo = 0;
                 //await App.SQLiteDB.UpdateClienteAsync(cliente);
@@ -158,7 +221,7 @@ namespace FinApp5.Data
         /// <returns></returns>
         public Task<List<Mcliente>> GetClientesAsync()
         {
-            return db.Table<Mcliente>().ToListAsync();
+            return db.Table<Mcliente>().OrderBy(x=>x.cteNumIdenti).ToListAsync();
         }
 
         /// <summary>
@@ -219,6 +282,7 @@ namespace FinApp5.Data
         public async Task<List<Mruta>> getRutaAsync()
         {
             return db.Table<Mruta>().OrderBy(x => x.posicion).ToListAsync().Result;
+            //return await db.Table<Mruta>().OrderBy(x => x.posicion).ToListAsync();
         }
 
         public Task<int> DeleteAbonos<T>()
