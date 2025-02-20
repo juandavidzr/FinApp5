@@ -311,7 +311,7 @@ public partial class Creditos : ContentPage
                     cmd.Parameters.AddWithValue("@strCodPlaPac", strCodPlaCre); //   "01"); // cmbPlazo.SelectedIndex.ToString()); //5
                     cmd.Parameters.AddWithValue("@intNumCuoCre", intNumeroCuotas); //  intNumeroCuotas);//6
                     cmd.Parameters.AddWithValue("@intNumCreVig", "0"); //   0);//7
-                    cmd.Parameters.AddWithValue("@dblSaldoAcCr", dblNetoEnCre); //  dblNetoEnCre);//8
+                    cmd.Parameters.AddWithValue("@dblSaldoAcCr", intSaldoActualCre); //  dblNetoEnCre);//8
                     cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag); //  intNumCuoPag);//9
                     cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen); //  intNumCuoPen);//10
                     cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd")); //  DateTime.Today.ToString("yyyy-MM-dd"));//11

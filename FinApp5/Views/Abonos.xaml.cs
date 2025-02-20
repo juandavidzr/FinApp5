@@ -63,8 +63,7 @@ public partial class Abonos : ContentPage
             {
                 btnGrabar.IsEnabled = false;
                 GrabarAbono(p);
-                
-                
+
                 await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
             else
