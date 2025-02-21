@@ -65,7 +65,7 @@ namespace FinApp5.ViewModels
         {
             try
             {
-                var location = await Geolocation.GetLastKnownLocationAsync();
+                Location? location = await Geolocation.GetLastKnownLocationAsync();
                 if (location == null)
                 {
                     location = await Geolocation.GetLocationAsync(new GeolocationRequest
@@ -73,8 +73,11 @@ namespace FinApp5.ViewModels
                         DesiredAccuracy = GeolocationAccuracy.High,
                         Timeout = TimeSpan.FromSeconds(30)
                     });
-                    TxtLatitud = location.Latitude.ToString();
-                    TxtLongitud = location.Longitude.ToString();
+                    if (location != null)
+                    {
+                        TxtLatitud = location.Latitude.ToString();
+                        TxtLongitud = location.Longitude.ToString();
+                    }
                 }
                 else
                 {
