@@ -419,7 +419,7 @@ public partial class Clientes : ContentPage
                     else
                     {
                         cliente.nuevo = 1;
-                        await DisplayAlert("Sin Internet", "Esta trabajando sin Internet", "OK");
+                        await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (422)", "OK");
                         await App.SQLiteDB.SaveClienteAsync(cliente);
                         exito = true;
                         if (exito)

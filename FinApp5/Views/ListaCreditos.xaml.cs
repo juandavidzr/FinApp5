@@ -1,10 +1,11 @@
-
-using Controls.UserDialogs.Maui;
+﻿using Controls.UserDialogs.Maui;
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Collections.ObjectModel;
 using System.Data;
+
 
 namespace FinApp5.Views;
 
@@ -13,15 +14,41 @@ public partial class ListaCreditos : ContentPage
     Musuarios Usuario = new Musuarios();
     public ListaCreditos(Musuarios usuario)
     {
-
         InitializeComponent();
+        NavigationPage.SetHasBackButton(this, false);
+        NavigationPage.SetHasNavigationBar(this, false);
         Usuario = usuario;
         //CargarCreditosAsync();
         OrdenList = GetOrden();
         cmbOrden.ItemsSource = OrdenList;
         if (cmbOrden.SelectedIndex == -1)
             cmbOrden.SelectedIndex = 0;
+    }
 
+    //protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    //{
+    //    base.OnNavigatedTo(args);
+
+    //    Shell.Current.Navigating += OnBackButtonPressed;
+    //}
+
+    //protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    //{
+    //    base.OnNavigatedFrom(args);
+
+    //    Shell.Current.Navigating -= OnBackButtonPressed; // Limpia el evento al salir de la página
+    //}
+
+    private async void OnBackButtonPressed(object sender, ShellNavigatingEventArgs e)
+    {
+        if (e.Source == ShellNavigationSource.Pop) // Si el usuario presiona "Atrás"
+        {
+            e.Cancel(); // Bloquea la navegación atrás
+            await Shell.Current.GoToAsync("///Transacciones", true, new Dictionary<string, object>
+            {
+                { "Usuario", Usuario }
+            });
+        }
     }
 
     public class Orden
@@ -65,46 +92,74 @@ public partial class ListaCreditos : ContentPage
             if (cmbOrden.SelectedIndex == 3)
                 filtro = "Reta";
 
-            //aqui verificar con
-
             SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", CONEXIONMAESTRA.conectar);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
             cmd.Parameters.AddWithValue("@strModoFil", filtro);
             CONEXIONMAESTRA.Abrir();
-            SqlDataReader rdr = cmd.ExecuteReader();
-
-            while (rdr.Read())
+            //SqlDataReader rdr = cmd.ExecuteReader();
+            using (SqlDataReader rdr = await cmd.ExecuteReaderAsync()) // Usa 'await'
             {
-                creditosCollection.Add(new Prestamos()
+
+                while (rdr.Read())
                 {
-                    idCliente = rdr["pmoIdentifiCli"].ToString(),
-                    nombreCliente = rdr["cteNombApel"].ToString(),
-                    DireccionCobro = rdr["cteDirCobCte"].ToString(),
-                    TelefonoCell = rdr["cteTeleCelu"].ToString(),
-                    NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
-                    numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
-                    fechaPrestamo = rdr["pmoFechaPre"].ToString(),
-                    valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
-                    valCuotaPag = Convert.ToInt32(rdr["pmoValCuotaPag"]),
-                    desDiaPago = rdr["pmoDesDiaPago"].ToString(),
-                    numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
-                    saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
-                    IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
-                    fecVenCre = rdr["pmoFecVenCre"].ToString(),
-                    cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
-                    totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
-                    marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
-                });
+                    creditosCollection.Add(new Prestamos()
+                    {
+
+                        idCliente = rdr["pmoIdentifiCli"].ToString(),
+                        nombreCliente = rdr["cteNombApel"].ToString(),
+                        NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
+                        fechaPrestamo = rdr["pmoFechaPre"].ToString(),
+                        cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+                        valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
+
+                        DireccionCobro = rdr["cteDirCobCte"].ToString(),
+                        TelefonoCell = rdr["cteTeleCelu"].ToString(),
+                        numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
+                        valCuotaPag = Convert.ToInt32(rdr["pmoValCuotaPag"]),
+                        desDiaPago = rdr["pmoDesDiaPago"].ToString(),
+                        numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
+                        saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+                        IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
+                        fecVenCre = rdr["pmoFecVenCre"].ToString(),
+                        totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
+                        marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
+
+                        /*
+                        idCliente = rdr["pmoIdentifiCli"] as string ?? "",
+                        nombreCliente = rdr["cteNombApel"] as string ?? "",
+                        NumPrestamo = rdr.GetInt32(rdr.GetOrdinal("pmoNumeroPre")),
+                        
+                        fechaPrestamo = rdr["pmoFechaPre"] as string ?? "",
+                        
+                        cantidadPrestada = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
+                        valUltPag = rdr.GetInt32(rdr.GetOrdinal("pmoValUltPag")),
+                        DireccionCobro = rdr["cteDirCobCte"] as string ?? "",
+                        TelefonoCell = rdr["cteTeleCelu"] as string ?? "",
+                        
+                        numCuoAtra = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoAtra")),
+                        valCuotaPag = rdr.GetInt32(rdr.GetOrdinal("pmoValCuotaPag")),
+                        desDiaPago = rdr["pmoDesDiaPago"] as string ?? "",
+                        numCuoPen = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoPen")),
+                        saldoActualCre = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
+                        IndicaRetaque = rdr.GetInt32(rdr.GetOrdinal("pmoIndicaRetaque")),
+                        fecVenCre = rdr["pmoFecVenCre"] as string ?? "",
+                        totalPagCre = rdr.GetDouble(rdr.GetOrdinal("TotalCre")),
+                        marAboCreDia = rdr.GetInt16(rdr.GetOrdinal("pmoMarAboCreDia")),*/
+                    });
+                }
             }
+
 
             if (creditosCollection != null)
             {
-                lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
-                                                                                p.marAboCreDia == 0)
-                                                            .OrderBy(p => p.posRutCre).ToList();
+                //lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+                //                                                                p.marAboCreDia == 0)
+                //                                            .OrderBy(p => p.posRutCre).ToList();
+                lstCreditos.ItemsSource = creditosCollection;
             }
 
+            UserDialogs.Instance.HideHud();
         }
         catch (Exception ex)
         {
@@ -206,5 +261,10 @@ public partial class ListaCreditos : ContentPage
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.marAboCreDia == 0 && p.IndicaRetaque == 1).ToList();
 
         UserDialogs.Instance.HideHud();
+    }
+
+    private void btnTransacciones_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new Transacciones(Usuario));
     }
 }

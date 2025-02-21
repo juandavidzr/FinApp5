@@ -5,11 +5,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:FinApp5"
     Shell.FlyoutBehavior="Disabled"
+    xmlns:views="clr-namespace:FinApp5.Views"
     Title="FinApp5">
 
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+
+    <ShellContent Route="Transacciones" ContentTemplate="{DataTemplate views:Transacciones}" />
+
 
 </Shell>

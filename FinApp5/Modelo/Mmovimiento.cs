@@ -13,13 +13,11 @@ namespace FinApp5.Modelo
         //[Unique]
         [AutoIncrement]
         public int idMovimiento { get; set; }
-
         public string? NombreCteCre { get; set; }
         public string? NumeroCreAfe { get; set; }
         public double ValorMovto { get; set; }
         public DateTime FechaHoraReg { get; set; }
         public string? Descripcion { get; set; }
-
         public string? strCodigoRut { get; set; }
         public string? strCodTipMov { get; set; }
         public string? strCodConMov { get; set; }

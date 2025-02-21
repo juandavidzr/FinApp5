@@ -2,7 +2,10 @@ using Controls.UserDialogs.Maui;
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
+
+//using Xamarin.Forms.OpenWhatsApp;
 
 namespace FinApp5.Views;
 
@@ -60,8 +63,7 @@ public partial class Abonos : ContentPage
             {
                 btnGrabar.IsEnabled = false;
                 GrabarAbono(p);
-                await DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
-                
+
                 await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
             else
@@ -98,7 +100,9 @@ public partial class Abonos : ContentPage
                 cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
                 cmd.Parameters.AddWithValue("@strComentAbo", "abono desde iphone");
                 cmd.ExecuteReader();
+                DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
             }
+            
             else
             {
                 DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
@@ -203,10 +207,87 @@ public partial class Abonos : ContentPage
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@lngNumeroCredito", txtIdCredito.Text);
             cmd.ExecuteReader();
+            CONEXIONMAESTRA.Cerrar();
+            Navigation.PushAsync(new ListaCreditos(Usuario));
         }
         catch (Exception ex)
         {
             throw ex;
+        }
+        finally {  }
+    }
+    private void btnPagos_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+    }
+    private void Button_WhatsApp(object sender, EventArgs e)
+    {
+        try
+        {
+            string phoneNumber = txtTelefono?.Text?.Trim() ?? "";
+            WhatsApp(phoneNumber, "Hola");
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Error", "Error" + ex.Message, "OK");
+            throw;
+        }
+        
+    }
+    private async void WhatsApp(string phoneNumber, string? message)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                string url = $"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString(message ?? "")}";
+                await Launcher.OpenAsync(new Uri(url));
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    private void Button_Clicked_Llamar(object sender, EventArgs e)
+    {
+        try
+        {
+            Launcher.OpenAsync(new Uri("tel:" + txtTelefono.Text));
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    private void Navegar_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            CONEXIONMAESTRA.Abrir();
+            SqlCommand cmd = new SqlCommand("consultarUbicacion", CONEXIONMAESTRA.conectar);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@idCliente", txtId.Text.Trim());
+            SqlDataReader rdr = cmd.ExecuteReader();
+            if (rdr.Read())
+            {
+                var longitud = rdr["longitud"].ToString();
+                var latitud = rdr["latitud"].ToString();
+                if (!string.IsNullOrWhiteSpace(longitud) && !string.IsNullOrWhiteSpace(latitud))
+                {
+                    var ubi = "https://waze.com/ul?q=your address&ll=" + latitud + "," + longitud + "&navigate=yes";
+                    Launcher.OpenAsync(new Uri(ubi));
+                }
+                else
+                {
+                    DisplayAlert("Sin Información", "No tiene la ubicación de este cliente guardada", "OK");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }

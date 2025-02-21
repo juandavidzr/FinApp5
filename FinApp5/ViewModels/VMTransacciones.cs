@@ -58,7 +58,7 @@ namespace FinApp5.ViewModels
             }
             else
             {
-                DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 115)", "OK");
+                //DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 115)", "OK");
                 Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
                 if (usuario.PermisoAbonar != null)
                 {
@@ -73,9 +73,13 @@ namespace FinApp5.ViewModels
         public async void ListarCreditos()
         {
             UserDialogs.Instance.Loading();
-            await Task.Delay(3000);
+            Task.Delay(3000);
+            
+
             await Navigation.PushAsync(new ListaCreditos(Usuario));
+
             UserDialogs.Instance.HideHud();
+
         }
 
         public async void RegistarGastos(object obj)
