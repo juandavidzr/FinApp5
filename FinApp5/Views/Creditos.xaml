@@ -6,8 +6,11 @@
 
     <ContentPage.Content>
 
-        <ScrollView Margin="1,0,1,1">
+        <ScrollView Margin="1,0,1,1" Scrolled="OnScrollViewScrolled" SizeChanged="OnScrollViewSizeChanged">
             <StackLayout Margin="10">
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTapGestureRecognizerTapped"/>
+                </StackLayout.GestureRecognizers>
                 <Label Text="Información de el cliente" HorizontalTextAlignment="Center" FontSize="20"></Label>
 
                 <Grid VerticalOptions="Start">

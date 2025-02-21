@@ -2,8 +2,10 @@
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Collections.ObjectModel;
 using System.Data;
+
 
 namespace FinApp5.Views;
 
@@ -12,15 +14,41 @@ public partial class ListaCreditos : ContentPage
     Musuarios Usuario = new Musuarios();
     public ListaCreditos(Musuarios usuario)
     {
-
         InitializeComponent();
+        NavigationPage.SetHasBackButton(this, false);
+        NavigationPage.SetHasNavigationBar(this, false);
         Usuario = usuario;
         //CargarCreditosAsync();
         OrdenList = GetOrden();
         cmbOrden.ItemsSource = OrdenList;
         if (cmbOrden.SelectedIndex == -1)
             cmbOrden.SelectedIndex = 0;
+    }
 
+    //protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    //{
+    //    base.OnNavigatedTo(args);
+
+    //    Shell.Current.Navigating += OnBackButtonPressed;
+    //}
+
+    //protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    //{
+    //    base.OnNavigatedFrom(args);
+
+    //    Shell.Current.Navigating -= OnBackButtonPressed; // Limpia el evento al salir de la página
+    //}
+
+    private async void OnBackButtonPressed(object sender, ShellNavigatingEventArgs e)
+    {
+        if (e.Source == ShellNavigationSource.Pop) // Si el usuario presiona "Atrás"
+        {
+            e.Cancel(); // Bloquea la navegación atrás
+            await Shell.Current.GoToAsync("///Transacciones", true, new Dictionary<string, object>
+            {
+                { "Usuario", Usuario }
+            });
+        }
     }
 
     public class Orden
@@ -70,21 +98,21 @@ public partial class ListaCreditos : ContentPage
             cmd.Parameters.AddWithValue("@strModoFil", filtro);
             CONEXIONMAESTRA.Abrir();
             //SqlDataReader rdr = cmd.ExecuteReader();
-            using (SqlDataReader rdr = await cmd.ExecuteReaderAsync()) // ✅ Usa 'await'
+            using (SqlDataReader rdr = await cmd.ExecuteReaderAsync()) // Usa 'await'
             {
 
                 while (rdr.Read())
                 {
                     creditosCollection.Add(new Prestamos()
                     {
-                        
+
                         idCliente = rdr["pmoIdentifiCli"].ToString(),
                         nombreCliente = rdr["cteNombApel"].ToString(),
                         NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
                         fechaPrestamo = rdr["pmoFechaPre"].ToString(),
                         cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
                         valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
-                        
+
                         DireccionCobro = rdr["cteDirCobCte"].ToString(),
                         TelefonoCell = rdr["cteTeleCelu"].ToString(),
                         numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
@@ -96,7 +124,7 @@ public partial class ListaCreditos : ContentPage
                         fecVenCre = rdr["pmoFecVenCre"].ToString(),
                         totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
                         marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
-                        
+
                         /*
                         idCliente = rdr["pmoIdentifiCli"] as string ?? "",
                         nombreCliente = rdr["cteNombApel"] as string ?? "",
@@ -121,8 +149,8 @@ public partial class ListaCreditos : ContentPage
                     });
                 }
             }
-            
-            
+
+
             if (creditosCollection != null)
             {
                 //lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
@@ -233,5 +261,10 @@ public partial class ListaCreditos : ContentPage
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.marAboCreDia == 0 && p.IndicaRetaque == 1).ToList();
 
         UserDialogs.Instance.HideHud();
+    }
+
+    private void btnTransacciones_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new Transacciones(Usuario));
     }
 }

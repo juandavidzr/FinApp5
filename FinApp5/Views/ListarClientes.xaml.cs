@@ -33,6 +33,7 @@ public partial class ListarClientes : ContentPage
 
         //BindingContext = new VMTransacciones(Navigation, usuario);
     }
+    
     private async void llenarDatos(Musuarios usuario)
     {
         SqlCommand cmd = new SqlCommand();
@@ -75,7 +76,7 @@ public partial class ListarClientes : ContentPage
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 72)", "OK");
+                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (74)", "OK");
                 var clienteList = await App.SQLiteDB.GetClientesAsync();
                 if (clienteList != null)
                 {
@@ -91,6 +92,7 @@ public partial class ListarClientes : ContentPage
                     }
                 }
             }
+            lstClientes.SelectedItem = null;
         }
         catch (Exception)
         {
@@ -143,5 +145,10 @@ public partial class ListarClientes : ContentPage
             DisplayAlert("Error", "Error" + ex.Message, "OK");
             throw;
         }
+    }
+
+    private void btnTransacciones_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new Transacciones(Usuario));
     }
 }

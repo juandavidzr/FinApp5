@@ -9,6 +9,6 @@ namespace FinApp5
     //[Activity(Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : MauiAppCompatActivity
     {
-
+       
     }
 }

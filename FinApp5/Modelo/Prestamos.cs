@@ -48,5 +48,6 @@ namespace FinApp5.Modelo
         public int nuevo { get; set; }
         public string? DireccionCobro { get; set; }
         public string? TelefonoCell { get; set; }
+        
     }
 }

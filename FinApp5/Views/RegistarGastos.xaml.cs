@@ -118,6 +118,7 @@ public partial class RegistarGastos : ContentPage
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             return false;
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
