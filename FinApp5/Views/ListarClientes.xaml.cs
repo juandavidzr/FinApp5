@@ -18,15 +18,13 @@ public partial class ListarClientes : ContentPage
         Usuario = usuario;
         if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
         {
-// HEAD
+
             App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
             if (Usuario?.Usuario != null)
                 App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
             else
                 Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
-// =====
-           // App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
-//>>>>>>> master
+
         }
 
         llenarDatos(usuario);
