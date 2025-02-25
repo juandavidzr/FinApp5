@@ -2,6 +2,7 @@
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using SQLite;
+using System.Collections.ObjectModel;
 using System.Data;
 
 namespace FinApp5.Data
@@ -80,6 +81,7 @@ namespace FinApp5.Data
             }
         }
 
+//<<<<<<< HEAD
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
@@ -140,7 +142,10 @@ namespace FinApp5.Data
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
+        //public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
+//=======
+        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
+//>>>>>>> master
         {
             Mcliente cliente = new Mcliente();
             try
@@ -192,12 +197,36 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
-
         public Task<List<Prestamos>> GetCreditos()
         {
-
             return db.Table<Prestamos>().Where(c => c.nuevo != 1).ToListAsync();
+        }
+        /// <summary>
+        /// Obtener todos los creditos
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ObservableCollection<Prestamos>> GetAllCredit(string? code)
+        {
+            try
+            {
+                return await Task.Run(async () =>
+                {
+                    //ObservableCollection<Prestamos> creditosCollection = [];
+                    var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
+                    
+                    return new ObservableCollection<Prestamos>(dt);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(code, ex);                
+            }
+
+            
+
+            
+
+            //return creditosCollection;
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)

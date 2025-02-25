@@ -169,6 +169,31 @@ public partial class ListaCreditos : ContentPage
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
 
+    /// <summary>
+    /// Cargar Creditos offLine
+    /// </summary>
+    /// <returns></returns>
+    public async Task CargarCreditos()
+    {
+        creditosCollection.Clear();
+        creditosCollection = await GetAllCredit(Usuario.CodigoCobr);
+        lstCreditos.ItemsSource = creditosCollection;
+    }
+
+    public async Task<ObservableCollection<Prestamos>> GetAllCredit(string? code)
+    {
+        try
+        {
+            creditosCollection = await App.SQLiteDB.GetAllCredit(code);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "Error" + ex.Message, "OK");
+        }
+        return creditosCollection;
+    }
+
+
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         try
@@ -205,21 +230,24 @@ public partial class ListaCreditos : ContentPage
         Navigation.PushAsync(new MenuPpal(Usuario));
     }
 
-    private void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
+    private async void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
     {
         //desde aqui
         if (CONEXIONMAESTRA.VerificarCon())
         {
-            CargarCreditosAsync();
+            await CargarCreditosAsync();
+
+            if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
+                lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+                                                                       p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
         }
-        else
+        else //sin conexion
         {
-            //sin conexion
+            //ToDo para commit 
+            await CargarCreditos();
+
         }
-
-        //if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
-        //    lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&     p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
-
+        
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
         {
             var fecha = DateTime.Today.AddDays(-60);

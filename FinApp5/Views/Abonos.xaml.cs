@@ -86,6 +86,7 @@ public partial class Abonos : ContentPage
         {
             if (Estado)
             {
+                //DisplayAlert("Conexion camino 1", "Estas trabajando sin conexion", "OK");
                 CONEXIONMAESTRA.Abrir();
                 SqlCommand cmd = new SqlCommand("RegistraAboMovCon", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
