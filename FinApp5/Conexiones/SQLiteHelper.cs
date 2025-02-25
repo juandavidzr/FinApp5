@@ -81,6 +81,7 @@ namespace FinApp5.Data
             }
         }
 
+
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
@@ -207,7 +208,7 @@ namespace FinApp5.Data
             {
                 return await Task.Run(async () =>
                 {
-                    ObservableCollection<Prestamos> creditosCollection = [];
+                    //ObservableCollection<Prestamos> creditosCollection = [];
                     var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
                     
                     return new ObservableCollection<Prestamos>(dt);
