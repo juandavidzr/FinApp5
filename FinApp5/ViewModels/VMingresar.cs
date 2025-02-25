@@ -55,6 +55,7 @@ namespace FinApp5.ViewModels
                 {
                     aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
                     if (aut)
+
                         await Navigation.PushAsync(new MenuPpal(usuario));
                     else
                         await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");

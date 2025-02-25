@@ -27,7 +27,7 @@ namespace FinApp5.ViewModels
 
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
-
+                ejecutarCierre();
                 GetBarrios(Usuario.CodigoCobr); //Trae todos los barrio del servidor
                 SyncRuta(Usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
                 SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
@@ -38,8 +38,6 @@ namespace FinApp5.ViewModels
                     App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
                 else
                     Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
-
-
             }
             else
             {
@@ -105,7 +103,23 @@ namespace FinApp5.ViewModels
         //    finally { CONEXIONMAESTRA.Cerrar(); }
         //}
 
+        private async Task ejecutarCierre()
+        {
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.ExecuteReader();
+                CONEXIONMAESTRA.Cerrar();
 
+            }
+            catch (Exception ex)
+            {
+               await DisplayAlert("error", ex.Message, "OK");
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
         private void SyncCobros(string ruta, string filtro)
         {
             try

@@ -81,7 +81,7 @@ namespace FinApp5.Data
             }
         }
 
-//<<<<<<< HEAD
+
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
@@ -142,10 +142,7 @@ namespace FinApp5.Data
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-        //public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
-//=======
         public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
-//>>>>>>> master
         {
             Mcliente cliente = new Mcliente();
             try

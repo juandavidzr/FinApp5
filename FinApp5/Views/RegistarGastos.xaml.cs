@@ -123,8 +123,23 @@ public partial class RegistarGastos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
+    private void BtnLimpiar_Clicked(object sender, EventArgs e)
+    {
+        Limpiar();
+    }
 
+    private void Limpiar()
+    {
+        try
+        {
+            txtValor.Text = string.Empty;
+            txtJustificacion.Text = string.Empty;
+            cmbConceptos.SelectedIndex = 0;
+        }
+        catch (Exception)
+        {
 
-
-
+            throw;
+        }
+    }
 }
