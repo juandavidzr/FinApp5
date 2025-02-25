@@ -25,6 +25,7 @@ namespace FinApp5.ViewModels
             Navigation = navigation;
             Usuario = usuario;
 
+
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
                 ejecutarCierre();
@@ -38,6 +39,7 @@ namespace FinApp5.ViewModels
                     App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
                 else
                     Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
+
             }
             else
             {
@@ -54,55 +56,8 @@ namespace FinApp5.ViewModels
         }
         #endregion
         #region PROCESOS
-        // se centralizo en helper
-        //public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
-        //{
-        //    Mcliente cliente = new Mcliente();
-        //    try
-        //    {
-        //        SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", CONEXIONMAESTRA.conectar);
-        //        cmd.CommandType = CommandType.StoredProcedure;
-        //        List<Mcliente>? clienteList = await App.SQLiteDB.GetClientesNew();
-        //        if (clienteList.Count > 0)
-        //        {
-        //            foreach (var a in clienteList)
-        //            {
-        //                cliente = await App.SQLiteDB.GetClienteByIdAsync(a.cteNumIdenti);
-        //                if (cliente != null)
-        //                {
-        //                    cmd.Parameters.AddWithValue("@strNumIdeCte", a.cteNumIdenti);
-        //                    cmd.Parameters.AddWithValue("@strNomComCte", a.cteNombApel);
-        //                    cmd.Parameters.AddWithValue("@strDirResCte", a.cteDireccion);
-        //                    cmd.Parameters.AddWithValue("@strDirCobCte", a.cteDirCobCte);
-        //                    cmd.Parameters.AddWithValue("@strNumTelFij", a.cteTeleFijo);
-        //                    cmd.Parameters.AddWithValue("@strNumTelCel", a.cteTeleCelu);
-        //                    cmd.Parameters.AddWithValue("@strCodBarDom", a.cteCodBarDom);
-        //                    cmd.Parameters.AddWithValue("@strCodBarCob", a.cteCodBarCob);
-        //                    cmd.Parameters.AddWithValue("@strCodigoRut", CodigoRuta);
-        //                    cmd.Parameters.AddWithValue("@longitud", "0");
-        //                    cmd.Parameters.AddWithValue("@latitud", "0");
-        //                    cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
-
-        //                    CONEXIONMAESTRA.Abrir();
-
-        //                    cmd.ExecuteReader();
-        //                    cmd.Parameters.Clear();
-        //                }
-        //                cliente.nuevo = 0;
-        //                await App.SQLiteDB.UpdateClienteAsync(cliente);
-        //            }
-        //        }
-        //        CONEXIONMAESTRA.Cerrar();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _ = DisplayAlert("error", ex.Message, "OK");
-        //        //cliente.nuevo = 0;
-        //        //await App.SQLiteDB.UpdateClienteAsync(cliente);
-        //    }
-        //    finally { CONEXIONMAESTRA.Cerrar(); }
-        //}
-
+        
+        
         private async Task ejecutarCierre()
         {
             try
@@ -120,6 +75,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
+
         private void SyncCobros(string ruta, string filtro)
         {
             try
