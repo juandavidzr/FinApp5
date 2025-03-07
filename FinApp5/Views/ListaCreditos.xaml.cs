@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Collections.ObjectModel;
 using System.Data;
-
+using FinApp5.ViewModels;
 
 namespace FinApp5.Views;
 
@@ -17,15 +17,31 @@ public partial class ListaCreditos : ContentPage
         InitializeComponent();
         NavigationPage.SetHasBackButton(this, false);
         NavigationPage.SetHasNavigationBar(this, false);
-        Usuario = usuario;
+        Usuario = usuario;       
 
-        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())        
         {           
             App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
             if (Usuario?.Usuario != null)
                 App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
             else
-                Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");            
+                Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
+
+            var movimientoNew =  App.SQLiteDB.CountNewAbonos();
+
+            if(movimientoNew.Result > 0)
+            {
+                int row = 0;
+                var movimiento = App.SQLiteDB.GetAbonosNewOffline();
+                VMAbono abono = new(null, Usuario);
+                foreach (var item in movimiento.Result)
+                {
+                    row += abono.SincronizarAbono(item, Usuario);
+                }
+
+                Task task = DisplayAlert("Exitoso", $"{row} Registo(s) guardado(s) con exito", "OK");
+            }
+
         }
 
         //CargarCreditosAsync();
@@ -34,20 +50,6 @@ public partial class ListaCreditos : ContentPage
         if (cmbOrden.SelectedIndex == -1)
             cmbOrden.SelectedIndex = 0;
     }
-
-    //protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    //{
-    //    base.OnNavigatedTo(args);
-
-    //    Shell.Current.Navigating += OnBackButtonPressed;
-    //}
-
-    //protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
-    //{
-    //    base.OnNavigatedFrom(args);
-
-    //    Shell.Current.Navigating -= OnBackButtonPressed; // Limpia el evento al salir de la página
-    //}
 
     private async void OnBackButtonPressed(object sender, ShellNavigatingEventArgs e)
     {
@@ -135,27 +137,6 @@ public partial class ListaCreditos : ContentPage
                         totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
                         marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
 
-                        /*
-                        idCliente = rdr["pmoIdentifiCli"] as string ?? "",
-                        nombreCliente = rdr["cteNombApel"] as string ?? "",
-                        NumPrestamo = rdr.GetInt32(rdr.GetOrdinal("pmoNumeroPre")),
-                        
-                        fechaPrestamo = rdr["pmoFechaPre"] as string ?? "",
-                        
-                        cantidadPrestada = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
-                        valUltPag = rdr.GetInt32(rdr.GetOrdinal("pmoValUltPag")),
-                        DireccionCobro = rdr["cteDirCobCte"] as string ?? "",
-                        TelefonoCell = rdr["cteTeleCelu"] as string ?? "",
-                        
-                        numCuoAtra = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoAtra")),
-                        valCuotaPag = rdr.GetInt32(rdr.GetOrdinal("pmoValCuotaPag")),
-                        desDiaPago = rdr["pmoDesDiaPago"] as string ?? "",
-                        numCuoPen = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoPen")),
-                        saldoActualCre = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
-                        IndicaRetaque = rdr.GetInt32(rdr.GetOrdinal("pmoIndicaRetaque")),
-                        fecVenCre = rdr["pmoFecVenCre"] as string ?? "",
-                        totalPagCre = rdr.GetDouble(rdr.GetOrdinal("TotalCre")),
-                        marAboCreDia = rdr.GetInt16(rdr.GetOrdinal("pmoMarAboCreDia")),*/
                     });
                 }
             }
@@ -277,4 +258,5 @@ public partial class ListaCreditos : ContentPage
     {
         Navigation.PushAsync(new Transacciones(Usuario));
     }
+    
 }

@@ -1,6 +1,7 @@
 using Controls.UserDialogs.Maui;
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
+using FinApp5.Services;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
@@ -11,11 +12,14 @@ namespace FinApp5.Views;
 
 public partial class Abonos : ContentPage
 {
+    //ConexionService conexionService
+    private readonly ConexionService _conexionService;
     Musuarios Usuario = new Musuarios();
     Prestamos p = new Prestamos();
     public Abonos(Prestamos Prestamo, Musuarios usuario)
     {
-        InitializeComponent();
+        InitializeComponent();       
+
         Usuario = usuario;
         formasPagos = GetFormasPago();
         cmbFormaPago.ItemsSource = formasPagos;

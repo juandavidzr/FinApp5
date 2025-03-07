@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices;
+using FinApp5.Services;
 
 namespace FinApp5.Views;
 
 public partial class Creditos : ContentPage
 {
+    private readonly ConexionService _conexionService;
     Musuarios Usuario = new Musuarios();
     Mcliente Cliente = new Mcliente();
     private const string DePrimero = "De Primero";

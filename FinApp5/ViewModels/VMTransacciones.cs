@@ -1,6 +1,7 @@
 ﻿using Controls.UserDialogs.Maui;
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
+using FinApp5.Services;
 using FinApp5.Views;
 using Microsoft.Data.SqlClient;
 using System;
@@ -18,12 +19,12 @@ namespace FinApp5.ViewModels
         #region VARIABLES
         string _Texto;
         Musuarios Usuario;
-        
+        private readonly ConexionService _conexionService;
         #endregion
         #region CONSTRUCTOR
 
-        public VMTransacciones(INavigation navigation, Musuarios usuario)
-        {
+        public VMTransacciones(INavigation navigation, Musuarios usuario )
+        {         
             Navigation = navigation;
             Usuario = usuario;
         }
@@ -173,5 +174,17 @@ namespace FinApp5.ViewModels
 
 
         #endregion
+
+        private void OnConexionCambiada(bool tieneInternet)
+        {
+            if (!tieneInternet)
+            {
+                DisplayAlert("Conexión", "Te quedaste sin internet.", "OK");
+            }
+            else
+            {
+                DisplayAlert("Conexión", "Conexión establecida.", "OK");
+            }
+        }
     }
 }

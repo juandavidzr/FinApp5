@@ -1,6 +1,7 @@
 ﻿using FinApp5.Conexiones;
 using FinApp5.Datos;
 using FinApp5.Modelo;
+using FinApp5.Services;
 using FinApp5.Views;
 using Microsoft.Data.SqlClient;
 using System;
@@ -16,12 +17,14 @@ namespace FinApp5.ViewModels
     public class VMmenuPrincipal : BaseViewModel
     {
         #region VARIABLES
+        private readonly ConexionService _conexionService;
         string _Texto;
         Musuarios Usuario = new Musuarios();
         #endregion
         #region CONSTRUCTOR
         public VMmenuPrincipal(INavigation navigation, Musuarios usuario)
         {
+            
             Navigation = navigation;
             Usuario = usuario;
 
@@ -330,5 +333,6 @@ namespace FinApp5.ViewModels
 
 
         #endregion
+
     }
 }

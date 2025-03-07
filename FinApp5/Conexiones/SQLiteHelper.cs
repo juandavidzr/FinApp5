@@ -81,7 +81,7 @@ namespace FinApp5.Data
             }
         }
 
-//<<<<<<< HEAD
+        #region Sincronización        
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
@@ -141,11 +141,9 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
-        //public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor
-//=======
+ 
         public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
-//>>>>>>> master
+ 
         {
             Mcliente cliente = new Mcliente();
             try
@@ -186,7 +184,7 @@ namespace FinApp5.Data
                         }
                     }
                 }
-                CONEXIONMAESTRA.Cerrar();
+                //CONEXIONMAESTRA.Cerrar();
             }
             catch (Exception ex)
             {
@@ -197,6 +195,8 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
+        #endregion
+
         public Task<List<Prestamos>> GetCreditos()
         {
             return db.Table<Prestamos>().Where(c => c.nuevo != 1).ToListAsync();
@@ -227,6 +227,11 @@ namespace FinApp5.Data
             
 
             //return creditosCollection;
+        }
+
+        public Task<List<Mmovimiento>> GetAbonosNewOffline()
+        {
+            return db.Table<Mmovimiento>().Where(c => c.nuevo == 1).ToListAsync();
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
@@ -291,12 +296,7 @@ namespace FinApp5.Data
         public Task<int> DeleteBarrios()
         {
             return db.DeleteAllAsync<Mbarrio>();
-        }
-
-        public Task<List<Mmovimiento>> GetAbonosNew()
-        {
-            return db.Table<Mmovimiento>().Where(c => c.nuevo == 1).ToListAsync();
-        }
+        }       
 
         public Task<List<Mcliente>> GetClientesNew()
         {
@@ -349,6 +349,8 @@ namespace FinApp5.Data
             return db.InsertAsync(abono);
         }
 
+
+
         public bool marcarAbonoSincronizado(int idMovimiento)
         {
             try
@@ -356,13 +358,13 @@ namespace FinApp5.Data
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3")))
                 {
                     SQLite.SQLiteCommand com = new SQLite.SQLiteCommand(connection);
-                    com.CommandText = "UPDATE MovimientosCont SET nuevo = 0 WHERE idMovimiento = " + idMovimiento;
+                    com.CommandText = "UPDATE Mmovimiento SET nuevo = 0 WHERE idMovimiento = " + idMovimiento;
                     com.ExecuteNonQuery();
-                    connection.Close();
+                    //connection.Close();
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
                 throw;
@@ -512,7 +514,7 @@ namespace FinApp5.Data
 
         internal async Task<int> CountNewAbonos()
         {
-            var count = await db.Table<Mmovimiento>().Where(a => a.nuevo == 1).CountAsync();
+            var count = db.Table<Mmovimiento>().Where(a => a.nuevo == 1).CountAsync().Result;
             return count;
         }
 

@@ -15,6 +15,9 @@ namespace FinApp5.Conexiones
     {
         public static string conexion = "Server=138.128.171.162; Database=prueba; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
 
+        private const string OffConexion = $"Te quedaste sin internet."; 
+        private const string OnConexion = $"Conexión establecida.";
+
         public static SqlConnection conectar = new SqlConnection(conexion);
         public static void Abrir()
         {
@@ -134,6 +137,21 @@ namespace FinApp5.Conexiones
                 Console.WriteLine(ex.Message);
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+
+        private bool _tieneInternet;
+        public Action<bool> OnConexionCambiada(bool tieneInternet, Action<bool> messageAlert)
+        {
+            bool MessageAlert = false;
+            if (!tieneInternet)
+            {
+                MessageAlert = false;
+            }
+            else
+            {
+                MessageAlert = true;
+            }
+            return messageAlert;
         }
     }
 }

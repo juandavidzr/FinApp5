@@ -1,5 +1,6 @@
 ﻿using FinApp5.Conexiones;
 using FinApp5.Modelo;
+using FinApp5.Services;
 using FinApp5.Views;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -11,6 +12,7 @@ namespace FinApp5.ViewModels
     public class VMingresar : BaseViewModel
     {
         #region VARIABLES
+        private readonly ConexionService _conexionService;
         string _txtUsuario = string.Empty;
         string _txtPw = string.Empty;
         Musuarios usuario = new Musuarios();
@@ -18,8 +20,7 @@ namespace FinApp5.ViewModels
 
         #region CONSTRUCTOR
         public VMingresar(INavigation? navigation)
-        {
-
+        {          
             Navigation = navigation;
         }
         #endregion
@@ -115,5 +116,6 @@ namespace FinApp5.ViewModels
         #region COMANDOS
         public ICommand ingresarCommand => new Command(ingresar);
         #endregion
+        
     }
 }
