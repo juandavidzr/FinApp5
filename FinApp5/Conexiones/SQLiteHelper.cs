@@ -290,7 +290,7 @@ namespace FinApp5.Data
             return db.DeleteAllAsync<Mbarrio>();
         }
 
-        public Task<List<Mmovimiento>> GetAbonosNew()
+        public Task<List<Mmovimiento>> GetAbonosNewOffLine()
         {
             return db.Table<Mmovimiento>().Where(c => c.nuevo == 1).ToListAsync();
         }
@@ -353,7 +353,7 @@ namespace FinApp5.Data
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3")))
                 {
                     SQLite.SQLiteCommand com = new SQLite.SQLiteCommand(connection);
-                    com.CommandText = "UPDATE MovimientosCont SET nuevo = 0 WHERE idMovimiento = " + idMovimiento;
+                    com.CommandText = "UPDATE Mmovimiento SET nuevo = 0 WHERE idMovimiento = " + idMovimiento;
                     com.ExecuteNonQuery();
                     connection.Close();
                 }
@@ -507,7 +507,7 @@ namespace FinApp5.Data
             return count;
         }
 
-        internal async Task<int> CountNewAbonos()
+        public async Task<int> CountNewAbonos()
         {
             var count = await db.Table<Mmovimiento>().Where(a => a.nuevo == 1).CountAsync();
             return count;
