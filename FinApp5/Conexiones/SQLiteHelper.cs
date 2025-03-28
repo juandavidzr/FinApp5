@@ -210,20 +210,84 @@ namespace FinApp5.Data
                 {
                     //ObservableCollection<Prestamos> creditosCollection = [];
                     var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
-                    
+
                     return new ObservableCollection<Prestamos>(dt);
                 });
             }
             catch (Exception ex)
             {
-                throw new Exception(code, ex);                
+                throw new Exception(code, ex);
+            }
+        }
+
+
+        public async Task<List<Prestamos>> FiltrarCreditosDeRutaSegunCriterio(string codigoRuta, int selector)
+        {
+            string query = @"
+            SELECT Prestamos.nombreCliente, 
+                   Prestamos.NumPrestamo, 
+                   Prestamos.posRutCre
+            FROM Mcliente 
+            INNER JOIN Prestamos 
+            ON Mcliente.cteNumIdenti = Prestamos.idCliente
+            WHERE Prestamos.codigoRuta = ? 
+            AND Prestamos.Vigente = 1 
+            AND Prestamos.Activo = 1 ";
+
+            if (selector == 2)
+            {
+                query += "AND Prestamos.posRutCre <> -1 ";
+                query += "ORDER BY Prestamos.posRutCre";
+            }
+            else
+            {
+                query += "ORDER BY Mcliente.cteNombApel";
             }
 
-            
+            return await db.QueryAsync<Prestamos>(query, codigoRuta);
+        }
 
+        public async Task ActualizarPosicionDeCreditoEnRutaDestinoAsync(int nuevaPosicion, string numeroCredito, string codigoRuta, string numeroCreCambiaPos)
+        {
+            await ActualizarCreditoAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            var creditos = await ObtenerCreditosPorRutaAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            if(creditos != null && creditos.Count > 0)
+            {
+                await ReasignarPosicionesAsync(creditos, nuevaPosicion);
+            } 
             
+        }
 
-            //return creditosCollection;
+        public async Task ActualizarCreditoAsync(int? nuevaPosicion, string numeroCredito, string codigoRuta)
+        {           
+
+            string updateCommandText = @"UPDATE Prestamos SET posRutCre = ? , PosActualizada = 1 WHERE NumPrestamo = ? ";
+
+            await db.ExecuteAsync(updateCommandText, nuevaPosicion, numeroCredito);
+
+        }
+        private async Task<List<long>> ObtenerCreditosPorRutaAsync(int nuevaPosicion,string numeroCredito, string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo FROM Prestamos WHERE Vigente = 1 AND Activo = 1 
+                                         AND posRutCre <> -1 and posRutCre >= ? and NumPrestamo <> ? AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo ";
+            return await db.QueryScalarsAsync<long>(selectCommandText, nuevaPosicion, numeroCredito, codigoRuta);
+        }
+
+        public Task<List<Prestamos>> ConsultarCambioDeRutaOffline()
+        {
+            return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();           
+             
+        }
+
+        private async Task ReasignarPosicionesAsync(List<long> creditos , int nuevaPosicion)
+        {
+            int contador = nuevaPosicion + 1;
+            foreach (var id in creditos)
+            {
+                string updatePositionCommandText = "UPDATE Prestamos SET posRutCre = ? WHERE NumPrestamo = ?";
+                await db.ExecuteAsync(updatePositionCommandText, contador, id);
+                contador++;
+            }
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
@@ -247,7 +311,7 @@ namespace FinApp5.Data
         /// <returns></returns>
         public Task<List<Mcliente>> GetClientesAsync()
         {
-            return db.Table<Mcliente>().OrderBy(x=>x.cteNumIdenti).ToListAsync();
+            return db.Table<Mcliente>().OrderBy(x => x.cteNumIdenti).ToListAsync();
         }
 
         /// <summary>
@@ -279,10 +343,10 @@ namespace FinApp5.Data
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
-            
+
         }
 
         public Task<int> DeleteBarrios()
@@ -503,7 +567,7 @@ namespace FinApp5.Data
         public Task<int> CountNewClient()
         {
             var count = db.Table<Mcliente>().Where(p => p.nuevo == 1).CountAsync();
-            
+
             return count;
         }
 

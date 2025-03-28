@@ -8,18 +8,28 @@ namespace FinApp5.Views;
 
 public partial class EnrrutarCartera : ContentPage
 {
-    public string ruta { get; set; }
+    public string? ruta { get; set; }
     public string lngNumeroCre { get; set; }
-    public int intNuevaPosCre { get; set; }
-    Musuarios Usuario = new Musuarios();
-    Prestamos prestamo = new Prestamos();
-    
+    public string NumeroCreCambiaPos { get; set; }
+    /// <summary>
+    /// Posición anterior
+    /// </summary>
+    public int? OldPosCre { get; set; }
+    public int IntNuevaPosCre { get; set; } = 0;
+    readonly Musuarios? Usuario = new();
+    Prestamos prestamo = new();
+
     public EnrrutarCartera(Musuarios usuario)
-	{
+    {
         Usuario = usuario;
-        intNuevaPosCre = 1;
+        IntNuevaPosCre = 1;
         InitializeComponent();
-        CargarCreditosAsync();
+        List<Prestamos> p = ConsultarCambioDeRutaOffline();
+
+        //var task = new Task(() => { _ = ConsultarCambioDeRutaOffline(); });
+        //task.Start();
+
+        _ = CargarCreditosAsync();
     }
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();
     public async Task CargarCreditosAsync()
@@ -31,21 +41,41 @@ public partial class EnrrutarCartera : ContentPage
             creditosCollection.Clear();
 
             ruta = Usuario.CodigoCobr;
-            SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-            cmd.Parameters.AddWithValue("@intSelector", 1);
-            CONEXIONMAESTRA.Abrir();
-            SqlDataReader rdr = cmd.ExecuteReader();
 
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                creditosCollection.Add(new Prestamos()
+                SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+                cmd.Parameters.AddWithValue("@intSelector", 1);
+                CONEXIONMAESTRA.Abrir();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
                 {
-                    nombreCliente = rdr["cteNombApel"].ToString().Trim(),
-                    NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
-                    posRutCre = Convert.ToInt32(rdr["pmoPosRutCre"].ToString().Trim())
-                });
+                    creditosCollection.Add(new Prestamos()
+                    {
+                        nombreCliente = rdr["cteNombApel"].ToString().Trim(),
+                        NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
+                        posRutCre = Convert.ToInt32(rdr["pmoPosRutCre"].ToString().Trim())
+                    });
+                }
+            }
+            else
+            {
+                var resultados = await App.SQLiteDB.FiltrarCreditosDeRutaSegunCriterio(ruta, 1);
+                foreach (var item in resultados)
+                {
+                    creditosCollection.Add(new Prestamos()
+                    {
+                        nombreCliente = item.nombreCliente,
+                        NumPrestamo = Convert.ToInt32(item.NumPrestamo),
+                        posRutCre = item.posRutCre
+                    });
+                }
+
+                //await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta);
+
             }
 
             if (creditosCollection != null)
@@ -56,7 +86,7 @@ public partial class EnrrutarCartera : ContentPage
                 lstCreditos1.ItemsSource = creditosCollection//.Where(p => p.activo == 1)
                                                            .OrderBy(p => p.posRutCre).ToList();
             }
-            intNuevaPosCre = 1;
+            IntNuevaPosCre = 1;
         }
         catch (Exception ex)
         {
@@ -64,21 +94,27 @@ public partial class EnrrutarCartera : ContentPage
             throw;
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
+
     }
 
+    public List<Prestamos> ConsultarCambioDeRutaOffline()
+    {
+        return App.SQLiteDB.ConsultarCambioDeRutaOffline().Result;
+    }
     private void lstCreditos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         if (lstCreditos != null && e.SelectedItem != null)
         {
             prestamo = e.SelectedItem as Prestamos;
             lngNumeroCre = prestamo.NumPrestamo.ToString();
+            OldPosCre = prestamo.posRutCre;
         }
-        else 
+        else
         {
             DisplayAlert("error", "Por favor seleccione un credito", "OK");
         }
 
-        
+
 
     }
     private void lstCreditos1_ItemSelected(object sender, SelectedItemChangedEventArgs e)
@@ -86,7 +122,8 @@ public partial class EnrrutarCartera : ContentPage
         if (lstCreditos1 != null && e.SelectedItem != null)
         {
             prestamo = e.SelectedItem as Prestamos;
-            intNuevaPosCre = prestamo.posRutCre ;
+            IntNuevaPosCre = prestamo.posRutCre;
+            NumeroCreCambiaPos = prestamo.NumPrestamo.ToString();
         }
         else
         {
@@ -96,25 +133,33 @@ public partial class EnrrutarCartera : ContentPage
 
     //private void lstCreditos2_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     //{
-       
+
     //}
 
-    private void Button_Clicked(object sender, EventArgs e)
+    private async void Button_Clicked(object sender, EventArgs e)
     {
         try
-        {
+        {            
             if (lngNumeroCre != null)
             {
-                SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRutaDestino", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@intNuePosCreRut", intNuevaPosCre);
-                cmd.Parameters.AddWithValue("@lngNumeroCreAct", lngNumeroCre);
-                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta.Trim());
-                CONEXIONMAESTRA.Abrir();
-                cmd.ExecuteReader();
-                CONEXIONMAESTRA.Cerrar();
-                CargarCreditosAsync();
-                
+
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRutaDestino", CONEXIONMAESTRA.conectar);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@intNuePosCreRut", IntNuevaPosCre);
+                    cmd.Parameters.AddWithValue("@lngNumeroCreAct", lngNumeroCre);
+                    cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+                    CONEXIONMAESTRA.Abrir();
+                    cmd.ExecuteReader();
+                    CONEXIONMAESTRA.Cerrar();
+                   
+                }
+                else
+                {
+                   await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta, NumeroCreCambiaPos);
+                }
+                 _ = CargarCreditosAsync();
             }
             else
                 DisplayAlert("error", "Por favor seleccione un credito", "OK");
