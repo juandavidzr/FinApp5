@@ -22,32 +22,35 @@ public partial class VerAbonos : ContentPage
     private void llenarAbonos(string lngNumeroUniCre, string strNombreCliente, string saldo)
     {
         lstMovimientos.ItemsSource = null;
-
         MovimientosCollection.Clear();
-       
+               
         try
         {
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("FiltrarRegistrosDePagosDelCredito", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@lngConsecutCre", lngNumeroUniCre);
-            CONEXIONMAESTRA.Abrir();
-            SqlDataReader rdr = cmd.ExecuteReader();
-
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                MovimientosCollection.Add(new Mmovimiento()
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("FiltrarRegistrosDePagosDelCredito", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@lngConsecutCre", lngNumeroUniCre);
+                CONEXIONMAESTRA.Abrir();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
                 {
-                    FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
-                    ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
-                    strCodTipMov = rdr["TipMov"].ToString()
-                });
+                    MovimientosCollection.Add(new Mmovimiento()
+                    {
+                        FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
+                        ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
+                        strCodTipMov = rdr["TipMov"].ToString()
+                    });
+                }
+                if (MovimientosCollection != null)
+                {
+                    lstMovimientos.ItemsSource = MovimientosCollection;
+                }
             }
-            if (MovimientosCollection != null)
-            {
-                lstMovimientos.ItemsSource = MovimientosCollection;
-            }
-
+            else
+                DisplayAlert("Sin Internet", "Esta trabajando sin Internet (53)", "OK");
         }
         catch (Exception ex)
         {

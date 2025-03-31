@@ -10,7 +10,8 @@ namespace FinApp5
         {
             InitializeComponent();
             Loaded += (s, e) => SetFocus();
-
+            TxtUsuario.Text = string.Empty;
+            TxtPW.Text = string.Empty;
             BindingContext = new VMingresar(Navigation);
         }
         private void SetFocus()

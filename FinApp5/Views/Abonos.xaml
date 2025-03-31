@@ -6,6 +6,9 @@
     <ContentPage.Content>
         <ScrollView Margin="30">
             <StackLayout >
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTapGestureRecognizerTapped"/>
+                </StackLayout.GestureRecognizers>
                 <Label Text="Información de el cliente" HorizontalTextAlignment="Center" FontSize="30"></Label>
 
                 <Grid VerticalOptions="Start">
@@ -91,22 +94,23 @@
                     <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Saldo: " VerticalOptions="StartAndExpand"/>
                     <Entry FontSize="20" Grid.Row="7" Grid.Column="1" x:Name="txtSaldo" VerticalOptions="Start" IsEnabled="False"/>
 
-                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Forma Pago: " VerticalOptions="StartAndExpand"/>
-                    <Picker FontSize="20" Grid.Row="8" Grid.Column="1" x:Name="cmbFormaPago" VerticalOptions="Start" IsEnabled="False"
+                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Total Credito: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="8" Grid.Column="1" x:Name="txtTotal" VerticalOptions="Start" IsEnabled="False"/>
+
+                    <Label FontSize="20" Grid.Row="9" Grid.Column="0" Text="Forma Pago: " VerticalOptions="StartAndExpand"/>
+                    <Picker FontSize="20" Grid.Row="9" Grid.Column="1" x:Name="cmbFormaPago" VerticalOptions="Start" IsEnabled="False"
                         ItemsSource="{Binding formasPagos}" ItemDisplayBinding="{Binding formaPago}"/>
 
-                    <Label FontSize="20" Grid.Row="9" Grid.Column="0" Text="Tipo de abono: " VerticalOptions="StartAndExpand"/>
-                    <Picker FontSize="20" Grid.Row="9" Grid.Column="1" x:Name="cmbTipoAbono" VerticalOptions="Start" IsEnabled="False" 
-                        ItemsSource="{Binding tiposAbonos}" ItemDisplayBinding="{Binding tipoAbono}"/>
+                    <Label FontSize="20" Grid.Row="10" Grid.Column="0" Text="Tipo de abono: " VerticalOptions="StartAndExpand"/>
+                    <Picker FontSize="20" Grid.Row="10" Grid.Column="1" x:Name="cmbTipoAbono" VerticalOptions="Start" IsEnabled="True" 
+                        ItemsSource="{Binding tiposAbonos}" ItemDisplayBinding="{Binding tipoAbono}"
+                            SelectedItem="{Binding tipoAbono}"/>
 
-                    <Label FontSize="20" Grid.Row="10" Grid.Column="0" Text="Abono: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="10" Grid.Column="1" x:Name="txtAbono" VerticalOptions="Start" Keyboard="Numeric"/>
+                    <Label FontSize="20" Grid.Row="11" Grid.Column="0" Text="Abono: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="11" Grid.Column="1" x:Name="txtAbono" VerticalOptions="Start" Keyboard="Numeric"/>
 
-                    <Label FontSize="20" Grid.Row="11" Grid.Column="0" Text="Observaciones: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="11" Grid.Column="1" x:Name="txtObservaciones" VerticalOptions="Start"/>
-
-                    <Label FontSize="20" Grid.Row="12" Grid.Column="0" Text="Total Credito: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="12" Grid.Column="1" x:Name="txtTotal" VerticalOptions="Start"/>
+                    <Label FontSize="20" Grid.Row="12" Grid.Column="0" Text="Observaciones: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="12" Grid.Column="1" x:Name="txtObservaciones" VerticalOptions="Start"/>
 
                 </Grid>
 

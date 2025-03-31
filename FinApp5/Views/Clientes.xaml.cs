@@ -9,8 +9,6 @@ using System.Data;
 
 public partial class Clientes : ContentPage
 {
-
-
     bool ModoEdit = false;
     Musuarios Usuario = new Musuarios();
 
@@ -27,10 +25,16 @@ public partial class Clientes : ContentPage
             Usuario = usuario;
 
             llenarBarrios();
+            if (Usuario?.CodigoCobr != null)
+            {
+                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor
+                App.SQLiteDB.GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell 
+            }
             //if (usuario.CodigoCobr != null)
             //    GetClientes(usuario.CodigoCobr);
 
             BindingContext = new VMClientes(Navigation, usuario);
+
         }
         else
         {
@@ -381,7 +385,7 @@ public partial class Clientes : ContentPage
                     await DisplayAlert("Conexion", "Esta trabajando sin conexion", "OK");
                     cliente.nuevo = 2; //2 si fue actualizado offline, 1 si fue agregado offline, 0 si fue cargado de la web
                     await App.SQLiteDB.UpdateClienteAsync(cliente);
-                    await DisplayAlert("Registro", "Actualizacion exitosa", "OK");
+                    await DisplayAlert("Registro", "Actualizacion exitosa localmente", "OK");
                 }
             }
             else
@@ -439,5 +443,10 @@ public partial class Clientes : ContentPage
         {
             await DisplayAlert("Error", "Error" + ex.Message, "OK");
         }
+    }
+
+    private void btnInicio_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new MenuPpal(Usuario));
     }
 }

@@ -21,6 +21,8 @@ namespace FinApp5.ViewModels
         {
             Navigation = navigation;
             Usuario = usuario;
+            
+
         }
         #endregion
 

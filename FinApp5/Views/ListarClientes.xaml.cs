@@ -37,7 +37,6 @@ public partial class ListarClientes : ContentPage
         SqlCommand cmd = new SqlCommand();
         try
         {
-            //var ruta = Helpers.Settings.CodigoRuta;
             var ruta = usuario.CodigoCobr;
             var intOpcionFil = 1;
             var criterio = "";
@@ -148,5 +147,10 @@ public partial class ListarClientes : ContentPage
     private void btnTransacciones_Clicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new Transacciones(Usuario));
+    }
+
+    private void btnInicio_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new MenuPpal(Usuario));
     }
 }

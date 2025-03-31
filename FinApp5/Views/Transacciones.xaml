@@ -3,10 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.Transacciones"
              Title="Transacciones"
+             Shell.NavBarHasShadow="False"
+             Shell.NavBarIsVisible="False"
              >
-
+    
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center"  >
-
+        <Label Text="Transacciones" HorizontalTextAlignment="Center" FontSize="Title"></Label>
+        <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>    
         <Grid IsVisible="{Binding IsBusy}" >
             <ActivityIndicator x:Name="acti"  HeightRequest="15" WidthRequest="15"
                     IsRunning="{Binding IsBusy}" Color="Red" IsVisible="True"

@@ -3,6 +3,7 @@ using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace FinApp5.Views;
 
@@ -12,39 +13,45 @@ public partial class RegistarGastos : ContentPage
     Mgasto mgasto = new Mgasto();
     List<MtipoGastos> conceptosList = new List<MtipoGastos>();
 
-
-
     public RegistarGastos(Musuarios usuario)
     {
         InitializeComponent();
         llenarConceptosGastos();
+
         Usuario = usuario;
-
     }
-
     private void llenarConceptosGastos()
     {
         try
         {
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            SqlDataReader rdr = cmd.ExecuteReader();
-            //List<MtipoGastos> conceptosList = new List<MtipoGastos>();
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                conceptosList.Add
-                    (
-                    new MtipoGastos
-                    {
-                        claCodigo = rdr["claCodigo"].ToString().Trim(),
-                        claDescripcion = rdr["claDescripcion"].ToString().Trim()
-                    }
-                    );
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataReader rdr = cmd.ExecuteReader();
+                
+                while (rdr.Read())
+                {
+                    conceptosList.Add
+                        (
+                        new MtipoGastos
+                        {
+                            claCodigo = rdr["claCodigo"].ToString().Trim(),
+                            claDescripcion = rdr["claDescripcion"].ToString().Trim()
+                        }
+                        );
+                }
+                //cmbConceptos.ItemsSource = conceptosList;
+                //cmbConceptos.SelectedIndex = 0;
+            }
+            else
+            {
+                //List<MtipoGastos> conceptosList = new List<MtipoGastos>();
+                llenarConceptosGastosOffLine();
             }
             cmbConceptos.ItemsSource = conceptosList;
             cmbConceptos.SelectedIndex = 0;
-
         }
         catch (Exception ex)
         {
@@ -52,11 +59,20 @@ public partial class RegistarGastos : ContentPage
         }
     }
 
+    private async Task llenarConceptosGastosOffLine()
+    {
+        var conceptosList = await App.SQLiteDB.GetTiposGastos();
+        if (conceptosList != null && conceptosList.Any())
+        {
+            cmbConceptos.ItemsSource = conceptosList;
+        }
+    }
+
     private void Button_Clicked(object sender, EventArgs e)
     {
         try
         {
-
+            bool grabo = false;
             if (Convert.ToInt32(txtValor.Text) <= 0 || String.IsNullOrWhiteSpace(txtValor.Text) || String.IsNullOrEmpty(txtValor.Text))
             {
                 DisplayAlert("ERROR", "Por favor digite un valor", "OK");
@@ -70,48 +86,52 @@ public partial class RegistarGastos : ContentPage
 
             Mgasto mgasto = new Mgasto();
             mgasto.strCodigoRuta = Usuario.CodigoCobr;
-
-
-            var codigoGasto = conceptosList[cmbConceptos.SelectedIndex].claCodigo;
+            
+            var codigoGasto = (MtipoGastos)cmbConceptos.SelectedItem;
 
             if (codigoGasto == null)
-                mgasto.strCodConGas = "00001";
+            {
+                DisplayAlert("FALTAN DATOS", "Por favor selecciona un concepto para registrar el gasto", "OK");
+                return;
+            }
             else
-                mgasto.strCodConGas = codigoGasto;
+                mgasto.strCodConGas = codigoGasto.claCodigo;
 
             mgasto.fltValorMov = Convert.ToDouble(txtValor.Text);
             mgasto.strDescripcion = txtJustificacion.Text;
             mgasto.strLoginUsSeAc = Usuario.Usuario;
-
-            bool grabo = GrabarGasto(mgasto);
-
-            if (grabo)
-                DisplayAlert("OK", "Registro grabado", "OK");
+            if (CONEXIONMAESTRA.VerificarCon())
+            {
+                grabo = GrabarGasto(mgasto);
+                if (grabo)
+                   DisplayAlert("GUARDADO", "Registro grabado", "OK");
+                else
+                   DisplayAlert("ERROR", "Registro NO grabado", "OK");
+            }
             else
-                DisplayAlert("ERROR", "Registro NO grabado", "OK");
-
-
+            {
+                mgasto.nuevo = 1;
+                App.SQLiteDB.SaveGasto(mgasto);
+                DisplayAlert("GUARDADO LOCAL", "Registro grabado localmente, Esta trabajando sin conexión", "OK");
+            }
+            Limpiar();
         }
         catch (Exception ex)
         {
             DisplayAlert("error", ex.Message, "OK");
         }
     }
-
-
-
     private bool GrabarGasto(Mgasto mgasto)
     {
         try
         {
-
             SqlCommand cmd = new SqlCommand("GrabarMovimientoDeGastoEnSesionDeTrabajo", CONEXIONMAESTRA.conectar);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@strCodigoRuta", mgasto.strCodigoRuta);
-            cmd.Parameters.AddWithValue("@strCodConGas", mgasto.strCodConGas.Trim());
+            cmd.Parameters.AddWithValue("@strCodConGas", mgasto.strCodConGas);
             cmd.Parameters.AddWithValue("@fltValorMov", mgasto.fltValorMov);
-            cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion.Trim());
-            cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc.Trim());
+            cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion);
+            cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc);
             CONEXIONMAESTRA.Abrir();
             cmd.ExecuteReader();
             return true;
@@ -127,7 +147,6 @@ public partial class RegistarGastos : ContentPage
     {
         Limpiar();
     }
-
     private void Limpiar()
     {
         try
@@ -138,8 +157,9 @@ public partial class RegistarGastos : ContentPage
         }
         catch (Exception)
         {
-
             throw;
         }
     }
+
+    
 }

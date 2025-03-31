@@ -16,9 +16,10 @@ public partial class EnrrutarCartera : ContentPage
     
     public EnrrutarCartera(Musuarios usuario)
 	{
+        
+        InitializeComponent();
         Usuario = usuario;
         intNuevaPosCre = 1;
-        InitializeComponent();
         CargarCreditosAsync();
     }
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();

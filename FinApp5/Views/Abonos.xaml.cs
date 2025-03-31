@@ -12,6 +12,7 @@ namespace FinApp5.Views;
 public partial class Abonos : ContentPage
 {
     Musuarios Usuario = new Musuarios();
+    Mmovimiento abono = new Mmovimiento();
     Prestamos p = new Prestamos();
     public Abonos(Prestamos Prestamo, Musuarios usuario)
     {
@@ -35,6 +36,7 @@ public partial class Abonos : ContentPage
         txtDia.Text = Prestamo.desDiaPago;
         txtCuotasPendientes.Text = Prestamo.numCuoPen.ToString();
         txtSaldo.Text = Prestamo.saldoActualCre.ToString();
+        txtTotal.Text = Prestamo.totalPagCre.ToString();
         txtAbono.Text = Prestamo.valCuotaPag.ToString();
         cmbFormaPago.SelectedIndex = 0;
         cmbTipoAbono.SelectedIndex = 0;
@@ -62,7 +64,17 @@ public partial class Abonos : ContentPage
             if (validarDatos())
             {
                 btnGrabar.IsEnabled = false;
-                GrabarAbono(p);
+                if ((cmbTipoAbono.SelectedItem as TiposAbono)?.tipoAbono == "Microseguro")
+                {
+                    abono.strCodTipMov = "02";
+                    abono.strCodConMov = "00013";
+                }
+                else
+                {
+                    abono.strCodTipMov = "98";
+                    abono.strCodConMov = "88888";
+                }
+                GrabarAbono(p, abono);
 
                 await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
@@ -79,34 +91,32 @@ public partial class Abonos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-    private void GrabarAbono(Prestamos p)
+    private void GrabarAbono(Prestamos p, Mmovimiento abono)
     {
         bool Estado = CONEXIONMAESTRA.VerificarCon();
         try
         {
             if (Estado)
             {
-                //DisplayAlert("Conexion camino 1", "Estas trabajando sin conexion", "OK");
                 CONEXIONMAESTRA.Abrir();
                 SqlCommand cmd = new SqlCommand("RegistraAboMovCon", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
-                cmd.Parameters.AddWithValue("@strCodTipMov", "98");
-                cmd.Parameters.AddWithValue("@strCodConMov", "88888");
+                cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
+                cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov);
                 cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
                 cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
                 cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente);
                 cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
                 cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
-                cmd.Parameters.AddWithValue("@strComentAbo", "abono desde iphone");
+                cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
                 cmd.ExecuteReader();
                 DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
             }
-            
             else
             {
                 DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
-                GrabarOffLine();
+                GrabarOffLine(abono);
             }
         }
         catch (Exception ex)
@@ -117,13 +127,13 @@ public partial class Abonos : ContentPage
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
 
-    private void GrabarOffLine()
+    private void GrabarOffLine(Mmovimiento abono)
     {
-        Mmovimiento abono = new Mmovimiento
+        abono = new Mmovimiento
         {
             strCodigoRut = Usuario.CodigoCobr,
-            strCodTipMov = "98",
-            strCodConMov = "8888",
+            strCodTipMov = abono.strCodTipMov,
+            strCodConMov = abono.strCodConMov,
             ValorMovto = Convert.ToInt32(txtAbono.Text),
             strObservaRA = txtObservaciones.Text,
             NombreCteCre = txtNombre.Text,
@@ -134,7 +144,12 @@ public partial class Abonos : ContentPage
         };
         App.SQLiteDB.SaveAbono(abono);
 
-        int nuevoSaldo = Convert.ToInt32(txtSaldo.Text) - Convert.ToInt32(txtAbono.Text);
+        int nuevoSaldo;
+        if (abono.strCodTipMov == "02")
+            nuevoSaldo = Convert.ToInt32(txtSaldo.Text);
+        else
+            nuevoSaldo = Convert.ToInt32(txtSaldo.Text) - Convert.ToInt32(txtAbono.Text);
+
         Prestamos prestamo = new Prestamos { };
 
         if (nuevoSaldo > 0)
@@ -178,7 +193,7 @@ public partial class Abonos : ContentPage
         var tiposAbono = new List<TiposAbono>
             {
                 new TiposAbono(){idTipoAbono=0, tipoAbono = "Recaudo"},
-                //new TiposAbono(){idTipoAbono=1, tipoAbono = "Microseguro"}
+                new TiposAbono(){idTipoAbono=1, tipoAbono = "Microseguro"}
             };
         return tiposAbono;
     }
@@ -218,7 +233,10 @@ public partial class Abonos : ContentPage
     }
     private void btnPagos_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+        if (CONEXIONMAESTRA.VerificarCon())
+            Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+        else
+            DisplayAlert("Sin Internet", "Esta trabajando sin Internet (239)", "OK");
     }
     private void Button_WhatsApp(object sender, EventArgs e)
     {
@@ -232,7 +250,6 @@ public partial class Abonos : ContentPage
             DisplayAlert("Error", "Error" + ex.Message, "OK");
             throw;
         }
-        
     }
     private async void WhatsApp(string phoneNumber, string? message)
     {
@@ -291,4 +308,38 @@ public partial class Abonos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
+
+    double _lastScrollY = 0;
+    double _maxScrollY = 0;
+    private void OnScrollViewScrolled(object sender, ScrolledEventArgs e)
+    {
+        //if (e.ScrollY > _lastScrollY || e.ScrollY >= _maxScrollY)
+        HideKeyboard();
+        _lastScrollY = e.ScrollY;
+    }
+    private void HideKeyboard()
+    {
+    #if ANDROID
+        var context = Android.App.Application.Context;
+        var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)context.GetSystemService(Android.Content.Context.InputMethodService);
+        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+        var token = activity?.CurrentFocus?.WindowToken;
+        inputMethodManager?.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
+    #elif IOS
+            UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
+    #endif
+    }
+    private void OnScrollViewSizeChanged(object sender, EventArgs e)
+    {
+        if (sender is ScrollView scrollView)
+        {
+            _maxScrollY = scrollView.ContentSize.Height - scrollView.Height;
+        }
+    }
+
+    private void OnTapGestureRecognizerTapped(object sender, TappedEventArgs e)
+    {
+        HideKeyboard();
+    }
+
 }
