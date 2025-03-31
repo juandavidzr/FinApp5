@@ -18,13 +18,14 @@ public partial class EnrrutarCartera : ContentPage
     public int IntNuevaPosCre { get; set; } = 0;
     readonly Musuarios? Usuario = new();
     Prestamos prestamo = new();
+    public List<Prestamos> prestamosOffLine = new List<Prestamos>();
 
     public EnrrutarCartera(Musuarios usuario)
     {
         Usuario = usuario;
         IntNuevaPosCre = 1;
         InitializeComponent();
-        List<Prestamos> p = ConsultarCambioDeRutaOffline();
+        prestamosOffLine = ConsultarCambioDeRutaOffline();
 
         //var task = new Task(() => { _ = ConsultarCambioDeRutaOffline(); });
         //task.Start();
@@ -44,6 +45,12 @@ public partial class EnrrutarCartera : ContentPage
 
             if (CONEXIONMAESTRA.VerificarCon())
             {
+
+                if (prestamosOffLine.Any())
+                {
+
+                }
+
                 SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
