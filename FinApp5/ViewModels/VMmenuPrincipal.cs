@@ -25,6 +25,7 @@ namespace FinApp5.ViewModels
             Navigation = navigation;
             Usuario = usuario;
 
+
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
                 ejecutarCierre();
@@ -73,6 +74,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
+
         private void SyncCobros(string ruta, string filtro)
         {
             try
