@@ -57,7 +57,7 @@ public partial class InformeDia : ContentPage
                 var abonosList = await App.SQLiteDB.GetAbonosNew();
                 if (abonosList != null)
                 {
-                    lstMovimientos.ItemsSource = abonosList;
+                    //lstMovimientos.ItemsSource = abonosList;
                     MovimientosCollection.Clear();
                     foreach (var abono in abonosList)
                     {

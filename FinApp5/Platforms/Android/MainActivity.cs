@@ -9,6 +9,9 @@ namespace FinApp5
     //[Activity(Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : MauiAppCompatActivity
     {
-       
+        public override void OnBackPressed()
+        {
+            // No llamar a base.OnBackPressed() para bloquear el botón atrás
+        }
     }
 }

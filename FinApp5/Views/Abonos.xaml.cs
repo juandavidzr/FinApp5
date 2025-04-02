@@ -139,7 +139,8 @@ public partial class Abonos : ContentPage
             NombreCteCre = txtNombre.Text,
             NumeroCreAfe = txtIdCredito.Text,
             strLoginUsSe = Usuario.NombApel,
-            strComentAbo = "Abono Off-Line",
+            strComentAbo = txtObservaciones.Text,
+            Descripcion = (cmbTipoAbono.SelectedItem as TiposAbono)?.tipoAbono,
             nuevo = 1
         };
         App.SQLiteDB.SaveAbono(abono);
@@ -177,7 +178,7 @@ public partial class Abonos : ContentPage
         var respuesta = App.SQLiteDB.UpdatePrestamos(prestamo);
 
         if (respuesta)
-            DisplayAlert("Registro", "El registro se guardo de manera exitosa", "OK");
+            DisplayAlert("Registro", "El registro se guardo localmente de manera exitosa", "OK");
         else
             DisplayAlert("ERROR", "El registro NO se guardo ", "OK");
     }

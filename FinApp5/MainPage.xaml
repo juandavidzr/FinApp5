@@ -2,9 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.MainPage"
+             Shell.NavBarHasShadow="False"
+             Shell.NavBarIsVisible="False"
              Title="AUTENTICACION">
 
     <VerticalStackLayout Padding="10" Spacing="10" Margin="20">
+        <Label Text="AUTENTICACION" HorizontalTextAlignment="Center" FontSize="Title" FontAttributes="Bold"></Label>
         <Label Text="" HorizontalOptions="CenterAndExpand" FontSize="Title" />
         <Label Text="Usuario" FontSize="Large" HorizontalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"/>
         <Entry x:Name="TxtUsuario" Placeholder="Usuario" FontSize="Large"
