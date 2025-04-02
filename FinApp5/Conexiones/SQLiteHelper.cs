@@ -83,6 +83,7 @@ namespace FinApp5.Data
         }
 
 
+
         public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
