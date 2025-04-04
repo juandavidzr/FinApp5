@@ -53,7 +53,8 @@ public partial class InformeDia : ContentPage
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
+                //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
+                lblMensaje.Text = "Sin Internet";
                 var abonosList = await App.SQLiteDB.GetAbonosNew();
                 if (abonosList != null)
                 {

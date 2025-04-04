@@ -25,7 +25,6 @@ namespace FinApp5.ViewModels
             Navigation = navigation;
             Usuario = usuario;
 
-
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
                 ejecutarCierre();
