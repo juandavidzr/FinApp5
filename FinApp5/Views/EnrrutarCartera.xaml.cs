@@ -1,6 +1,7 @@
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 
@@ -10,7 +11,7 @@ public partial class EnrrutarCartera : ContentPage
 {
     public string? ruta { get; set; }
     public string lngNumeroCre { get; set; }
-    public string NumeroCreCambiaPos { get; set; }
+    public string NumeroCreCambiaPos { get; set; }    
     /// <summary>
     /// Posición anterior
     /// </summary>
@@ -25,10 +26,8 @@ public partial class EnrrutarCartera : ContentPage
         Usuario = usuario;
         IntNuevaPosCre = 1;
         InitializeComponent();
-        prestamosOffLine = ConsultarCambioDeRutaOffline();
-
-        //var task = new Task(() => { _ = ConsultarCambioDeRutaOffline(); });
-        //task.Start();
+        if(CONEXIONMAESTRA.VerificarCon())
+            prestamosOffLine = ConsultarCambioDeRutaOffline();  
 
         _ = CargarCreditosAsync();
     }
@@ -48,7 +47,12 @@ public partial class EnrrutarCartera : ContentPage
 
                 if (prestamosOffLine.Any())
                 {
+                    List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(ruta);
 
+                    if (prestamos.Any())
+                    {
+                       await App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
+                    }
                 }
 
                 SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);

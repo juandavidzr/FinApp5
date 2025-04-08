@@ -32,23 +32,17 @@ namespace FinApp5.Conexiones
             bool estado = false;
             System.Uri Url = new System.Uri("https://www.google.com/");
 
-            System.Net.WebRequest? WebRequest;
-            WebRequest = System.Net.WebRequest.Create(Url);
-            System.Net.WebResponse objetoResp;
             try
             {
-                objetoResp = WebRequest.GetResponse();
-                estado = true;
-                objetoResp.Close();
+                using (HttpClient client = new HttpClient())
+                {
+                    var response = client.GetAsync(Url).Result;
+                    estado = response.IsSuccessStatusCode;
+                }
             }
             catch (Exception)
             {
                 estado = false;
-                //DisplayAlert("Error", "Error: " + ex.Message, "OK");
-            }
-            finally
-            {
-                WebRequest = null;
             }
             return estado;
         }
@@ -75,7 +69,5 @@ namespace FinApp5.Conexiones
                 return false;
             }
         }
-
-
     }
 }

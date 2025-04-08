@@ -18,6 +18,7 @@ namespace FinApp5.ViewModels
         #region VARIABLES
         string _Texto;
         Musuarios Usuario = new Musuarios();
+        public List<Prestamos> prestamosOffLine = new List<Prestamos>();
         #endregion
         #region CONSTRUCTOR
         public VMmenuPrincipal(INavigation navigation, Musuarios usuario)
@@ -28,6 +29,8 @@ namespace FinApp5.ViewModels
 
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
+
+                
                 ejecutarCierre();
                 GetBarrios(Usuario.CodigoCobr); //Trae todos los barrio del servidor
                 SyncRuta(Usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
@@ -39,7 +42,7 @@ namespace FinApp5.ViewModels
                     App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
                 else
                     Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
-
+                SincronizarEnrrutarCartera(Usuario.CodigoCobr);
             }
             else
             {
@@ -57,7 +60,29 @@ namespace FinApp5.ViewModels
         #endregion
         #region PROCESOS
         
-        
+        private async void SincronizarEnrrutarCartera(string CodigoCobr)
+        {
+            try
+            {
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    prestamosOffLine = App.SQLiteDB.ConsultarCambioDeRutaOffline().Result;
+
+                    if (prestamosOffLine.Any())
+                    {
+                        List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(CodigoCobr);
+                        if (prestamos.Any())
+                        {
+                            _ = App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
+                        }
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("error", ex.Message, "OK");
+            }
+        }
         private async Task ejecutarCierre()
         {
             try

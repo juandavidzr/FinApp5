@@ -251,35 +251,47 @@ namespace FinApp5.Data
         {
             await ActualizarCreditoAsync(nuevaPosicion, numeroCredito, codigoRuta);
             var creditos = await ObtenerCreditosPorRutaAsync(nuevaPosicion, numeroCredito, codigoRuta);
-            if(creditos != null && creditos.Count > 0)
+            if (creditos != null && creditos.Count > 0)
             {
                 await ReasignarPosicionesAsync(creditos, nuevaPosicion);
-            } 
-            
+            }
+
         }
 
         public async Task ActualizarCreditoAsync(int? nuevaPosicion, string numeroCredito, string codigoRuta)
-        {           
+        {
 
             string updateCommandText = @"UPDATE Prestamos SET posRutCre = ? , PosActualizada = 1 WHERE NumPrestamo = ? ";
 
             await db.ExecuteAsync(updateCommandText, nuevaPosicion, numeroCredito);
 
         }
-        private async Task<List<long>> ObtenerCreditosPorRutaAsync(int nuevaPosicion,string numeroCredito, string codigoRuta)
+
+        public async Task ActualizarPosActualizada()
         {
-            string selectCommandText = @"SELECT NumPrestamo FROM Prestamos WHERE Vigente = 1 AND Activo = 1 
-                                         AND posRutCre <> -1 and posRutCre >= ? and NumPrestamo <> ? AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo ";
+
+            string updateCommandText = @"UPDATE Prestamos SET PosActualizada = 0 ";
+
+            await db.ExecuteAsync(updateCommandText);
+
+        }
+
+        private async Task<List<long>> ObtenerCreditosPorRutaAsync(int nuevaPosicion, string numeroCredito, string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo FROM Prestamos 
+                                                WHERE Vigente = 1 AND Activo = 1 
+                                                AND posRutCre <> -1 and posRutCre >= ? and NumPrestamo <> ? 
+                                                AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo ";
             return await db.QueryScalarsAsync<long>(selectCommandText, nuevaPosicion, numeroCredito, codigoRuta);
         }
 
         public Task<List<Prestamos>> ConsultarCambioDeRutaOffline()
         {
-            return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();           
-             
+            return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();
+
         }
 
-        private async Task ReasignarPosicionesAsync(List<long> creditos , int nuevaPosicion)
+        private async Task ReasignarPosicionesAsync(List<long> creditos, int nuevaPosicion)
         {
             int contador = nuevaPosicion + 1;
             foreach (var id in creditos)
@@ -288,6 +300,77 @@ namespace FinApp5.Data
                 await db.ExecuteAsync(updatePositionCommandText, contador, id);
                 contador++;
             }
+        }
+
+        public async Task ReasignarPosicionesServerAsync1(List<Prestamos> prestamos)
+        {
+            foreach (var prestamo in prestamos)
+            {
+                var pos = prestamo.posRutCre;
+                var credito = prestamo.NumPrestamo;
+                SqlCommand cmd = new("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                cmd.Parameters.AddWithValue("@strNumIdeCte", pos);
+                cmd.Parameters.AddWithValue("@strNomComCte", credito);
+
+                await cmd.ExecuteNonQueryAsync();
+
+            }
+        }
+
+        public async Task ReasignarPosicionesServerAsync(List<Prestamos> prestamos)
+        {
+            if (prestamos == null || prestamos.Count == 0)
+            {
+                throw new ArgumentException("La lista de préstamos no puede ser nula o vacía.", nameof(prestamos));
+            }
+
+            try
+            {
+
+                using (SqlCommand cmd = new("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // Agregar parámetros una sola vez y reutilizarlos
+                    cmd.Parameters.Add("@intNuePosCreRut", SqlDbType.Int);
+                    cmd.Parameters.Add("@lngNumeroCreAct", SqlDbType.BigInt);
+
+                    CONEXIONMAESTRA.Abrir();
+
+                    foreach (var prestamo in prestamos)
+                    {
+                        cmd.Parameters["@intNuePosCreRut"].Value = prestamo.posRutCre;
+                        cmd.Parameters["@lngNumeroCreAct"].Value = prestamo.NumPrestamo;
+                       
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+                CONEXIONMAESTRA.Cerrar();
+
+               _ = App.SQLiteDB.ActualizarPosActualizada();
+
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores, puedes loggear o lanzar una excepción personalizada
+                Console.WriteLine($"Error al reasignar posiciones: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                CONEXIONMAESTRA.Cerrar();
+            }
+        }
+
+        public async Task<List<Prestamos>> ObtenerTodosCreditosPorRutaAsync(string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo, posRutCre FROM Prestamos WHERE Vigente = 1 AND Activo = 1 AND posRutCre <> -1  
+                                        AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo";
+            return await db.QueryAsync<Prestamos>(selectCommandText, codigoRuta);
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
