@@ -34,6 +34,7 @@ namespace FinApp5.ViewModels
                 SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
                 GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
 
+
                 App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor
                 if (Usuario?.Usuario != null)
                 {
