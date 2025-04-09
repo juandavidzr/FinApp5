@@ -4,13 +4,18 @@
              x:Class="FinApp5.Views.InformeDia"
              Title="Informe Dia">
     <ContentPage.Content>
+        
         <ScrollView>
-            <StackLayout Margin="10">
+            
+            <StackLayout Margin="5">
+                
                 <Label Text="Nombre                     | ID Crédito      |            Valor " />
                 <Label Text="Fecha                          | Tipo" />
                 <Label Text="Comentario" />
 
-                <ListView x:Name="lstMovimientos" ItemSelected="lstMovimientos_ItemSelected" Margin="10">
+                <Label x:Name="lblMensaje" HorizontalTextAlignment="Center" Text="" TextColor="Red" FontSize="Large"/>
+
+                <ListView x:Name="lstMovimientos" ItemSelected="lstMovimientos_ItemSelected" Margin="5" HasUnevenRows="True">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>

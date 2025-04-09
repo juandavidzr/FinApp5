@@ -34,20 +34,9 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleIdentifier</key>
 	<string></string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>MKDirectionsRequest</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.apple.maps.directionsrequest</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.12</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.12</string>
 </dict>
 </plist>

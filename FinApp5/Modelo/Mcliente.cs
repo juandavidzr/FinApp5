@@ -4,7 +4,6 @@ namespace FinApp5.Modelo
 {
     public class Mcliente
     {
-        
         public string? cteCodTipIde { get; set; }
         [PrimaryKey]
         [Indexed]

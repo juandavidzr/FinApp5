@@ -18,7 +18,7 @@ namespace FinApp5.ViewModels
         #region VARIABLES
         string _Texto;
         Musuarios Usuario;
-        
+
         #endregion
         #region CONSTRUCTOR
 
@@ -58,7 +58,6 @@ namespace FinApp5.ViewModels
             }
             else
             {
-                //DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 115)", "OK");
                 Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
                 if (usuario.PermisoAbonar != null)
                 {
@@ -74,7 +73,7 @@ namespace FinApp5.ViewModels
         {
             UserDialogs.Instance.Loading();
             Task.Delay(3000);
-            
+
 
             await Navigation.PushAsync(new ListaCreditos(Usuario));
 
@@ -84,13 +83,32 @@ namespace FinApp5.ViewModels
 
         public async void RegistarGastos(object obj)
         {
-            if (ValidarPermisos())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                await Navigation.PushAsync(new RegistarGastos(Usuario));
+                if (ValidarPermisos())
+                {
+                    await Navigation.PushAsync(new RegistarGastos(Usuario));
+                }
+                else
+                {
+                    await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                }
             }
             else
             {
-               await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
+                if (usuario.PermisoGastos != null)
+                {
+                    var permiso = usuario.PermisoGastos;
+                    if (permiso == "1")
+                        await Navigation.PushAsync(new RegistarGastos(Usuario));
+                    else
+                        await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("ADVERTENCIA", "ERROR", "OK");
+                }
             }
         }
 
@@ -128,7 +146,7 @@ namespace FinApp5.ViewModels
                     return false;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -152,7 +170,7 @@ namespace FinApp5.ViewModels
                     else
                         return false;
                 }
-                else {  return false; }
+                else { return false; }
             }
             catch (Exception)
             {

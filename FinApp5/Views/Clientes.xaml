@@ -4,7 +4,9 @@
              x:Class="FinApp5.Views.Clientes"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Clientes"
-             xmlns:local="clr-namespace:FinApp5.ViewModels">
+             xmlns:local="clr-namespace:FinApp5.ViewModels"
+             Shell.NavBarHasShadow="False"
+            Shell.NavBarIsVisible="False">
     <ContentPage.BindingContext>
         <local:BaseViewModel/>
     </ContentPage.BindingContext>
@@ -13,7 +15,7 @@
         
         <VerticalStackLayout VerticalOptions="StartAndExpand" 
                              HorizontalOptions="FillAndExpand">
-            
+            <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
             <Label Text="Numero de identificación" />
             <Entry Text="{Binding TxtId}" x:Name="TxtId" Unfocused="TxtId_Unfocused" >
                 <!--<Entry.Behaviors>

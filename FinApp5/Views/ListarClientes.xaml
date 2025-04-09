@@ -4,13 +4,14 @@
              x:Class="FinApp5.Views.ListarClientes"
              Title="Clientes para credito"
              Shell.NavBarHasShadow="False"
-             Shell.NavBarIsVisible="false">
+             Shell.NavBarIsVisible="False">
     
     <ContentPage.Content>
         
         <StackLayout>
             <Label Text="Clientes para credito" HorizontalTextAlignment="Center" FontSize="Title"></Label>
             <Button x:Name="btnTransacciones" Text="Ir a Transacciones" Clicked="btnTransacciones_Clicked" Margin="5"></Button>
+            <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
             <SearchBar  Placeholder="Buscar por nombre" Keyboard="Chat" 
                         TextChanged="SearchBar_TextChanged" MaxLength="30" 
                         FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="5"/>

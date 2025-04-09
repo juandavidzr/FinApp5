@@ -5,9 +5,16 @@ namespace FinApp5.Views;
 
 public partial class SubMenuClientes : ContentPage
 {
-	public SubMenuClientes(Musuarios usuario)
+    Musuarios Usuario = new Musuarios();
+    public SubMenuClientes(Musuarios usuario)
 	{
 		InitializeComponent();
+        Usuario = usuario;
         BindingContext = new VMSubMenuClientes(Navigation, usuario);
+    }
+
+    private void btnInicio_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new MenuPpal(Usuario));
     }
 }

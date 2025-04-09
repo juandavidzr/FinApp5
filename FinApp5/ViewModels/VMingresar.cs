@@ -19,7 +19,6 @@ namespace FinApp5.ViewModels
         #region CONSTRUCTOR
         public VMingresar(INavigation? navigation)
         {
-
             Navigation = navigation;
         }
         #endregion
@@ -40,7 +39,8 @@ namespace FinApp5.ViewModels
         #region PROCESOS
         public async void ingresar()
         {
-
+            //TxtUsuario = "14";
+            //TxtPw = "14";
             if (String.IsNullOrEmpty(TxtUsuario) || String.IsNullOrEmpty(TxtPw))
             {
                 await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
@@ -50,29 +50,26 @@ namespace FinApp5.ViewModels
                 //bool Estado = CONEXIONMAESTRA.VerificarCon();
                 //var Estado = CONEXIONMAESTRA.VerificarConexionAsync();
                 bool Estado = await CONEXIONMAESTRA.VerificarConexionAsync();
+                //Estado = true;
                 bool aut = false;
                 if (Estado)
                 {
                     aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
+                    //aut = true;
                     if (aut)
-
                         await Navigation.PushAsync(new MenuPpal(usuario));
                     else
                         await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
                 }
                 else
                 {
-                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion (62)", "OK");
+                    await DisplayAlert("Sin Internet", "Esta trabajando sin conexion (66)", "OK");
                     usuario = await App.SQLiteDB.GetUsuarioByIdandPw(TxtUsuario.Trim(), TxtPw.Trim());
                     if (usuario != null)
-                    {
-                        aut = true;
                         await Navigation.PushAsync(new MenuPpal(usuario));
-                    }
                     else
-                        await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
+                        await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas, debe tener conexion al menos la primer vez que inicie la app", "OK");
                 }
-
             }
         }
         private bool Autenticar(string login, string pass)
@@ -82,7 +79,7 @@ namespace FinApp5.ViewModels
                 CONEXIONMAESTRA.Abrir();
                 SqlCommand cmd =
                     new SqlCommand
-                    ("SELECT cbrCodigoCobr, cbrNombApel, cbrNumIdenti, cbrIndicadorPeReAb " +
+                    ("SELECT cbrCodigoCobr, cbrNombApel, cbrNumIdenti, cbrIndicadorPeReAb, cbrFlagPerGraGas " +
                     " FROM tbl_Cobradores WHERE cbrLogAppRut = '" + login + "' and cbrPasUniRut = '" + pass + "'", CONEXIONMAESTRA.conectar);
 
                 SqlDataReader rdr = cmd.ExecuteReader();
@@ -93,8 +90,10 @@ namespace FinApp5.ViewModels
                     usuario.NombApel = rdr["cbrNombApel"].ToString();
                     usuario.NumIdenti = rdr["cbrNumIdenti"].ToString();
                     usuario.PermisoAbonar = rdr["cbrIndicadorPeReAb"].ToString();
+                    usuario.PermisoGastos = rdr["cbrFlagPerGraGas"].ToString();
                     usuario.pw = pass.Trim();
                     usuario.Usuario = login.Trim();
+                    App.SQLiteDB.DeleteUsuarios<Task>();
                     App.SQLiteDB.saveUsuario(usuario);
                     rdr.Close();
                     return true;

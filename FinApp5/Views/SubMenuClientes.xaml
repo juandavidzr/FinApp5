@@ -2,9 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.SubMenuClientes"
-             Title="SubMenuClientes">
+             Title="SubMenuClientes"
+             Shell.NavBarHasShadow="False"
+             Shell.NavBarIsVisible="False">
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-
+        <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
+        <Label Text="SubMenu Clientes" HorizontalTextAlignment="Center" FontSize="Title"></Label>
+        
         <ImageButton Source="clientes.png"
              Aspect="AspectFit"
              BorderColor="Black"

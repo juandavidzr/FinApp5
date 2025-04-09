@@ -10,7 +10,6 @@ namespace FinApp5.Views;
 public partial class Transacciones : ContentPage
 {
     private Musuarios _usuario;
-
     public Musuarios Usuario
     {
         get => _usuario;
@@ -39,5 +38,10 @@ public partial class Transacciones : ContentPage
 
     private void ImageButton_Clicked(object sender, EventArgs e)
     {
+    }
+
+    private void btnInicio_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new MenuPpal(Usuario));
     }
 }

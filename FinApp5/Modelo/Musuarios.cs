@@ -14,6 +14,7 @@ namespace FinApp5.Modelo
         public string? NumIdenti { get; set; }
         public string? Usuario { get; set; }
         public string? PermisoAbonar { get; set; }
+        public string? PermisoGastos { get; set; }
 
     }
 }

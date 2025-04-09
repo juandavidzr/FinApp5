@@ -34,31 +34,7 @@ namespace FinApp5.ViewModels
             }
         }
 
-        //public BaseViewModel()
-        //{
-            //SqlCommand cmd = new SqlCommand();
-            //cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
-            //CONEXIONMAESTRA.Abrir();
-            //cmd.CommandType = CommandType.StoredProcedure;
-            //if (cmd.Connection.State == ConnectionState.Closed)
-            //    cmd.Connection.Open();
-
-            //SqlDataReader rdr = cmd.ExecuteReader();
-            //if (rdr.Read())
-            //{
-            //    while (rdr.Read())
-            //    {
-
-            //        Barrios = new List<Mbarrio>
-            //        {
-            //            new Mbarrio { IdBarrio = rdr["rbcCodigo"].ToString(), NombreBarrio = rdr["rbcNombre"].ToString() }
-                        
-            //        };
-            //    }
-            //    if (cmd.Connection.State == ConnectionState.Open)
-            //        cmd.Connection.Close();
-            //}
-        //}
+       
 
         public List<String> llenarBarrios()
         {
@@ -197,15 +173,10 @@ namespace FinApp5.ViewModels
         protected void SetValue<T>(ref T backingFieled, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(backingFieled, value))
-
             {
-
                 return;
-
             }
-
             backingFieled = value;
-
             OnPropertyChanged(propertyName);
         }
 
