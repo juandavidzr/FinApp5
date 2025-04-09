@@ -53,6 +53,7 @@ public partial class EnrrutarCartera : ContentPage
                     {
                        await App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
                     }
+                    await App.SQLiteDB.ActualizarPosActualizada();
                 }
 
                 SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);
@@ -150,10 +151,9 @@ public partial class EnrrutarCartera : ContentPage
     private async void Button_Clicked(object sender, EventArgs e)
     {
         try
-        {            
+        {
             if (lngNumeroCre != null)
             {
-
                 if (CONEXIONMAESTRA.VerificarCon())
                 {
                     SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRutaDestino", CONEXIONMAESTRA.conectar);
@@ -164,16 +164,22 @@ public partial class EnrrutarCartera : ContentPage
                     CONEXIONMAESTRA.Abrir();
                     cmd.ExecuteReader();
                     CONEXIONMAESTRA.Cerrar();
-                   
+
+                    if (!string.IsNullOrEmpty(ruta))
+                    {
+                        App.SQLiteDB.SyncCobros(ruta, "Ruta");
+                    }
                 }
                 else
                 {
-                   await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta, NumeroCreCambiaPos);
+                    await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta, NumeroCreCambiaPos);
                 }
-                 _ = CargarCreditosAsync();
+                _ = CargarCreditosAsync();
             }
             else
+            {
                 DisplayAlert("error", "Por favor seleccione un credito", "OK");
+            }
         }
         catch (Exception ex)
         {
