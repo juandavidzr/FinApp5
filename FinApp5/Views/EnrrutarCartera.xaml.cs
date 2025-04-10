@@ -102,6 +102,7 @@ public partial class EnrrutarCartera : ContentPage
 
     private void Button_Clicked(object sender, EventArgs e)
     {
+        // Validar si el credito ya existe en la ruta destino
         try
         {
             if (lngNumeroCre != null)

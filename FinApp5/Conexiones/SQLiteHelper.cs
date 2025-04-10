@@ -317,14 +317,170 @@ namespace FinApp5.Data
                 return await Task.Run(async () =>
                 {
                     var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
-                    
+
                     return new ObservableCollection<Prestamos>(dt);
                 });
             }
             catch (Exception ex)
             {
-                throw new Exception(code, ex);                
+                throw new Exception(code, ex);
             }
+        }
+
+        public async Task<List<Prestamos>> FiltrarCreditosDeRutaSegunCriterio(string codigoRuta, int selector)
+        {
+            string query = @" SELECT Prestamos.nombreCliente, 
+            Prestamos.NumPrestamo, 
+            Prestamos.posRutCre
+            FROM Mcliente 
+            INNER JOIN Prestamos 
+            ON Mcliente.cteNumIdenti = Prestamos.idCliente
+            WHERE Prestamos.codigoRuta = ? 
+            AND Prestamos.Vigente = 1 
+            AND Prestamos.Activo = 1 ";
+
+            if (selector == 2)
+            {
+                query += "AND Prestamos.posRutCre <> -1 ";
+                query += "ORDER BY Prestamos.posRutCre";
+            }
+            else
+            {
+                query += "ORDER BY Mcliente.cteNombApel";
+            }
+
+            return await db.QueryAsync<Prestamos>(query, codigoRuta);
+        }
+        
+
+        /// <summary>
+        /// Actualizar la posición de un crédito en la ruta destino
+        /// </summary>
+        /// <param name="nuevaPosicion"></param>
+        /// <param name="numeroCredito"></param>
+        /// <param name="codigoRuta"></param>
+        /// <param name="numeroCreCambiaPos"></param>
+        /// <returns></returns>
+        public async Task ActualizarPosicionDeCreditoEnRutaDestinoAsync(int nuevaPosicion, string numeroCredito, string codigoRuta, string numeroCreCambiaPos)
+        {
+            await ActualizarCreditoAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            var creditos = await ObtenerCreditosPorRutaAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            if (creditos != null && creditos.Count > 0)
+            {
+                await ReasignarPosicionesAsync(creditos, nuevaPosicion);
+            }
+
+        }
+
+        public async Task ActualizarCreditoAsync(int? nuevaPosicion, string numeroCredito, string codigoRuta)
+        {
+
+            string updateCommandText = @"UPDATE Prestamos SET posRutCre = ? , PosActualizada = 1 WHERE NumPrestamo = ? ";
+
+            await db.ExecuteAsync(updateCommandText, nuevaPosicion, numeroCredito);
+
+        }
+
+        public async Task ActualizarPosActualizada()
+        {
+
+            string updateCommandText = @"UPDATE Prestamos SET PosActualizada = 0 ";
+
+            await db.ExecuteAsync(updateCommandText);
+
+        }
+
+        private async Task<List<long>> ObtenerCreditosPorRutaAsync(int nuevaPosicion, string numeroCredito, string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo FROM Prestamos 
+                                                WHERE Vigente = 1 AND Activo = 1 
+                                                AND posRutCre <> -1 and posRutCre >= ? and NumPrestamo <> ? 
+                                                AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo ";
+            return await db.QueryScalarsAsync<long>(selectCommandText, nuevaPosicion, numeroCredito, codigoRuta);
+        }
+
+        public Task<List<Prestamos>> ConsultarCambioDeRutaOffline()
+        {
+            return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();
+        }
+
+        private async Task ReasignarPosicionesAsync(List<long> creditos, int nuevaPosicion)
+        {
+            int contador = nuevaPosicion + 1;
+            foreach (var id in creditos)
+            {
+                string updatePositionCommandText = "UPDATE Prestamos SET posRutCre = ? WHERE NumPrestamo = ?";
+                await db.ExecuteAsync(updatePositionCommandText, contador, id);
+                contador++;
+            }
+        }
+
+        public async Task ReasignarPosicionesServerAsync1(List<Prestamos> prestamos)
+        {
+            foreach (var prestamo in prestamos)
+            {
+                var pos = prestamo.posRutCre;
+                var credito = prestamo.NumPrestamo;
+                SqlCommand cmd = new("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                cmd.Parameters.AddWithValue("@strNumIdeCte", pos);
+                cmd.Parameters.AddWithValue("@strNomComCte", credito);
+
+                await cmd.ExecuteNonQueryAsync();
+
+            }
+        }
+        /// <summary>
+        /// Reasignar posiciones de crédito en ruta
+        /// </summary>
+        /// <param name="prestamos"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public async Task ReasignarPosicionesServerAsync(List<Prestamos> prestamos)
+        {
+            if (prestamos == null || prestamos.Count == 0)
+            {
+                throw new ArgumentException("La lista de préstamos no puede ser nula o vacía.", nameof(prestamos));
+            }
+
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                foreach (var prestamo in prestamos)
+                {
+                    cmd.Parameters.AddWithValue("@intNuePosCreRut", prestamo.posRutCre);
+                    cmd.Parameters.AddWithValue("@lngNumeroCreAct", prestamo.NumPrestamo);
+                    CONEXIONMAESTRA.Abrir();
+                    cmd.ExecuteReader();
+                    cmd.Parameters.Clear();
+                    CONEXIONMAESTRA.Cerrar();
+                }
+                //CONEXIONMAESTRA.Cerrar();
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores, puedes loggear o lanzar una excepción personalizada
+                Console.WriteLine($"Error al reasignar posiciones: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                CONEXIONMAESTRA.Cerrar();
+            }
+        }
+
+        public async Task<List<Prestamos>> ObtenerTodosCreditosPorRutaAsync(string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo, posRutCre FROM Prestamos WHERE Vigente = 1 AND Activo = 1 AND posRutCre <> -1  
+                                        AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo";
+            return await db.QueryAsync<Prestamos>(selectCommandText, codigoRuta);
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
@@ -353,7 +509,7 @@ namespace FinApp5.Data
         /// <returns></returns>
         public Task<List<Mcliente>> GetClientesAsync()
         {
-            return db.Table<Mcliente>().OrderBy(x=>x.cteNumIdenti).ToListAsync();
+            return db.Table<Mcliente>().OrderBy(x => x.cteNumIdenti).ToListAsync();
         }
 
         /// <summary>
@@ -383,7 +539,7 @@ namespace FinApp5.Data
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
         }
