@@ -22,34 +22,50 @@ public partial class InformeDia : ContentPage
     {
         try
         {
-            
             lstMovimientos.ItemsSource = null;
 
             MovimientosCollection.Clear();
-            
+
             if (Usuario.CodigoCobr != null)
                 ruta = Usuario.CodigoCobr;
 
-            SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-            
-            CONEXIONMAESTRA.Abrir();
-            SqlDataReader rdr = cmd.ExecuteReader();
-
-            while (rdr.Read())
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                MovimientosCollection.Add(new Mmovimiento()
-                {
-                    NombreCteCre =  rdr["mrcNombreCteCre"].ToString(),
-                    NumeroCreAfe =  rdr["mrcNumeroCreAfe"].ToString(),
-                    ValorMovto =  Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
-                    FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
-                    Descripcion =   rdr["tmcDescripcion"].ToString(),
-                    strComentAbo = rdr["mrcComentarioAbo"].ToString()
-                });
-            }
+                SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
 
+                CONEXIONMAESTRA.Abrir();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    MovimientosCollection.Add(new Mmovimiento()
+                    {
+                        NombreCteCre = rdr["mrcNombreCteCre"].ToString(),
+                        NumeroCreAfe = rdr["mrcNumeroCreAfe"].ToString(),
+                        ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
+                        FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
+                        Descripcion = rdr["tmcDescripcion"].ToString(),
+                        strComentAbo = rdr["mrcComentarioAbo"].ToString()
+                    });
+                }
+            }
+            else
+            {
+                //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
+                lblMensaje.Text = "Sin Internet";
+                var abonosList = await App.SQLiteDB.GetAbonosNew();
+                if (abonosList != null)
+                {
+                    //lstMovimientos.ItemsSource = abonosList;
+                    MovimientosCollection.Clear();
+                    foreach (var abono in abonosList)
+                    {
+                        MovimientosCollection.Add(abono);
+                    }
+                }
+            }
             if (MovimientosCollection != null)
             {
                 //lstMovimientos.ItemsSource = MovimientosCollection.OrderBy(p => p.FechaHoraReg).ToList();

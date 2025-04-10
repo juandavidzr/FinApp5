@@ -2,16 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.MainPage"
+             Shell.NavBarHasShadow="False"
+             Shell.NavBarIsVisible="False"
              Title="AUTENTICACION">
 
     <VerticalStackLayout Padding="10" Spacing="10" Margin="20">
-        <Label Text=""  HorizontalOptions="CenterAndExpand" FontSize="Title" />
+        <Label Text="AUTENTICACION" HorizontalTextAlignment="Center" FontSize="Title" FontAttributes="Bold"></Label>
+        <Label Text="" HorizontalOptions="CenterAndExpand" FontSize="Title" />
         <Label Text="Usuario" FontSize="Large" HorizontalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"/>
-        <Entry x:Name="TxtUsuario" Placeholder="Usuario" FontSize="Large" 
+        <Entry x:Name="TxtUsuario" Placeholder="Usuario" FontSize="Large"
                        Text="{Binding TxtUsuario}" HorizontalTextAlignment="Center" ClearButtonVisibility="WhileEditing"/>
         <Label FontSize="Large" HorizontalOptions="Center" Text="Contraseña"/>
-        <Entry HorizontalTextAlignment="Center" Placeholder="Contraseña" FontSize="Large" Text="{Binding TxtPw}"
-                       ClearButtonVisibility="WhileEditing"/>
+        <Entry x:Name="TxtPW" HorizontalTextAlignment="Center" Placeholder="Contraseña" FontSize="Large" Text="{Binding TxtPw}"
+                       ClearButtonVisibility="WhileEditing" IsPassword="True"/>
         <Button Text="INGRESAR" HorizontalOptions="CenterAndExpand" FontSize="Large" Command="{Binding ingresarCommand}"/>
         <Label Text="Version 3.0" HorizontalOptions="Center"/>
     </VerticalStackLayout>

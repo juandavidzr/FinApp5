@@ -13,7 +13,7 @@ public partial class EnrrutarCartera : ContentPage
     public string lngNumeroCre { get; set; }
     public string NumeroCreCambiaPos { get; set; }    
     /// <summary>
-    /// Posición anterior
+    /// Posiciï¿½n anterior
     /// </summary>
     public int? OldPosCre { get; set; }
     public int IntNuevaPosCre { get; set; } = 0;
@@ -22,6 +22,7 @@ public partial class EnrrutarCartera : ContentPage
     public List<Prestamos> prestamosOffLine = new List<Prestamos>();
 
     public EnrrutarCartera(Musuarios usuario)
+
     {
         Usuario = usuario;
         IntNuevaPosCre = 1;
@@ -30,6 +31,14 @@ public partial class EnrrutarCartera : ContentPage
             prestamosOffLine = ConsultarCambioDeRutaOffline();  
 
         _ = CargarCreditosAsync();
+
+	{
+        
+        InitializeComponent();
+        Usuario = usuario;
+        intNuevaPosCre = 1;
+        CargarCreditosAsync();
+
     }
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();
     public async Task CargarCreditosAsync()

@@ -1,6 +1,5 @@
 ﻿using FinApp5.Data;
 
-
 namespace FinApp5
 {
     public partial class App : Application

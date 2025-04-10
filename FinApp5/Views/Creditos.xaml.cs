@@ -21,7 +21,7 @@ public partial class Creditos : ContentPage
     double _lastScrollY = 0;
     double _maxScrollY = 0;
     public Creditos(Mcliente cliente, Musuarios usuario)
-	{
+    {
         InitializeComponent();
         Usuario = usuario;
         Cliente = cliente;
@@ -32,7 +32,7 @@ public partial class Creditos : ContentPage
         cmbPlazo.ItemsSource = PlazoList;
         diasList = GetDias();
         cmbDias.ItemsSource = diasList;
-        
+
 
         llenarRuta();
 
@@ -83,8 +83,8 @@ public partial class Creditos : ContentPage
             }
             else
             {
-               await DisplayAlert("Sin Internet", "Esta trabajando sin internet (83)", "OK");
-                App.SQLiteDB.FiltrarInformacionPersonalDeCliente(cliente.cteNumIdenti, CodigoCobr, out dblSalAcuCte, 
+                await DisplayAlert("Sin Internet", "Esta trabajando sin internet (83)", "OK");
+                App.SQLiteDB.FiltrarInformacionPersonalDeCliente(cliente.cteNumIdenti, CodigoCobr, out dblSalAcuCte,
                     out intCanCreVigCte, out dblMonto, out dteFecUltCre, out dteFechaAux);
             }
 
@@ -155,7 +155,7 @@ public partial class Creditos : ContentPage
         {
             Console.WriteLine(ex.Message);
         }
-        finally {  }
+        finally { }
     }
 
     public class Plazo
@@ -215,20 +215,23 @@ public partial class Creditos : ContentPage
     {
         try
         {
+            if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+
             var codigoRuta = Usuario.CodigoCobr;
-            
+
             if (validarDatos())
             {
                 btnGrabar.IsEnabled = false;
                 var intNumeroCuotas = 0;
                 var intSaldoActualCre = 0;
-                var intNumCuoPag = 0; 
+                var intNumCuoPag = 0;
                 var dblValCuoPag = 0;
-                var intNumCuoPen = 0; 
-                DateTime dteFechaVenCre = DateTime.MinValue; 
-                var dblValorCuoPen = 0; 
+                var intNumCuoPen = 0;
+                DateTime dteFechaVenCre = DateTime.MinValue;
+                var dblValorCuoPen = 0;
                 var intPosCredito = 0;
-                DateTime dteFechaUltCreOto = DateTime.Today; 
+                DateTime dteFechaUltCreOto = DateTime.Today;
                 string strCodPlaCre = string.Empty;
                 int found = 0;
                 var strPosicion = string.Empty;
@@ -307,7 +310,7 @@ public partial class Creditos : ContentPage
                     CONEXIONMAESTRA.Abrir();
                     SqlCommand cmd = new SqlCommand("GrabaCredito", CONEXIONMAESTRA.conectar);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@strCodigRut" , Usuario.CodigoCobr); // "00001"); // 
+                    cmd.Parameters.AddWithValue("@strCodigRut", Usuario.CodigoCobr); // "00001"); // 
                     cmd.Parameters.AddWithValue("@strNumIdeCte", txtidCliente.Text.Trim()); //   "01"); // txtidCliente.Text.Trim());//2
                     cmd.Parameters.AddWithValue("@dblNetoEnCre", dblNetoEnCre); //  dblNetoEnCre);//3
                     cmd.Parameters.AddWithValue("@dblPorIntCre", dblPorIntCre); //  dblPorIntCre);//4
@@ -393,7 +396,7 @@ public partial class Creditos : ContentPage
                 DisplayAlert("Validar datos", "Por favor verifique que toda la información ingresada este completa y sea correcta", "OK");
                 btnGrabar.IsEnabled = true;
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -425,7 +428,7 @@ public partial class Creditos : ContentPage
                     foreach (string s in info)
                     {
                         found = s.IndexOf("-");
-                        nombre = s.Substring(0,found).Trim();
+                        nombre = s.Substring(0, found).Trim();
                         if (nombre.Trim().ToLower() == txtNombreCli.Text.Trim().ToLower())
                         {
                             strPosicion = s.Substring(found + 2);
@@ -468,33 +471,30 @@ public partial class Creditos : ContentPage
 
     private void btnRegresar_Clicked(object sender, EventArgs e)
     {
-
     }
-
     private void cmbPosicion_SelectedIndexChanged(object sender, EventArgs e)
     {
-
     }
-
-    
 
     private void OnScrollViewScrolled(object sender, ScrolledEventArgs e)
     {
         //if (e.ScrollY > _lastScrollY || e.ScrollY >= _maxScrollY)
-            HideKeyboard();
+        HideKeyboard();
         _lastScrollY = e.ScrollY;
     }
     private void HideKeyboard()
     {
-        #if ANDROID
-            var context = Android.App.Application.Context;
-            var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)context.GetSystemService(Android.Content.Context.InputMethodService);
-            var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
-            var token = activity?.CurrentFocus?.WindowToken;
-            inputMethodManager?.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
-        #elif IOS
-            UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
-        #endif
+    #if ANDROID
+    var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+    if (activity?.CurrentFocus != null)
+    {
+        var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)activity.GetSystemService(Android.Content.Context.InputMethodService);
+        inputMethodManager?.HideSoftInputFromWindow(activity.CurrentFocus.WindowToken, Android.Views.InputMethods.HideSoftInputFlags.None);
+        activity.CurrentFocus.ClearFocus(); // Asegurar que la vista pierde el foco
+    }
+    #elif IOS
+    UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
+    #endif
     }
     private void OnScrollViewSizeChanged(object sender, EventArgs e)
     {
@@ -503,7 +503,6 @@ public partial class Creditos : ContentPage
             _maxScrollY = scrollView.ContentSize.Height - scrollView.Height;
         }
     }
-
     private void OnTapGestureRecognizerTapped(object sender, TappedEventArgs e)
     {
         HideKeyboard();

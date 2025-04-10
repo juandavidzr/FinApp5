@@ -1,4 +1,4 @@
-﻿using SQLite;
+using SQLite;
 
 namespace FinApp5.Modelo
 {
@@ -49,6 +49,7 @@ namespace FinApp5.Modelo
         public string? DireccionCobro { get; set; }
         public string? TelefonoCell { get; set; }
         public int PosActualizada { get; set; }
+
 
     }
 }

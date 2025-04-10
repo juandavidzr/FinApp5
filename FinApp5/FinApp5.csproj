@@ -40,9 +40,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
-	  <CodesignKey>Apple Development: Created via API (6UNM8VF452)</CodesignKey>
-	  <CodesignProvision>VS: WildCard Development</CodesignProvision>
-	  <ProvisioningType>automatic</ProvisioningType>
+	  <CodesignKey>Apple Distribution: JUAN DAVID ZAPATA ROBLEDO (4VS2J48HYH)</CodesignKey>
+	  <CodesignProvision>com.companyname.finapp5</CodesignProvision>
+	  <ProvisioningType>manual</ProvisioningType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android34.0|AnyCPU'">
@@ -65,7 +65,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-ios|AnyCPU'">
-	  <BuildIpa>true</BuildIpa>
+	  <BuildIpa>True</BuildIpa>
     <OutputPath>bin\iPhone\Release</OutputPath>
 	  <ApplicationId>com.companyname.finapp5</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>

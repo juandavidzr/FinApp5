@@ -43,6 +43,8 @@ namespace FinApp5.ViewModels
             Usuario = usuario;
             //BtnUbicacion();
             //llenarBarrios();
+
+           
         }
         #endregion
         #region OBJETOS

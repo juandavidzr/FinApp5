@@ -15,25 +15,27 @@
                 <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
                 <Label Text="Ordernar por: "></Label>
                 <Picker x:Name="cmbOrden"
-                ItemsSource="{Binding OrdenList}"
-                ItemDisplayBinding="{Binding orden}"
-                SelectedItem="{Binding id}"
-                SelectedIndex="0"
-                Title="Seleccione una opción"
-                VerticalOptions="Start"
-                FontSize="20"
-                SelectedIndexChanged="cmbOrden_SelectedIndexChanged">
+                        ItemsSource="{Binding OrdenList}"
+                        ItemDisplayBinding="{Binding orden}"
+                        SelectedItem="{Binding id}"
+                        SelectedIndex="0"
+                        Title="Seleccione una opción"
+                        VerticalOptions="Start"
+                        FontSize="20"
+                        SelectedIndexChanged="cmbOrden_SelectedIndexChanged">
                 </Picker>
                 <Label Text="Escriba el nombre que desea buscar: "></Label>
                 <SearchBar Placeholder="Buscar por nombre" Keyboard="Chat" TextChanged="SearchBar_TextChanged" MaxLength="20" 
                             FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="0,5"/>
 
                 <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-                <Label Text="ID CLIENTE                | NOMBRE CLIENTE | ID CREDITO"/>
-                <Label Text="FECHA PRESTAMO   |        CANTIDAD       | ULTIMO PAGO"/>
-                
+                <Label Text="ID CLIENTE                             | NOMBRE CLIENTE " Margin="5,2"/>
+                <Label Text="ID CREDITO                            | FECHA PRESTAMO   " Margin="5,2" />
+                <Label Text="SALDO                                     | ULTIMO PAGO" Margin="5,2"/>
+
                 <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-                <ListView x:Name="lstCreditos" ItemSelected="lstCreditos_ItemSelected" Margin="5">
+                <ListView x:Name="lstCreditos" ItemSelected="lstCreditos_ItemSelected" Margin="4" 
+                          HeightRequest="500" HasUnevenRows="True" VerticalOptions="FillAndExpand">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -41,19 +43,20 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="90"/>
-                                        <ColumnDefinition Width="180"/>
-                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="*"/>
+
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <Label Text="{Binding idCliente}"        Grid.Row="0" Grid.Column="0" TextColor="Black"/>
-                                    <Label Text="{Binding nombreCliente}"    Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding NumPrestamo}"      Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End"/>
-                                    <Label Text="{Binding fechaPrestamo}"    Grid.Row="1" Grid.Column="0" TextColor="Black"/>
-                                    <Label Text="{Binding cantidadPrestada}" Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding valUltPag}"        Grid.Row="1" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End"/>
+
+                                    <Label Text="{Binding idCliente}"        Grid.Row="0" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start" />
+                                    <Label Text="{Binding nombreCliente}"    Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
+                                    <Label Text="{Binding NumPrestamo}"      Grid.Row="1" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+                                    <Label Text="{Binding fechaPrestamo}"    Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
+                                    <Label Text="{Binding cantidadPrestada, StringFormat='{}{0:C0}'}" Grid.Row="2" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+                                    <Label Text="{Binding valUltPag, StringFormat='{}{0:C0}'}"        Grid.Row="2" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
 
                                 </Grid>
                             </ViewCell>
