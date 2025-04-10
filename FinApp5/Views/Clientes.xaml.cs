@@ -166,6 +166,7 @@ public partial class Clientes : ContentPage
     List<Mbarrio> barrio = new List<Mbarrio>();
     private async void llenarBarriosOffLine()
     {
+
         var barriosList = await App.SQLiteDB.GetBarriosAsync();
         if (barriosList != null)
         {

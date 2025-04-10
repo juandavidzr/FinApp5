@@ -195,6 +195,8 @@ namespace FinApp5.ViewModels
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
                 SqlDataReader rdr = cmd.ExecuteReader();
+                App.SQLiteDB.DeleteBarrios();
+
                 while (rdr.Read())
                 {
                     Mbarrio bar = new Mbarrio
