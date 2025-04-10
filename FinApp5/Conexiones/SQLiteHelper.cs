@@ -317,14 +317,161 @@ namespace FinApp5.Data
                 return await Task.Run(async () =>
                 {
                     var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
-                    
+
                     return new ObservableCollection<Prestamos>(dt);
                 });
             }
             catch (Exception ex)
             {
-                throw new Exception(code, ex);                
+                throw new Exception(code, ex);
             }
+        }
+
+
+        public async Task<List<Prestamos>> FiltrarCreditosDeRutaSegunCriterio(string codigoRuta, int selector)
+        {
+            string query = @"
+            SELECT Prestamos.nombreCliente, 
+                   Prestamos.NumPrestamo, 
+                   Prestamos.posRutCre
+            FROM Mcliente 
+            INNER JOIN Prestamos 
+            ON Mcliente.cteNumIdenti = Prestamos.idCliente
+            WHERE Prestamos.codigoRuta = ? 
+            AND Prestamos.Vigente = 1 
+            AND Prestamos.Activo = 1 ";
+
+            if (selector == 2)
+            {
+                query += "AND Prestamos.posRutCre <> -1 ";
+                query += "ORDER BY Prestamos.posRutCre";
+            }
+            else
+            {
+                query += "ORDER BY Mcliente.cteNombApel";
+            }
+
+            return await db.QueryAsync<Prestamos>(query, codigoRuta);
+        }
+
+        public async Task ActualizarPosicionDeCreditoEnRutaDestinoAsync(int nuevaPosicion, string numeroCredito, string codigoRuta, string numeroCreCambiaPos)
+        {
+            await ActualizarCreditoAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            var creditos = await ObtenerCreditosPorRutaAsync(nuevaPosicion, numeroCredito, codigoRuta);
+            if (creditos != null && creditos.Count > 0)
+            {
+                await ReasignarPosicionesAsync(creditos, nuevaPosicion);
+            }
+
+        }
+
+        public async Task ActualizarCreditoAsync(int? nuevaPosicion, string numeroCredito, string codigoRuta)
+        {
+
+            string updateCommandText = @"UPDATE Prestamos SET posRutCre = ? , PosActualizada = 1 WHERE NumPrestamo = ? ";
+
+            await db.ExecuteAsync(updateCommandText, nuevaPosicion, numeroCredito);
+
+        }
+
+        public async Task ActualizarPosActualizada()
+        {
+
+            string updateCommandText = @"UPDATE Prestamos SET PosActualizada = 0 ";
+
+            await db.ExecuteAsync(updateCommandText);
+
+        }
+
+        private async Task<List<long>> ObtenerCreditosPorRutaAsync(int nuevaPosicion, string numeroCredito, string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo FROM Prestamos 
+                                                WHERE Vigente = 1 AND Activo = 1 
+                                                AND posRutCre <> -1 and posRutCre >= ? and NumPrestamo <> ? 
+                                                AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo ";
+            return await db.QueryScalarsAsync<long>(selectCommandText, nuevaPosicion, numeroCredito, codigoRuta);
+        }
+
+        public Task<List<Prestamos>> ConsultarCambioDeRutaOffline()
+        {
+            return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();
+
+        }
+
+        private async Task ReasignarPosicionesAsync(List<long> creditos, int nuevaPosicion)
+        {
+            int contador = nuevaPosicion + 1;
+            foreach (var id in creditos)
+            {
+                string updatePositionCommandText = "UPDATE Prestamos SET posRutCre = ? WHERE NumPrestamo = ?";
+                await db.ExecuteAsync(updatePositionCommandText, contador, id);
+                contador++;
+            }
+        }
+
+        public async Task ReasignarPosicionesServerAsync1(List<Prestamos> prestamos)
+        {
+            foreach (var prestamo in prestamos)
+            {
+                var pos = prestamo.posRutCre;
+                var credito = prestamo.NumPrestamo;
+                SqlCommand cmd = new("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                cmd.Parameters.AddWithValue("@strNumIdeCte", pos);
+                cmd.Parameters.AddWithValue("@strNomComCte", credito);
+
+                await cmd.ExecuteNonQueryAsync();
+
+            }
+        }
+
+        public async Task ReasignarPosicionesServerAsync(List<Prestamos> prestamos)
+        {
+            if (prestamos == null || prestamos.Count == 0)
+            {
+                throw new ArgumentException("La lista de préstamos no puede ser nula o vacía.", nameof(prestamos));
+            }
+
+
+            try
+            {             
+
+                SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar);
+
+                cmd.CommandType = CommandType.StoredProcedure;              
+
+                foreach (var prestamo in prestamos)
+                {
+                    cmd.Parameters.AddWithValue("@intNuePosCreRut", prestamo.posRutCre);
+                    cmd.Parameters.AddWithValue("@lngNumeroCreAct", prestamo.NumPrestamo);                     
+                    CONEXIONMAESTRA.Abrir();
+                    cmd.ExecuteReader();
+                    cmd.Parameters.Clear();
+                    CONEXIONMAESTRA.Cerrar();
+                }
+                //CONEXIONMAESTRA.Cerrar();
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores, puedes loggear o lanzar una excepción personalizada
+                Console.WriteLine($"Error al reasignar posiciones: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                CONEXIONMAESTRA.Cerrar();
+            }
+        }
+
+        public async Task<List<Prestamos>> ObtenerTodosCreditosPorRutaAsync(string codigoRuta)
+        {
+            string selectCommandText = @"SELECT NumPrestamo, posRutCre FROM Prestamos WHERE Vigente = 1 AND Activo = 1 AND posRutCre <> -1  
+                                        AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo";
+            return await db.QueryAsync<Prestamos>(selectCommandText, codigoRuta);
+
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)
@@ -353,7 +500,7 @@ namespace FinApp5.Data
         /// <returns></returns>
         public Task<List<Mcliente>> GetClientesAsync()
         {
-            return db.Table<Mcliente>().OrderBy(x=>x.cteNumIdenti).ToListAsync();
+            return db.Table<Mcliente>().OrderBy(x => x.cteNumIdenti).ToListAsync();
         }
 
         /// <summary>
@@ -383,9 +530,10 @@ namespace FinApp5.Data
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
+
         }
         public Task<int> DeleteBarrios()
         {
@@ -432,6 +580,81 @@ namespace FinApp5.Data
         {
             return db.InsertAsync(prestamos);
         }
+
+
+        public void SyncCobros(string ruta, string filtro)
+        {
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("DescargarCarteraCompleta", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                App.SQLiteDB.DeletePrestamosAsync<Task>();
+
+                while (rdr.Read())
+                {
+                    Prestamos prestamos = new Prestamos
+                    {
+                        rowid = Convert.ToInt32(rdr["pmoNumeroPre"]),
+                        NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"]),
+                        idCliente = rdr["pmoIdentifiCli"].ToString(),
+                        fechaPrestamo = (rdr["pmoFechaPre"].ToString()),
+                        codigoRuta = ruta,
+                        cantidadPrestada = Convert.ToDouble(rdr["pmoTotalPagCre"].ToString()),
+                        nombreCliente = rdr["cteNombApel"].ToString(),
+                        interes = Convert.ToDouble(rdr["pmoInteresPre"]),
+                        codigoPlan = rdr["pmoCodigoPla"].ToString(),
+                        numeroCuotas = Convert.ToInt32(rdr["pmoNumeroCuo"]),
+                        observaciones = rdr["pmoObservaciones"].ToString(),
+                        vigente = Convert.ToInt32(rdr["pmoVigente"]),
+                        activo = Convert.ToInt32(rdr["pmoActivo"]),
+                        fechaCancelacion = rdr["pmpFechaCan"].ToString(),
+                        refinanciado = Convert.ToInt32(rdr["pmoRefinanciado"]),
+                        trasladado = Convert.ToInt32(rdr["pmoTrasladado"]),
+                        fechaTraCue = (rdr["pmoFechaTraCue"].ToString()),
+                        cantidadCreVig = Convert.ToDouble(rdr["pmoCantidadCreVig"]),
+                        saldoActualCre = Convert.ToDouble(rdr["pmoSaldoActualCte"]),
+                        numCuoPag = Convert.ToInt32(rdr["pmoNumCuoPag"]),
+                        numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
+                        fecUltPag = rdr["pmoFecUltPag"].ToString(),
+                        valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
+                        fecVenCre = (rdr["pmoFecVenCre"].ToString()),
+                        numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
+                        valorAtrazo = Convert.ToDouble(rdr["pmoValorAtrazo"]),
+                        valorCuoPen = Convert.ToDouble(rdr["pmoValorCuoPen"]),
+                        posRutCre = Convert.ToInt32(rdr["pmoPosRutCre"]),
+                        tiempoDias = Convert.ToInt32(rdr["pmoTiempoDias"]),
+                        desDiaPago = rdr["pmoDesDiaPago"].ToString(),
+                        valorMicroSeg = Convert.ToDouble(rdr["pmoValorMicroSeg"]),
+                        salTotPenCte = Convert.ToDouble(rdr["pmoSalTotPenCte"]),
+                        fechaUltCreOto = rdr["pmoFechaUltCreOto"].ToString(),
+                        valCuotaPag = Convert.ToDouble(rdr["pmoValCuotaPag"]),
+                        diaProPagCre = Convert.ToInt32(rdr["pmoDiaProPagCre"]),
+                        marAboCreDia = Convert.ToInt32(rdr["pmoMarAboCreDia"]),
+                        totalPagCre = Convert.ToDouble(rdr["pmoTotalPagCre"]),
+                        verificado = Convert.ToInt32(rdr["pmoVerificado"]),
+                        IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
+                        DiaSemana = Convert.ToString(rdr["pmoDiaSemana"]),
+                        nuevo = 0
+                    };
+                    App.SQLiteDB.savePrestamos(prestamos);
+                }
+                CONEXIONMAESTRA.Cerrar();
+
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                var err = ex.Message;
+                throw;
+
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+
 
         public Task<int> DeletePrestamosAsync<T>()
         {
@@ -602,6 +825,7 @@ namespace FinApp5.Data
         public Task<int> CountNewClient()
         {
             var count = db.Table<Mcliente>().Where(p => p.nuevo == 1).CountAsync();
+
             return count;
         }
 

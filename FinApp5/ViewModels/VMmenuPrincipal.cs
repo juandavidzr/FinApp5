@@ -18,6 +18,7 @@ namespace FinApp5.ViewModels
         #region VARIABLES
         string _Texto;
         Musuarios Usuario = new Musuarios();
+        public List<Prestamos> prestamosOffLine = new List<Prestamos>();
         #endregion
         #region CONSTRUCTOR
         public VMmenuPrincipal(INavigation navigation, Musuarios usuario)
@@ -27,11 +28,12 @@ namespace FinApp5.ViewModels
 
             if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
             {
+                SincronizarEnrrutarCartera(Usuario.CodigoCobr);
                 ejecutarCierre();
                 GetBarrios(Usuario.CodigoCobr); //Trae todos los barrio del servidor
                 GetTiposGastos();
                 SyncRuta(Usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
-                SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
+                App.SQLiteDB.SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
                 GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
 
 
@@ -42,7 +44,9 @@ namespace FinApp5.ViewModels
                     App.SQLiteDB.SincronizarGastos(Usuario.Usuario); //inserta los nuevos gastos en el servidor
                 }
                 else
+
                     Console.WriteLine("Error: Usuario.Usuario es null.");
+
             }
             else
             {
@@ -58,6 +62,32 @@ namespace FinApp5.ViewModels
         }
         #endregion
         #region PROCESOS
+
+        
+        private async void SincronizarEnrrutarCartera(string CodigoCobr)
+        {
+            try
+            {
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    prestamosOffLine = App.SQLiteDB.ConsultarCambioDeRutaOffline().Result;
+
+                    if (prestamosOffLine.Any())
+                    {
+                        List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(CodigoCobr);
+                        if (prestamos.Any())
+                        {
+                            await  App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
+                        }
+
+                        await App.SQLiteDB.ActualizarPosActualizada();
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("error", ex.Message, "OK");
+
         private async Task ejecutarCierre()
         {
             try
@@ -71,81 +101,30 @@ namespace FinApp5.ViewModels
             catch (Exception ex)
             {
                 await DisplayAlert("error(72)", ex.Message, "OK");
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
 
-        private void SyncCobros(string ruta, string filtro)
+            }
+        }
+        private async Task ejecutarCierre()
         {
             try
             {
                 CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("DescargarCarteraCompleta", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-                SqlDataReader rdr = cmd.ExecuteReader();
-
-                App.SQLiteDB.DeletePrestamosAsync<Task>();
-
-                while (rdr.Read())
-                {
-                    Prestamos prestamos = new Prestamos
-                    {
-                        rowid = Convert.ToInt32(rdr["pmoNumeroPre"]),
-                        NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"]),
-                        idCliente = rdr["pmoIdentifiCli"].ToString(),
-                        fechaPrestamo = (rdr["pmoFechaPre"].ToString()),
-                        codigoRuta = ruta,
-                        cantidadPrestada = Convert.ToDouble(rdr["pmoTotalPagCre"].ToString()),
-                        nombreCliente = rdr["cteNombApel"].ToString(),
-                        interes = Convert.ToDouble(rdr["pmoInteresPre"]),
-                        codigoPlan = rdr["pmoCodigoPla"].ToString(),
-                        numeroCuotas = Convert.ToInt32(rdr["pmoNumeroCuo"]),
-                        observaciones = rdr["pmoObservaciones"].ToString(),
-                        vigente = Convert.ToInt32(rdr["pmoVigente"]),
-                        activo = Convert.ToInt32(rdr["pmoActivo"]),
-                        fechaCancelacion = rdr["pmpFechaCan"].ToString(),
-                        refinanciado = Convert.ToInt32(rdr["pmoRefinanciado"]),
-                        trasladado = Convert.ToInt32(rdr["pmoTrasladado"]),
-                        fechaTraCue = (rdr["pmoFechaTraCue"].ToString()),
-                        cantidadCreVig = Convert.ToDouble(rdr["pmoCantidadCreVig"]),
-                        saldoActualCre = Convert.ToDouble(rdr["pmoSaldoActualCte"]),
-                        numCuoPag = Convert.ToInt32(rdr["pmoNumCuoPag"]),
-                        numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
-                        fecUltPag = rdr["pmoFecUltPag"].ToString(),
-                        valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
-                        fecVenCre = (rdr["pmoFecVenCre"].ToString()),
-                        numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
-                        valorAtrazo = Convert.ToDouble(rdr["pmoValorAtrazo"]),
-                        valorCuoPen = Convert.ToDouble(rdr["pmoValorCuoPen"]),
-                        posRutCre = Convert.ToInt32(rdr["pmoPosRutCre"]),
-                        tiempoDias = Convert.ToInt32(rdr["pmoTiempoDias"]),
-                        desDiaPago = rdr["pmoDesDiaPago"].ToString(),
-                        valorMicroSeg = Convert.ToDouble(rdr["pmoValorMicroSeg"]),
-                        salTotPenCte = Convert.ToDouble(rdr["pmoSalTotPenCte"]),
-                        fechaUltCreOto = rdr["pmoFechaUltCreOto"].ToString(),
-                        valCuotaPag = Convert.ToDouble(rdr["pmoValCuotaPag"]),
-                        diaProPagCre = Convert.ToInt32(rdr["pmoDiaProPagCre"]),
-                        marAboCreDia = Convert.ToInt32(rdr["pmoMarAboCreDia"]),
-                        totalPagCre = Convert.ToDouble(rdr["pmoTotalPagCre"]),
-                        verificado = Convert.ToInt32(rdr["pmoVerificado"]),
-                        IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
-                        DiaSemana = Convert.ToString(rdr["pmoDiaSemana"]),
-                        nuevo = 0
-                    };
-                    App.SQLiteDB.savePrestamos(prestamos);
-                }
+                SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.ExecuteReader();
                 CONEXIONMAESTRA.Cerrar();
 
-                rdr.Close();
             }
             catch (Exception ex)
-            {
+            {              
+
                 DisplayAlert("error(142)", ex.Message, "OK");
+
 
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
+       
         private void SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
         {
 

@@ -1,4 +1,4 @@
-﻿using SQLite;
+using SQLite;
 
 namespace FinApp5.Modelo
 {
@@ -48,7 +48,8 @@ namespace FinApp5.Modelo
         public int nuevo { get; set; }
         public string? DireccionCobro { get; set; }
         public string? TelefonoCell { get; set; }
-        public int PosActualizada {  get; set; } //campo para identificar si cambio la posicion del prestamo
+        public int PosActualizada { get; set; }
+
 
     }
 }
