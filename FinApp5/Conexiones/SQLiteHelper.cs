@@ -327,13 +327,11 @@ namespace FinApp5.Data
             }
         }
 
-
         public async Task<List<Prestamos>> FiltrarCreditosDeRutaSegunCriterio(string codigoRuta, int selector)
         {
-            string query = @"
-            SELECT Prestamos.nombreCliente, 
-                   Prestamos.NumPrestamo, 
-                   Prestamos.posRutCre
+            string query = @" SELECT Prestamos.nombreCliente, 
+            Prestamos.NumPrestamo, 
+            Prestamos.posRutCre
             FROM Mcliente 
             INNER JOIN Prestamos 
             ON Mcliente.cteNumIdenti = Prestamos.idCliente
@@ -353,7 +351,16 @@ namespace FinApp5.Data
 
             return await db.QueryAsync<Prestamos>(query, codigoRuta);
         }
+        
 
+        /// <summary>
+        /// Actualizar la posición de un crédito en la ruta destino
+        /// </summary>
+        /// <param name="nuevaPosicion"></param>
+        /// <param name="numeroCredito"></param>
+        /// <param name="codigoRuta"></param>
+        /// <param name="numeroCreCambiaPos"></param>
+        /// <returns></returns>
         public async Task ActualizarPosicionDeCreditoEnRutaDestinoAsync(int nuevaPosicion, string numeroCredito, string codigoRuta, string numeroCreCambiaPos)
         {
             await ActualizarCreditoAsync(nuevaPosicion, numeroCredito, codigoRuta);
@@ -395,7 +402,6 @@ namespace FinApp5.Data
         public Task<List<Prestamos>> ConsultarCambioDeRutaOffline()
         {
             return db.Table<Prestamos>().Where(p => p.PosActualizada == 1).ToListAsync();
-
         }
 
         private async Task ReasignarPosicionesAsync(List<long> creditos, int nuevaPosicion)
@@ -427,7 +433,12 @@ namespace FinApp5.Data
 
             }
         }
-
+        /// <summary>
+        /// Reasignar posiciones de crédito en ruta
+        /// </summary>
+        /// <param name="prestamos"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task ReasignarPosicionesServerAsync(List<Prestamos> prestamos)
         {
             if (prestamos == null || prestamos.Count == 0)
@@ -435,18 +446,17 @@ namespace FinApp5.Data
                 throw new ArgumentException("La lista de préstamos no puede ser nula o vacía.", nameof(prestamos));
             }
 
-
             try
-            {             
+            {
 
                 SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRuta", CONEXIONMAESTRA.conectar);
 
-                cmd.CommandType = CommandType.StoredProcedure;              
+                cmd.CommandType = CommandType.StoredProcedure;
 
                 foreach (var prestamo in prestamos)
                 {
                     cmd.Parameters.AddWithValue("@intNuePosCreRut", prestamo.posRutCre);
-                    cmd.Parameters.AddWithValue("@lngNumeroCreAct", prestamo.NumPrestamo);                     
+                    cmd.Parameters.AddWithValue("@lngNumeroCreAct", prestamo.NumPrestamo);
                     CONEXIONMAESTRA.Abrir();
                     cmd.ExecuteReader();
                     cmd.Parameters.Clear();
@@ -471,7 +481,6 @@ namespace FinApp5.Data
             string selectCommandText = @"SELECT NumPrestamo, posRutCre FROM Prestamos WHERE Vigente = 1 AND Activo = 1 AND posRutCre <> -1  
                                         AND codigoRuta = ? ORDER BY posRutCre , NumPrestamo";
             return await db.QueryAsync<Prestamos>(selectCommandText, codigoRuta);
-
         }
 
         public Task<int> SaveClienteAsync(Mcliente cli)

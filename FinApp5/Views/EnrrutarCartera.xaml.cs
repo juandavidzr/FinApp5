@@ -27,8 +27,8 @@ public partial class EnrrutarCartera : ContentPage
         Usuario = usuario;
         IntNuevaPosCre = 1;
         InitializeComponent();
-        if(CONEXIONMAESTRA.VerificarCon())
-            prestamosOffLine = ConsultarCambioDeRutaOffline();  
+        if (CONEXIONMAESTRA.VerificarCon())
+            prestamosOffLine = ConsultarCambioDeRutaOffline();
 
         _ = CargarCreditosAsync();
        
@@ -153,6 +153,7 @@ public partial class EnrrutarCartera : ContentPage
 
     private async void Button_Clicked(object sender, EventArgs e)
     {
+        // Validar si el credito ya existe en la ruta destino
         try
         {
             if (lngNumeroCre != null)
