@@ -63,7 +63,7 @@ namespace FinApp5.ViewModels
         #endregion
         #region PROCESOS
 
-        
+
         private async void SincronizarEnrrutarCartera(string CodigoCobr)
         {
             try
@@ -77,33 +77,21 @@ namespace FinApp5.ViewModels
                         List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(CodigoCobr);
                         if (prestamos.Any())
                         {
-                            await  App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
+                            await App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
                         }
 
                         await App.SQLiteDB.ActualizarPosActualizada();
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
             {
                 await DisplayAlert("error", ex.Message, "OK");
-
-        private async Task ejecutarCierre()
-        {
-            try
-            {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.ExecuteReader();
-                CONEXIONMAESTRA.Cerrar();
             }
-            catch (Exception ex)
-            {
-                await DisplayAlert("error(72)", ex.Message, "OK");
-
-            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
         }
+
+        
         private async Task ejecutarCierre()
         {
             try

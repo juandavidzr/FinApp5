@@ -31,13 +31,7 @@ public partial class EnrrutarCartera : ContentPage
             prestamosOffLine = ConsultarCambioDeRutaOffline();  
 
         _ = CargarCreditosAsync();
-
-	{
-        
-        InitializeComponent();
-        Usuario = usuario;
-        intNuevaPosCre = 1;
-        CargarCreditosAsync();
+       
 
     }
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();
