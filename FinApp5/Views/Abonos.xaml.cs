@@ -110,7 +110,8 @@ public partial class Abonos : ContentPage
                 cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
                 cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
                 cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
-                cmd.ExecuteReader();
+                var response = cmd.ExecuteReader();
+
                 DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
             }
             else
