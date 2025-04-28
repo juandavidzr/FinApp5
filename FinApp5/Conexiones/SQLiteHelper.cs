@@ -316,7 +316,7 @@ namespace FinApp5.Data
             {
                 return await Task.Run(async () =>
                 {
-                    var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code && c.IndicaRetaque == 0 && c.marAboCreDia == 0).OrderBy(o => o.posRutCre).ToListAsync();
+                    var dt = await db.Table<Prestamos>().Where(c => c.codigoRuta == code ).OrderBy(o => o.posRutCre).ToListAsync();
 
                     return new ObservableCollection<Prestamos>(dt);
                 });

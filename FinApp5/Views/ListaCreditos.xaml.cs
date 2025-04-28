@@ -236,10 +236,7 @@ public partial class ListaCreditos : ContentPage
         if (CONEXIONMAESTRA.VerificarCon())
         {
             await CargarCreditosAsync();
-
-            if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
-                lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
-                                                                       p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+           
         }
         else //sin conexion
         {
@@ -247,7 +244,11 @@ public partial class ListaCreditos : ContentPage
             await CargarCreditos();
 
         }
-        
+
+        if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
+            lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+                                                                   p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
         {
             var fecha = DateTime.Today.AddDays(-60);
