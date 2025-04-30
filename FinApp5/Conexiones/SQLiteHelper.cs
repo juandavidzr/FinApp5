@@ -549,7 +549,7 @@ namespace FinApp5.Data
             return db.DeleteAllAsync<Mbarrio>();
         }
 
-        public Task<List<Mmovimiento>> GetAbonosNew()
+        public Task<List<Mmovimiento>> GetAbonosNewOffLine()
         {
             return db.Table<Mmovimiento>().Where(c => c.nuevo == 1).ToListAsync();
         }
@@ -838,7 +838,7 @@ namespace FinApp5.Data
             return count;
         }
 
-        internal async Task<int> CountNewAbonos()
+        public async Task<int> CountNewAbonos()
         {
             var count = await db.Table<Mmovimiento>().Where(a => a.nuevo == 1).CountAsync();
             return count;
