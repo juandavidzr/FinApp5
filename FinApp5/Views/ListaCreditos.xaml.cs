@@ -25,19 +25,6 @@ public partial class ListaCreditos : ContentPage
             cmbOrden.SelectedIndex = 0;
     }
 
-    //protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    //{
-    //    base.OnNavigatedTo(args);
-
-    //    Shell.Current.Navigating += OnBackButtonPressed;
-    //}
-
-    //protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
-    //{
-    //    base.OnNavigatedFrom(args);
-
-    //    Shell.Current.Navigating -= OnBackButtonPressed; // Limpia el evento al salir de la página
-    //}
 
     private async void OnBackButtonPressed(object sender, ShellNavigatingEventArgs e)
     {
@@ -125,27 +112,7 @@ public partial class ListaCreditos : ContentPage
                         totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
                         marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
 
-                        /*
-                        idCliente = rdr["pmoIdentifiCli"] as string ?? "",
-                        nombreCliente = rdr["cteNombApel"] as string ?? "",
-                        NumPrestamo = rdr.GetInt32(rdr.GetOrdinal("pmoNumeroPre")),
                         
-                        fechaPrestamo = rdr["pmoFechaPre"] as string ?? "",
-                        
-                        cantidadPrestada = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
-                        valUltPag = rdr.GetInt32(rdr.GetOrdinal("pmoValUltPag")),
-                        DireccionCobro = rdr["cteDirCobCte"] as string ?? "",
-                        TelefonoCell = rdr["cteTeleCelu"] as string ?? "",
-                        
-                        numCuoAtra = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoAtra")),
-                        valCuotaPag = rdr.GetInt32(rdr.GetOrdinal("pmoValCuotaPag")),
-                        desDiaPago = rdr["pmoDesDiaPago"] as string ?? "",
-                        numCuoPen = rdr.GetInt32(rdr.GetOrdinal("pmoNumCuoPen")),
-                        saldoActualCre = rdr.GetInt32(rdr.GetOrdinal("pmoSaldoActualCte")),
-                        IndicaRetaque = rdr.GetInt32(rdr.GetOrdinal("pmoIndicaRetaque")),
-                        fecVenCre = rdr["pmoFecVenCre"] as string ?? "",
-                        totalPagCre = rdr.GetDouble(rdr.GetOrdinal("TotalCre")),
-                        marAboCreDia = rdr.GetInt16(rdr.GetOrdinal("pmoMarAboCreDia")),*/
                     });
                 }
             }
@@ -232,34 +199,30 @@ public partial class ListaCreditos : ContentPage
 
     private async void cmbOrden_SelectedIndexChanged(object sender, EventArgs e)
     {
-        //desde aqui
         if (CONEXIONMAESTRA.VerificarCon())
         {
-            await CargarCreditosAsync();
 
-            if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
-                lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
-                                                                       p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+            await CargarCreditosAsync();
         }
-        else //sin conexion
+        else 
         {
             //ToDo para commit 
             await CargarCreditos();
-
         }
-        
+        if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
+        {
+            lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 && p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
+        }
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
         {
             var fecha = DateTime.Today.AddDays(-60);
             lstCreditos.ItemsSource = creditosCollection.Where(p => Convert.ToDateTime(p.fecUltPag) < fecha).ToList();
         }
-
         if (cmbOrden.SelectedIndex == 2) //creditos con abonos le dia de hoy
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.marAboCreDia == 1).ToList();
-
         if (cmbOrden.SelectedIndex == 3) //clasificados como para retacar
             lstCreditos.ItemsSource = creditosCollection.Where(p => p.marAboCreDia == 0 && p.IndicaRetaque == 1).ToList();
-
+        
         UserDialogs.Instance.HideHud();
     }
 
