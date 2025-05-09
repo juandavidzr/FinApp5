@@ -114,6 +114,7 @@ public partial class Creditos : ContentPage
     {
         try
         {
+            
             var codigoRuta = Usuario.CodigoCobr;
             if (CONEXIONMAESTRA.VerificarCon())
             {
@@ -125,11 +126,7 @@ public partial class Creditos : ContentPage
                 SqlDataReader rdr = cmd.ExecuteReader();
                 int intIndice = 1;
                 List<Mruta> rutaList = new List<Mruta>();
-
-                rutaList.Add(new Mruta { nombreCliente = DePrimero, posicion = -1 });
-                rutaList.Add(new Mruta { nombreCliente = PosiciónActual, posicion = -2 });
-                rutaList.Add(new Mruta { nombreCliente = DeUltimo, posicion = -3 });
-
+                rutaList = GetRuta();
                 while (rdr.Read())
                 {
                     rutaList.Add(new Mruta
@@ -145,10 +142,14 @@ public partial class Creditos : ContentPage
             }
             else
             {
-                var rutaList = App.SQLiteDB.getRutaAsync().Result;
+                List<Mruta> rutaList = new List<Mruta>();
+                rutaList = App.SQLiteDB.getRutaAsync().Result;
 
                 if (rutaList != null)
-                    cmbPosicion.ItemsSource = rutaList;
+                {
+                    rutaList.AddRange(GetRuta());
+                }
+                 cmbPosicion.ItemsSource = rutaList;
             }
         }
         catch (Exception ex)
@@ -157,6 +158,8 @@ public partial class Creditos : ContentPage
         }
         finally { }
     }
+
+
 
     public class Plazo
     {
@@ -169,6 +172,18 @@ public partial class Creditos : ContentPage
         public int idDia { get; set; }
         public string nombreDia { get; set; }
     }
+
+    public List<Mruta> GetRuta()
+    {
+        var ruta = new List<Mruta>() 
+        {
+             new Mruta { nombreCliente = DePrimero, posicion = -1 },
+             new Mruta { nombreCliente = PosiciónActual, posicion = -2 },
+             new Mruta { nombreCliente = DeUltimo, posicion = -3 }
+        };
+        return ruta;
+    }
+
     public List<Plazo> PlazoList { get; set; }
     public List<Plazo> GetPlazos()
     {
