@@ -493,7 +493,7 @@ public partial class Creditos : ContentPage
         activity.CurrentFocus.ClearFocus(); // Asegurar que la vista pierde el foco
     }
     #elif IOS
-    UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
+        //UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
     #endif
     }
     private void OnScrollViewSizeChanged(object sender, EventArgs e)
