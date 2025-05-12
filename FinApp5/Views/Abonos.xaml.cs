@@ -99,7 +99,7 @@ public partial class Abonos : ContentPage
             if (Estado)
             {
                 CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("RegistraAboMovCon", CONEXIONMAESTRA.conectar);
+                SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
                 cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
@@ -110,13 +110,29 @@ public partial class Abonos : ContentPage
                 cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
                 cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
                 cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
-                cmd.ExecuteReader();
+                var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+
+                    //int update1 = Convert.ToInt32(reader["AfectóUpdateSaldoMayorACero"]);
+                    //int update2 = Convert.ToInt32(reader["AfectóUpdateSaldoMenorOIgualACero"]);
+                    //int update3 = Convert.ToInt32(reader["AfectóUpdateReaMayorACero"]);
+                    int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
+                    int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
+
+                     
+                    if (update4 > 0 && update5 > 0)
+                    {
+                        GrabarOffLine(abono, 0);
+                    }                    
+                }
+
                 DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
             }
             else
             {
                 DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
-                GrabarOffLine(abono);
+                GrabarOffLine(abono, 1 );
             }
         }
         catch (Exception ex)
@@ -127,7 +143,7 @@ public partial class Abonos : ContentPage
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
 
-    private void GrabarOffLine(Mmovimiento abono)
+    private void GrabarOffLine(Mmovimiento abono , int nuevoparam = 1)
     {
         abono = new Mmovimiento
         {
@@ -141,7 +157,7 @@ public partial class Abonos : ContentPage
             strLoginUsSe = Usuario.NombApel,
             strComentAbo = txtObservaciones.Text,
             Descripcion = (cmbTipoAbono.SelectedItem as TiposAbono)?.tipoAbono,
-            nuevo = 1
+            nuevo = nuevoparam
         };
         App.SQLiteDB.SaveAbono(abono);
 

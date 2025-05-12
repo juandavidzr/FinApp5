@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using System.Collections.ObjectModel;
 using System.Data;
+using FinApp5.ViewModels;
 
 
 namespace FinApp5.Views;
@@ -18,7 +19,12 @@ public partial class ListaCreditos : ContentPage
         NavigationPage.SetHasBackButton(this, false);
         NavigationPage.SetHasNavigationBar(this, false);
         Usuario = usuario;
-        //CargarCreditosAsync();
+        VMAbono abono = new VMAbono(null, Usuario);
+
+        //ToDo sincronizar Abonos
+        _ = abono.SincronizarAbonosAsync();
+
+
         OrdenList = GetOrden();
         cmbOrden.ItemsSource = OrdenList;
         if (cmbOrden.SelectedIndex == -1)
@@ -85,7 +91,7 @@ public partial class ListaCreditos : ContentPage
             cmd.Parameters.AddWithValue("@strModoFil", filtro);
             CONEXIONMAESTRA.Abrir();
             //SqlDataReader rdr = cmd.ExecuteReader();
-            using (SqlDataReader rdr = await cmd.ExecuteReaderAsync()) // Usa 'await'
+            using (SqlDataReader rdr = cmd.ExecuteReader()) // Usa 'await'
             {
 
                 while (rdr.Read())
@@ -201,6 +207,8 @@ public partial class ListaCreditos : ContentPage
     {
         if (CONEXIONMAESTRA.VerificarCon())
         {
+            VMAbono abono = new VMAbono(null, Usuario);            
+            _ = abono.SincronizarAbonosAsync();
 
             await CargarCreditosAsync();
         }
@@ -210,9 +218,8 @@ public partial class ListaCreditos : ContentPage
             await CargarCreditos();
         }
         if (cmbOrden.SelectedIndex == 0) //ordenar por ruta
-        {
-            lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 && p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
-        }
+            lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+                                                                   p.marAboCreDia == 0).OrderBy(p => p.posRutCre).ToList();
         if (cmbOrden.SelectedIndex == 1) //creditos en mora
         {
             var fecha = DateTime.Today.AddDays(-60);

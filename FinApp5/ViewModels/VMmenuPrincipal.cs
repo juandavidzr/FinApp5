@@ -137,16 +137,6 @@ namespace FinApp5.ViewModels
                     };
                     App.SQLiteDB.SaveRuta(ruta);
                 }
-
-                ruta = new Mruta { nombreCliente = "De primero", posicion = -2 };
-                App.SQLiteDB.SaveRuta(ruta);
-
-                ruta = new Mruta { nombreCliente = "De ultimo", posicion = -3 };
-                App.SQLiteDB.SaveRuta(ruta);
-
-                ruta = new Mruta { nombreCliente = "Posición Actual", posicion = -4 };
-                App.SQLiteDB.SaveRuta(ruta);
-
                 CONEXIONMAESTRA.Cerrar();
                 rdr.Close();
             }

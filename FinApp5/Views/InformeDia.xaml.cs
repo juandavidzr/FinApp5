@@ -55,7 +55,7 @@ public partial class InformeDia : ContentPage
             {
                 //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
                 lblMensaje.Text = "Sin Internet";
-                var abonosList = await App.SQLiteDB.GetAbonosNew();
+                var abonosList = await App.SQLiteDB.GetAbonosNewOffLine();
                 if (abonosList != null)
                 {
                     //lstMovimientos.ItemsSource = abonosList;
