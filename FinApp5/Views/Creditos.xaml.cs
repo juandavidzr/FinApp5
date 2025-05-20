@@ -349,7 +349,7 @@ public partial class Creditos : ContentPage
                     cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre); //  dblTotPagCre);//22
                     cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim()); //  txtNombreCli.Text.Trim());//23
                     cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);  //24
-                    cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim()); //  txtNotas.Text.Trim()); //24
+                    cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim() + "," + txtGuiaPago.Text.Trim()); //  txtNotas.Text.Trim()); //24
 
                     cmd.ExecuteReader();
                     CONEXIONMAESTRA.Cerrar();

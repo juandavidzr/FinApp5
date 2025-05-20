@@ -117,8 +117,8 @@ public partial class ListaCreditos : ContentPage
                         fecVenCre = rdr["pmoFecVenCre"].ToString(),
                         totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
                         marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
+                        observaciones = (rdr["pmoObservaciones"].ToString()),
 
-                        
                     });
                 }
             }
