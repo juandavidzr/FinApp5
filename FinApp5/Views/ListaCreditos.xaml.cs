@@ -208,7 +208,7 @@ public partial class ListaCreditos : ContentPage
         if (CONEXIONMAESTRA.VerificarCon())
         {
             VMAbono abono = new VMAbono(null, Usuario);            
-            _ = abono.SincronizarAbonosAsync();
+            await abono.SincronizarAbonosAsync();
 
             await CargarCreditosAsync();
         }

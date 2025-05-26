@@ -193,10 +193,17 @@ public partial class Abonos : ContentPage
         }
         var respuesta = App.SQLiteDB.UpdatePrestamos(prestamo);
 
-        if (respuesta)
-            DisplayAlert("Registro", "El registro se guardo localmente de manera exitosa", "OK");
-        else
-            DisplayAlert("ERROR", "El registro NO se guardo ", "OK");
+        if (!respuesta)
+        {
+            DisplayAlert("ERROR", "El registro NO se guardó", "OK");
+            return;
+        }
+
+        if (!CONEXIONMAESTRA.VerificarCon())
+        {            
+                DisplayAlert("Registro", "El registro se guardo localmente de manera exitosa", "OK");
+        }
+
     }
 
     public class TiposAbono

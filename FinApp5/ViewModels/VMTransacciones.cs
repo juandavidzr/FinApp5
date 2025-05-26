@@ -48,7 +48,10 @@ namespace FinApp5.ViewModels
                 {
                     UserDialogs.Instance.Loading();
                     await Task.Delay(3000);
-                    await Navigation.PushAsync(new ListarClientes(Usuario));
+                    if (Usuario != null) // Ensure Usuario is not null  
+                    {
+                        await Navigation.PushAsync(new ListarClientes(Usuario));
+                    }
                     UserDialogs.Instance.HideHud();
                 }
                 else
@@ -58,14 +61,21 @@ namespace FinApp5.ViewModels
             }
             else
             {
-                Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
-                if (usuario.PermisoAbonar != null)
+                if (Usuario != null) // Ensure Usuario is not null  
                 {
-                    var permiso = usuario.PermisoAbonar;
-                    if (permiso == "1")
-                        await Navigation.PushAsync(new ListarClientes(Usuario));
-                    else
-                        await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                    Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
+                    if (usuario.PermisoAbonar != null)
+                    {
+                        var permiso = usuario.PermisoAbonar;
+                        if (permiso == "1")
+                        {
+                            await Navigation.PushAsync(new ListarClientes(Usuario));
+                        }
+                        else
+                        {
+                            await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                        }
+                    }
                 }
             }
         }

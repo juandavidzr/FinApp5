@@ -57,11 +57,11 @@ namespace FinApp5.ViewModels
         {
             if (Usuario?.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
             {
-                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); // Inserta nuevos clientes en el servidor 
+               await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); // Inserta nuevos clientes en el servidor 
 
                 if (!string.IsNullOrEmpty(Usuario?.Usuario))
                 {
-                    App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); // Inserta nuevos créditos en el servidor
+                   await App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); // Inserta nuevos créditos en el servidor
                 }
                 else
                 {

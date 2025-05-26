@@ -6,10 +6,20 @@ public partial class MenuPpal : ContentPage
 {
     double _lastScrollY = 0;
     double _maxScrollY = 0;
+
+    private VMmenuPrincipal viewModel;
     public MenuPpal(Musuarios usuario)
 	{
         InitializeComponent();
-        BindingContext = new VMmenuPrincipal(Navigation, usuario);
+        viewModel = new VMmenuPrincipal(Navigation, usuario);
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        await viewModel.InicializarAsync(); // ahora inicializa todo de forma asincrónica
     }
 
     private void btnInicio_Clicked(object sender, EventArgs e)
