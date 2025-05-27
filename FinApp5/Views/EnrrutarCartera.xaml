@@ -36,12 +36,13 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                
                             </Grid.RowDefinitions>
+
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+                            
                             <Label Text="{Binding nombreCliente}" Grid.Row="0" Grid.Column="0" TextColor="Black"/>
                             <Label Text="{Binding NumPrestamo}" Grid.Row="0"  Grid.Column="1" TextColor="Black" HorizontalTextAlignment="Center"/>
                         </Grid>

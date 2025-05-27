@@ -32,7 +32,7 @@ public partial class MenuPpal : ContentPage
         var token = activity?.CurrentFocus?.WindowToken;
         inputMethodManager?.HideSoftInputFromWindow(token, Android.Views.InputMethods.HideSoftInputFlags.None);
 #elif IOS
-            UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
+            //UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
 #endif
     }
     private void OnScrollViewSizeChanged(object sender, EventArgs e)

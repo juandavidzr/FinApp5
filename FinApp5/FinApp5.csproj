@@ -25,7 +25,7 @@
 		<ApplicationTitle>FinApp5</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.finapp5</ApplicationId>
+		<ApplicationId>com.companyname.finapp</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -40,54 +40,56 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
-	  <CodesignKey>iPhone Developer</CodesignKey>
-	  <CodesignProvision></CodesignProvision>
-	  <ProvisioningType>manual</ProvisioningType>
+	  <CodesignKey>Apple Development: Created via API (CFKBS3U296)</CodesignKey>
+	  <CodesignProvision>VS: com.companyname.finapp Development</CodesignProvision>
+	  <ProvisioningType>automatic</ProvisioningType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android34.0|AnyCPU'">
 	  <AndroidKeyStore>False</AndroidKeyStore>
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android34.0|AnyCPU'">
 	  <AndroidKeyStore>False</AndroidKeyStore>
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
     
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-ios|AnyCPU'">
 	  <BuildIpa>False</BuildIpa>
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
+  <!--cambiar al generar el ipa-->
+  
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-ios|AnyCPU'">
 	  <BuildIpa>True</BuildIpa>
     <OutputPath>bin\iPhone\Release</OutputPath>
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-maccatalyst|AnyCPU'">
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-maccatalyst|AnyCPU'">
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-windows10.0.19041.0|AnyCPU'">
-	  <ApplicationId>com.companyname.finapp5</ApplicationId>
+	  <ApplicationId>com.companyname.finapp</ApplicationId>
 	  <ApplicationTitle>FinApp</ApplicationTitle>
 	</PropertyGroup>
 
