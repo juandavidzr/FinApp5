@@ -22,7 +22,7 @@ public partial class ListaCreditos : ContentPage
         VMAbono abono = new VMAbono(null, Usuario);
 
         //ToDo sincronizar Abonos
-        _ = abono.SincronizarAbonosAsync();
+        //_ = abono.SincronizarAbonosAsync();
 
 
         OrdenList = GetOrden();

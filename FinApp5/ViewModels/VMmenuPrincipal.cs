@@ -220,6 +220,7 @@ namespace FinApp5.ViewModels
                 cmd.Parameters.AddWithValue("@strCriterio", 1);
 
                 var clientesNew = await App.SQLiteDB.CountNewClient();
+                //var clientesNew = 0;
                 if (clientesNew == 0)
                 {
                     App.SQLiteDB.DeleteClientes<Task>();
