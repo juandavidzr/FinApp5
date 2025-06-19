@@ -18,40 +18,7 @@ namespace FinApp5.ViewModels
         {
             Navigation = navigation;
             Usuario = usuario;
-        }
-
-        public int SincronizarAbono(Mmovimiento mmovimiento, Musuarios Usuario)
-        {
-            int row = 0;
-            try
-            {
-                if (CONEXIONMAESTRA.VerificarCon())
-                {
-                    CONEXIONMAESTRA.Abrir();
-                    SqlCommand cmd = new SqlCommand("RegistraAboMovCon", CONEXIONMAESTRA.conectar);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
-                    cmd.Parameters.AddWithValue("@strCodTipMov", "98");
-                    cmd.Parameters.AddWithValue("@strCodConMov", "88888");
-                    cmd.Parameters.AddWithValue("@dblValAboCre", mmovimiento.ValorMovto);
-                    cmd.Parameters.AddWithValue("@strObservaRA", mmovimiento.strObservaRA);
-                    cmd.Parameters.AddWithValue("@strNombreCte", mmovimiento.NombreCteCre);
-                    cmd.Parameters.AddWithValue("@lngNumCreAfe", mmovimiento.NumeroCreAfe);
-                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.Usuario);
-                    cmd.Parameters.AddWithValue("@strComentAbo", "");
-                    row = cmd.ExecuteNonQuery() * -1;
-                    if (row > 0)
-                        App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
-                }
-            }
-            catch (Exception ex)
-            {
-                Task task = DisplayAlert("Error", "Error" + ex.Message, "OK");
-                throw;
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-            return row;
-        }
+        }       
 
         public async Task SincronizarAbonosAsync()
         {
@@ -78,7 +45,7 @@ namespace FinApp5.ViewModels
 
                     foreach (var item in movimiento)
                     {
-                        row += await Task.Run(() => abono.SincronizarAbono(item, Usuario));
+                        row += await App.SQLiteDB.SincronizarAbono(item, Usuario);
                     }
 
                     await DisplayAlert("Exitoso", $"{row} Registro(s) guardado(s) con éxito", "OK");

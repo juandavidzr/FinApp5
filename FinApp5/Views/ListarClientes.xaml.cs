@@ -82,7 +82,7 @@ public partial class ListarClientes : ContentPage
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (74)", "OK");
+                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
                 var clienteList = await App.SQLiteDB.GetClientesAsync();
                 if (clienteList != null)
                 {

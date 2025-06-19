@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using SQLite;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Threading;
 
 namespace FinApp5.Data
 {
@@ -90,39 +91,43 @@ namespace FinApp5.Data
         public async Task<List<Mbarrio>> LlenarBarriosAsync()
         {
             List<Mbarrio> barrios = new();
-
             try
             {
-                using (var connection = CONEXIONMAESTRA.conectar)
+                SqlCommand cmd = new SqlCommand();
+                cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
+                CONEXIONMAESTRA.Abrir();
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (cmd.Connection.State == ConnectionState.Closed)
+                    cmd.Connection.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                if (rdr.HasRows)
                 {
-                    await connection.OpenAsync();
-
-                    using (SqlCommand cmd = new SqlCommand("CargarItemsDeBarriosEnGral", connection))
+                    //await App.SQLiteDB.DeleteBarrios();
+                    while (rdr.Read())
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        barrios.Add(new Mbarrio
                         {
-                            while (await rdr.ReadAsync())
-                            {
-                                barrios.Add(new Mbarrio
-                                {
-                                    IdBarrio = rdr["rbcCodigo"].ToString(),
-                                    NombreBarrio = rdr["rbcNombre"].ToString()
-                                });
-                            }
-                        }
+                            IdBarrio = rdr["rbcCodigo"].ToString(),
+                            NombreBarrio = rdr["rbcNombre"].ToString()
+                        });
+
                     }
                 }
+                if (cmd.Connection.State == ConnectionState.Open)
+                    cmd.Connection.Close();
+                
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en LlenarBarriosAsync: {ex.Message}");
-                // O podrías relanzar si deseas que se maneje en un nivel superior.
             }
+            finally { CONEXIONMAESTRA.Cerrar(); }
 
             return barrios;
         }        
+
+
 
         public async Task SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
@@ -150,7 +155,7 @@ namespace FinApp5.Data
                             cmd.Parameters.AddWithValue("@intNumCuoPag", p.numCuoPag);//9
                             cmd.Parameters.AddWithValue("@intNumCuoPen", p.numCuoPen);//10
                             cmd.Parameters.AddWithValue("@strFecUltPag", p.fecUltPag);//11
-                            cmd.Parameters.AddWithValue("@dblValUltPag", p.valUltPag);//12
+                            cmd.Parameters.AddWithValue("@dblValUltPag", 0);//12
                             cmd.Parameters.AddWithValue("@strFecVtoCre", p.fecVenCre);//13
                             cmd.Parameters.AddWithValue("@intPosCreEnr", p.posRutCre);//14
                             cmd.Parameters.AddWithValue("@intTieDiaCre", p.tiempoDias);//15
@@ -1110,5 +1115,43 @@ namespace FinApp5.Data
         {
             return db.DeleteAllAsync<Musuarios>();
         }
+
+
+        public async Task<int> SincronizarAbono(Mmovimiento mmovimiento, Musuarios Usuario)
+        {
+            int row = 0;
+            try
+            {
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    CONEXIONMAESTRA.Abrir();
+                    SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
+                    cmd.Parameters.AddWithValue("@strCodTipMov", "98");
+                    cmd.Parameters.AddWithValue("@strCodConMov", "88888");
+                    cmd.Parameters.AddWithValue("@dblValAboCre", mmovimiento.ValorMovto);
+                    cmd.Parameters.AddWithValue("@strObservaRA", mmovimiento.strObservaRA);
+                    cmd.Parameters.AddWithValue("@strNombreCte", mmovimiento.NombreCteCre);
+                    cmd.Parameters.AddWithValue("@lngNumCreAfe", mmovimiento.NumeroCreAfe);
+                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.Usuario);
+                    cmd.Parameters.AddWithValue("@strComentAbo", "");
+                    row = await cmd.ExecuteNonQueryAsync() * -1;
+                    if (row > 0)
+                        App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                CONEXIONMAESTRA.Cerrar();
+            }
+            return row;
+        }
+
     }
 }

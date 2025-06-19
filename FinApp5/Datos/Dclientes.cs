@@ -14,8 +14,8 @@ namespace FinApp5.Datos
 {
     public class Dclientes : BaseViewModel
     {
-        SqlCommand cmd = new SqlCommand();
 
+        SqlCommand cmd = new SqlCommand();
         public bool InsertarCliente (Mcliente cliente)
         {
             try
@@ -79,7 +79,7 @@ namespace FinApp5.Datos
                 }
                 
             }
-            catch (Exception )
+            catch (Exception ex)
             {
                 return null;
             }

@@ -9,8 +9,18 @@ namespace FinApp5.Conexiones
         public static SqlConnection conectar = new SqlConnection(conexion);
         public static void Abrir()
         {
-            if (conectar.State == System.Data.ConnectionState.Closed)
-                conectar.Open();
+            try
+            {
+                if (conectar.State == System.Data.ConnectionState.Closed)
+                    conectar.Open();
+            }
+            catch (Exception ex)
+            {
+                // Este log momentáneo ayuda a encontrar el error real
+                System.Diagnostics.Debug.WriteLine("ERROR al abrir conexión: " + ex.Message);
+                throw; // re-lanzamos para no ocultarlo                
+            }
+           
         }
         public static void Cerrar()
         {
