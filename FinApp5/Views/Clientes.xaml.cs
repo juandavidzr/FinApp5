@@ -11,37 +11,25 @@ public partial class Clientes : ContentPage
 {
     bool ModoEdit = false;
     Musuarios Usuario = new Musuarios();
-
-    //public string? TxtId { get { return _txtId; } set { SetValue(ref _txtId, value); } }
+    private VMClientes viewModel;
 
     Mcliente cliente = new Mcliente();
     public Clientes(Musuarios usuario)
     {
         InitializeComponent();
-        Loaded += (s, e) => SetFocus();
-        bool estado = CONEXIONMAESTRA.VerificarCon();
-        if (estado)
-        {
-            Usuario = usuario;
+        viewModel = new VMClientes(Navigation, usuario);
+        BindingContext = viewModel;
 
-            llenarBarrios();
-            if (Usuario?.CodigoCobr != null)
-            {
-                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor
-                App.SQLiteDB.GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell 
-            }
-            //if (usuario.CodigoCobr != null)
-            //    GetClientes(usuario.CodigoCobr);
-
-            BindingContext = new VMClientes(Navigation, usuario);
-
-        }
-        else
-        {
-            DisplayAlert("Conexion", "Estas trabajando sin conexion (Linea 37)", "OK");
-            llenarBarriosOffLine();
-        }
+        Loaded += (s, e) => SetFocus();       
     }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        await viewModel.InicializarAsync(); // ahora inicializa todo de forma asincrónica
+    }
+
     private void SetFocus()
     {
         TxtId.Focus();

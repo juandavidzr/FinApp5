@@ -24,35 +24,38 @@ namespace FinApp5.ViewModels
         public VMmenuPrincipal(INavigation navigation, Musuarios usuario)
         {
             Navigation = navigation;
-            Usuario = usuario;
+            Usuario = usuario;            
+        }
 
-            if (CONEXIONMAESTRA.VerificarCon() && (Usuario.CodigoCobr != null))
+        public async Task InicializarAsync()
+        {
+            if (CONEXIONMAESTRA.VerificarCon() && Usuario?.CodigoCobr != null)
             {
-                SincronizarEnrrutarCartera(Usuario.CodigoCobr);
-                ejecutarCierre();
-                GetBarrios(Usuario.CodigoCobr); //Trae todos los barrio del servidor
-                GetTiposGastos();
-                SyncRuta(Usuario.CodigoCobr); // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
-                App.SQLiteDB.SyncCobros(Usuario.CodigoCobr, "Ruta"); //descarga la cartera completa desde el servidor
-                GetClientes(Usuario.CodigoCobr); // Trae del servidor todos los clientes y los guarda en el cell localmente
+                // Se conserva el nombre SyncRuta
+                await App.SQLiteDB.SyncRuta(Usuario.CodigoCobr);
 
+                await Task.Run(() => App.SQLiteDB.SincronizarEnrrutarCartera(Usuario.CodigoCobr));
+                await Task.Run(() => App.SQLiteDB.EjecutarCierre());
+                await Task.Run(() => App.SQLiteDB.GetBarrios(Usuario.CodigoCobr));
+                await Task.Run(() => App.SQLiteDB.GetTiposGastosMigrator());
 
-                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor
-                if (Usuario?.Usuario != null)
+                await App.SQLiteDB.SyncCobros(Usuario.CodigoCobr, "Ruta");
+                await App.SQLiteDB.GetClientes(Usuario.CodigoCobr);
+                await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
+
+                if (!string.IsNullOrWhiteSpace(Usuario.Usuario))
                 {
-                    App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
-                    App.SQLiteDB.SincronizarGastos(Usuario.Usuario); //inserta los nuevos gastos en el servidor
+                    await App.SQLiteDB.SincronizarCreditos(Usuario.Usuario);
+                    await App.SQLiteDB.SincronizarGastos(Usuario.Usuario);
                 }
                 else
-
+                {
                     Console.WriteLine("Error: Usuario.Usuario es null.");
-
-            }
-            else
-            {
-                //DisplayAlert("Conexion", "Esta trabajando sin conexion", "OK");
+                }
             }
         }
+
+
         #endregion
         #region OBJETOS
         public string Texto
@@ -63,7 +66,7 @@ namespace FinApp5.ViewModels
         #endregion
         #region PROCESOS
 
-
+        [Obsolete]
         private async void SincronizarEnrrutarCartera(string CodigoCobr)
         {
             try
@@ -147,7 +150,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
+        [Obsolete]
         private void GetTiposGastos()
         {
             try
@@ -175,7 +178,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
+        [Obsolete]
         private void GetBarrios(string codigoRuta)
         {
             try
@@ -208,6 +211,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
+        [Obsolete]
         private async void GetClientes(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
         {
             try

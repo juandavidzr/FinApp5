@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using SQLite;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Threading;
 
 namespace FinApp5.Data
 {
@@ -82,9 +83,53 @@ namespace FinApp5.Data
             }
         }
 
+        public async Task<List<Mbarrio>> LlenarBarriosOffLine()
+        {
+            var barriosList = await App.SQLiteDB.GetBarriosAsync();
+            return barriosList;
+        }
+        public async Task<List<Mbarrio>> LlenarBarriosAsync()
+        {
+            List<Mbarrio> barrios = new();
+            try
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
+                CONEXIONMAESTRA.Abrir();
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (cmd.Connection.State == ConnectionState.Closed)
+                    cmd.Connection.Open();
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                if (rdr.HasRows)
+                {
+                    //await App.SQLiteDB.DeleteBarrios();
+                    while (rdr.Read())
+                    {
+                        barrios.Add(new Mbarrio
+                        {
+                            IdBarrio = rdr["rbcCodigo"].ToString(),
+                            NombreBarrio = rdr["rbcNombre"].ToString()
+                        });
+
+                    }
+                }
+                if (cmd.Connection.State == ConnectionState.Open)
+                    cmd.Connection.Close();
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en LlenarBarriosAsync: {ex.Message}");
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+
+            return barrios;
+        }        
 
 
-        public async void SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
+
+        public async Task SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
         {
             Prestamos prestamo = new Prestamos();
             try
@@ -110,7 +155,7 @@ namespace FinApp5.Data
                             cmd.Parameters.AddWithValue("@intNumCuoPag", p.numCuoPag);//9
                             cmd.Parameters.AddWithValue("@intNumCuoPen", p.numCuoPen);//10
                             cmd.Parameters.AddWithValue("@strFecUltPag", p.fecUltPag);//11
-                            cmd.Parameters.AddWithValue("@dblValUltPag", p.valUltPag);//12
+                            cmd.Parameters.AddWithValue("@dblValUltPag", 0);//12
                             cmd.Parameters.AddWithValue("@strFecVtoCre", p.fecVenCre);//13
                             cmd.Parameters.AddWithValue("@intPosCreEnr", p.posRutCre);//14
                             cmd.Parameters.AddWithValue("@intTieDiaCre", p.tiempoDias);//15
@@ -144,7 +189,115 @@ namespace FinApp5.Data
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-        public async void GetClientes(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
+        public async Task EjecutarCierre()
+        {
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.ExecuteReader();
+                CONEXIONMAESTRA.Cerrar();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                // DisplayAlert("error(142)", ex.Message, "OK");
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+
+        public async Task GetTiposGastosMigrator()
+        {
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    MtipoGastos gasto = new MtipoGastos
+                    {
+                        claCodigo = rdr["claCodigo"].ToString().Trim(),
+                        claDescripcion = rdr["claDescripcion"].ToString().Trim()
+                    };
+                 App.SQLiteDB.SaveTipoGasto(gasto);
+                }
+                CONEXIONMAESTRA.Cerrar();
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //DisplayAlert("error(215)", ex.Message, "OK");
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+        public async Task GetBarrios(string codigoRuta)
+        {
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("FiltrarBarriosPorRuta", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                await App.SQLiteDB.DeleteBarrios();
+
+                while (rdr.Read())
+                {
+                    Mbarrio bar = new Mbarrio
+                    {
+                        IdBarrio = rdr["rbcCodigo"].ToString(),
+                        NombreBarrio = rdr["rbcNombre"].ToString()
+                    };
+                    //var barrio = App.SQLiteDB.GetBarrioByIdAsync(bar.IdBarrio);
+                    //if (barrio == null)
+                  await  App.SQLiteDB.SaveBarrios(bar);
+                }
+                CONEXIONMAESTRA.Cerrar();
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //DisplayAlert("error(245)", ex.Message, "OK");
+
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+
+        public async Task SincronizarEnrrutarCartera(string CodigoCobr)
+        {
+            try
+            {
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    var  prestamosOffLine = App.SQLiteDB.ConsultarCambioDeRutaOffline().Result;
+
+                    if (prestamosOffLine.Any())
+                    {
+                        List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(CodigoCobr);
+                        if (prestamos.Any())
+                        {
+                            await App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
+                        }
+
+                        await App.SQLiteDB.ActualizarPosActualizada();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //await DisplayAlert("error", ex.Message, "OK");
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+        public async Task GetClientesMigrator(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
         {
             try
             {
@@ -158,7 +311,7 @@ namespace FinApp5.Data
                 var clientesNew = await App.SQLiteDB.CountNewClient();
                 if (clientesNew == 0)
                 {
-                    App.SQLiteDB.DeleteClientes<Task>();
+                    await App.SQLiteDB.DeleteClientes<Task>();
                     CONEXIONMAESTRA.Abrir();
                     SqlDataReader rdr = cmd.ExecuteReader();
                     while (rdr.Read())
@@ -179,7 +332,60 @@ namespace FinApp5.Data
                             nuevo = 0
                         };
                         //await App.SQLiteDB.SaveClienteAsync(cli);
-                        App.SQLiteDB.SaveClienteAsync(cli);
+                        await App.SQLiteDB.SaveClienteAsync(cli);
+                    }
+
+                    rdr.Close();
+                    CONEXIONMAESTRA.Cerrar();
+                }
+                else
+                    Console.WriteLine("Habia registros pendientes por actualizar");
+                //await DisplayAlert("Actualizar", "Habia registros pendientes por actualizar", "OK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //DisplayAlert("error(296)", ex.Message, "OK");
+
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
+        public async Task GetClientes(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
+        {
+            try
+            {
+                //CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("ConsultarTodosClientes", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodRutaTra", CodigoRuta);
+                cmd.Parameters.AddWithValue("@intOpcionFil", 1);
+                cmd.Parameters.AddWithValue("@strCriterio", 1);
+
+                var clientesNew = await App.SQLiteDB.CountNewClient();
+                if (clientesNew == 0)
+                {
+                    await App.SQLiteDB.DeleteClientes<Task>();
+                    CONEXIONMAESTRA.Abrir();
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        Mcliente cli = new Mcliente
+                        {
+                            cteNumIdenti = rdr["cteNumIdenti"].ToString(),
+                            cteNombApel = rdr["cteNombApel"].ToString(),
+                            cteDirCobCte = rdr["cteDirCobCte"].ToString(),
+                            cteCodBarDom = rdr["cteCodBarDom"].ToString(),
+                            cteDireccion = rdr["cteDirCobCte"].ToString(),
+                            cteCodBarCob = rdr["cteCodBarCob"].ToString(),
+                            cteTeleCelu = rdr["cteTeleCelu"].ToString(),
+                            cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+                            cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
+                            latitud = rdr["latitud"].ToString(),
+                            longitud = rdr["longitud"].ToString(),
+                            nuevo = 0
+                        };
+                        //await App.SQLiteDB.SaveClienteAsync(cli);
+                       await App.SQLiteDB.SaveClienteAsync(cli);
                     }
 
                     rdr.Close();
@@ -197,7 +403,7 @@ namespace FinApp5.Data
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-        public async void SincronizarGastos(string usuario) //inserta los nuevos gastos en el servidor
+        public async Task SincronizarGastos(string usuario) //inserta los nuevos gastos en el servidor
         {
             Mgasto gasto = new Mgasto();
             try
@@ -250,7 +456,7 @@ namespace FinApp5.Data
             return db.Table<Mgasto>().Where(c => c.nuevo == 1).ToListAsync();
         }
 
-        public async void SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
+        public async Task SincronizarClientes(string CodigoRuta) //inserta los nuevos clientes en el servidor 
         {
             Mcliente cliente = new Mcliente();
             try
@@ -591,7 +797,7 @@ namespace FinApp5.Data
         }
 
 
-        public void SyncCobros(string ruta, string filtro)
+        public async Task SyncCobros(string ruta, string filtro)
         {
             try
             {
@@ -601,7 +807,7 @@ namespace FinApp5.Data
                 cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
                 SqlDataReader rdr = cmd.ExecuteReader();
 
-                App.SQLiteDB.DeletePrestamosAsync<Task>();
+                await App.SQLiteDB.DeletePrestamosAsync<Task>();
 
                 while (rdr.Read())
                 {
@@ -649,7 +855,7 @@ namespace FinApp5.Data
                         DiaSemana = Convert.ToString(rdr["pmoDiaSemana"]),
                         nuevo = 0
                     };
-                    App.SQLiteDB.savePrestamos(prestamos);
+                 await  App.SQLiteDB.savePrestamos(prestamos);
                 }
                 CONEXIONMAESTRA.Cerrar();
 
@@ -664,6 +870,42 @@ namespace FinApp5.Data
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
+
+        public async Task SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
+        {
+
+            try
+            {
+                CONEXIONMAESTRA.Abrir();
+                SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
+                SqlDataReader rdr = cmd.ExecuteReader();
+
+                await App.SQLiteDB.DeleteRutaAsync<Task>();
+
+                Mruta ruta = new Mruta();
+
+                while (rdr.Read())
+                {
+                    ruta = new Mruta
+                    {
+                        nombreCliente = rdr["cteNombApel"].ToString() + " - " + rdr["pmoPosRutCre"].ToString(),
+                        posicion = Convert.ToInt32(rdr["pmoPosRutCre"].ToString()),
+                    };
+                 await   App.SQLiteDB.SaveRuta(ruta);
+                }
+                CONEXIONMAESTRA.Cerrar();
+                rdr.Close();
+            }
+            catch (Exception ex)
+            {
+                var err = ex.Message;
+                throw;
+
+            }
+            finally { CONEXIONMAESTRA.Cerrar(); }
+        }
 
         public Task<int> DeletePrestamosAsync<T>()
         {
@@ -873,5 +1115,43 @@ namespace FinApp5.Data
         {
             return db.DeleteAllAsync<Musuarios>();
         }
+
+
+        public async Task<int> SincronizarAbono(Mmovimiento mmovimiento, Musuarios Usuario)
+        {
+            int row = 0;
+            try
+            {
+                if (CONEXIONMAESTRA.VerificarCon())
+                {
+                    CONEXIONMAESTRA.Abrir();
+                    SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
+                    cmd.Parameters.AddWithValue("@strCodTipMov", "98");
+                    cmd.Parameters.AddWithValue("@strCodConMov", "88888");
+                    cmd.Parameters.AddWithValue("@dblValAboCre", mmovimiento.ValorMovto);
+                    cmd.Parameters.AddWithValue("@strObservaRA", mmovimiento.strObservaRA);
+                    cmd.Parameters.AddWithValue("@strNombreCte", mmovimiento.NombreCteCre);
+                    cmd.Parameters.AddWithValue("@lngNumCreAfe", mmovimiento.NumeroCreAfe);
+                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.Usuario);
+                    cmd.Parameters.AddWithValue("@strComentAbo", "");
+                    row = await cmd.ExecuteNonQueryAsync() * -1;
+                    if (row > 0)
+                        App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                CONEXIONMAESTRA.Cerrar();
+            }
+            return row;
+        }
+
     }
 }

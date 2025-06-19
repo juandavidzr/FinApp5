@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,17 +35,55 @@ namespace FinApp5.ViewModels
         string? _txtNotas;
         bool ModoEdit = false;
         Musuarios Usuario = new Musuarios();
-
+        private Mbarrio _barrioSeleccionado;
         #endregion
         #region CONSTRUCTOR
         public VMClientes(INavigation navigation, Musuarios usuario)
         {
             Navigation = navigation;
             Usuario = usuario;
-            //BtnUbicacion();
-            //llenarBarrios();
+        }
 
-           
+        public async Task InicializarAsync()
+        {
+            List<Mbarrio> barrios;
+            if (CONEXIONMAESTRA.VerificarCon() && Usuario?.CodigoCobr != null)
+            {
+                var barriosOnLine  = await App.SQLiteDB.LlenarBarriosAsync();
+                Barrios = barriosOnLine;
+                await Task.Run(() => App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr));
+                await Task.Run(() => App.SQLiteDB.GetClientes(Usuario.CodigoCobr));
+            }
+            else
+            {
+                var barriosOffLine = await App.SQLiteDB.LlenarBarriosOffLine();
+                Barrios = barriosOffLine;
+            }            
+                     
+        }
+
+        public Mbarrio BarrioSeleccionado
+        {
+            get => _barrioSeleccionado;
+            set
+            {
+                _barrioSeleccionado = value;
+                OnPropertyChanged();
+
+                // Si quieres extraer el ID:
+                IdBarrio = _barrioSeleccionado?.IdBarrio;
+            }
+        }
+
+        private string _idBarrio;
+        public string IdBarrio
+        {
+            get => _idBarrio;
+            set
+            {
+                _idBarrio = value;
+                OnPropertyChanged();
+            }
         }
         #endregion
         #region OBJETOS

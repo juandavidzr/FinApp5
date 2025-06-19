@@ -15,19 +15,28 @@ public partial class ListarClientes : ContentPage
     public ListarClientes(Musuarios usuario)
     {
         InitializeComponent();
-        Usuario = usuario;
-        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+        try
+        {
+            Usuario = usuario;
+            if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+            {
+
+                _ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+                if (Usuario?.Usuario != null)
+                    _ = App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
+                else
+                    Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
+
+            }
+
+            llenarDatos(usuario);
+        }
+        catch (Exception ex)
         {
 
-            App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
-            if (Usuario?.Usuario != null)
-                App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
-            else
-                Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
-
+            throw;
         }
-
-        llenarDatos(usuario);
+       
 
         //BindingContext = new VMTransacciones(Navigation, usuario);
     }
@@ -73,7 +82,7 @@ public partial class ListarClientes : ContentPage
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (74)", "OK");
+                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
                 var clienteList = await App.SQLiteDB.GetClientesAsync();
                 if (clienteList != null)
                 {

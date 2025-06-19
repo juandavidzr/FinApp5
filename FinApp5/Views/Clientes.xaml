@@ -30,7 +30,7 @@
 
             <Picker x:Name="cmbBarrioDom" 
                 Title="Seleccione el barrio de Domicilio" 
-                ItemsSource="{Binding barrio}"
+                ItemsSource="{Binding Barrios}"
                 ItemDisplayBinding="{Binding NombreBarrio}"
                 SelectedItem="{Binding IdBarrio}"
                 FontAutoScalingEnabled="False"
@@ -46,7 +46,7 @@
 
             <Picker x:Name="cmbBarrioCobro" 
                     Title="Seleccione el barrio de cobro" 
-                    ItemsSource="{Binding barrio}"
+                    ItemsSource="{Binding Barrios}"
                     ItemDisplayBinding="{Binding NombreBarrio}"
                     SelectedItem="{Binding IdBarrio}"
                     FontAutoScalingEnabled="False"
