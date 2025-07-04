@@ -10,7 +10,7 @@
             <StackLayout Margin="5">
                 
                 <Label Text="Nombre                     | ID Crédito      |            Valor " />
-                <Label Text="Fecha                          | Tipo" />
+                <Label Text="Hora                           | Tipo" />
                 <Label Text="Comentario" />
 
                 <Label x:Name="lblMensaje" HorizontalTextAlignment="Center" Text="" TextColor="Red" FontSize="Large"/>

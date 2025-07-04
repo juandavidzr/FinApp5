@@ -33,9 +33,9 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.16</string>
+	<string>1.18</string>
 	<key>CFBundleVersion</key>
-	<string>1.16</string>
+	<string>1.18</string>
 	<key>CFBundleIdentifier</key>
 	<string></string>
 </dict>

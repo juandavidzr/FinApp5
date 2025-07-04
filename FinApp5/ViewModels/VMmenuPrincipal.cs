@@ -24,7 +24,7 @@ namespace FinApp5.ViewModels
         public VMmenuPrincipal(INavigation navigation, Musuarios usuario)
         {
             Navigation = navigation;
-            Usuario = usuario;            
+            Usuario = usuario;
         }
 
         public async Task InicializarAsync()
