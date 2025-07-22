@@ -50,7 +50,7 @@ public partial class Abonos : ContentPage
         bool respuesta;
         if (string.IsNullOrEmpty(txtAbono.Text))
         {
-                respuesta = false;
+            respuesta = false;
         }
         else
         {
@@ -83,10 +83,12 @@ public partial class Abonos : ContentPage
                     abono.strCodTipMov = "98";
                     abono.strCodConMov = "88888";
                 }
+
+
                 GrabarAbono(p, abono);
 
                 // Original line causing the error
-                // int saldo = txtSaldo.Text;
+                
 
                 // Fixed line
                 int saldo = int.TryParse(txtSaldo.Text, out int parsedSaldo) ? parsedSaldo : 0;
