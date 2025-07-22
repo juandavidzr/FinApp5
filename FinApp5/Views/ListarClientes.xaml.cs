@@ -11,7 +11,7 @@ public partial class ListarClientes : ContentPage
 {
     public ObservableCollection<Mcliente> clientsCollection = new ObservableCollection<Mcliente>();
     private List<Mcliente> ListaFinCtes = new List<Mcliente>();
-    Musuarios Usuario = new Musuarios();
+    private readonly Musuarios Usuario = new();
     public ListarClientes(Musuarios usuario)
     {
         InitializeComponent();
@@ -23,7 +23,7 @@ public partial class ListarClientes : ContentPage
 
                 _ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
                 if (Usuario?.Usuario != null)
-                    _ = App.SQLiteDB.SincronizarCreditos(Usuario.Usuario); //inserta los nuevos creditos en el servidor
+                    _ = App.SQLiteDB.SincronizarCreditos(Usuario); //inserta los nuevos creditos en el servidor
                 else
                     Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
 

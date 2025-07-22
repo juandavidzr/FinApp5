@@ -17,9 +17,10 @@ namespace FinApp5.ViewModels
         #endregion
 
         #region CONSTRUCTOR
-        public VMingresar(INavigation? navigation)
+        public VMingresar(INavigation? navigation , Musuarios Usuario)
         {
             Navigation = navigation;
+            usuario = Usuario;
         }
         #endregion
 
@@ -38,26 +39,30 @@ namespace FinApp5.ViewModels
 
         #region PROCESOS
         public async void ingresar()
-        {
-            //TxtUsuario = "14";
-            //TxtPw = "14";
+        {  
             if (String.IsNullOrEmpty(TxtUsuario) || String.IsNullOrEmpty(TxtPw))
             {
                 await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
             }
             else
-            {
-                //bool Estado = CONEXIONMAESTRA.VerificarCon();
-                //var Estado = CONEXIONMAESTRA.VerificarConexionAsync();
+            {                
                 bool Estado = await CONEXIONMAESTRA.VerificarConexionAsync();
                 //Estado = true;
                 bool aut = false;
                 if (Estado)
                 {
-                    aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());
-                    //aut = true;
+                    aut = Autenticar(TxtUsuario.Trim(), TxtPw.Trim());                 
                     if (aut)
+                    {
+
+                        bool puedeContinuar = await App.SQLiteDB.PuedeContinuarAutenticacionAsync(usuario);
+                        if (!puedeContinuar)
+                        {                           
+                            return; // Si no puede continuar, mostramos un mensaje y salimos del proceso.
+                        }
                         await Navigation.PushAsync(new MenuPpal(usuario));
+                        
+                    }                        
                     else
                         await DisplayAlert("Credenciales incorrectas", "Credenciales incorrectas", "OK");
                 }
@@ -72,10 +77,11 @@ namespace FinApp5.ViewModels
                 }
             }
         }
+
         private bool Autenticar(string login, string pass)
         {
             try
-            {
+            { 
                 CONEXIONMAESTRA.Abrir();
                 SqlCommand cmd =
                     new SqlCommand
@@ -84,8 +90,9 @@ namespace FinApp5.ViewModels
 
                 SqlDataReader rdr = cmd.ExecuteReader();
                 if (rdr.HasRows)
-                {
+                {                    
                     rdr.Read();
+                    usuario ??= new Musuarios();
                     usuario.CodigoCobr = rdr["cbrCodigoCobr"].ToString();
                     usuario.NombApel = rdr["cbrNombApel"].ToString();
                     usuario.NumIdenti = rdr["cbrNumIdenti"].ToString();

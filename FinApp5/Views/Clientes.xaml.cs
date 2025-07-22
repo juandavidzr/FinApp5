@@ -19,6 +19,7 @@ public partial class Clientes : ContentPage
         InitializeComponent();
         viewModel = new VMClientes(Navigation, usuario);
         BindingContext = viewModel;
+        Usuario = usuario;
 
         Loaded += (s, e) => SetFocus();       
     }

@@ -5,7 +5,7 @@ namespace FinApp5.Views;
 
 public partial class SubMenuClientes : ContentPage
 {
-    Musuarios Usuario = new Musuarios();
+    private readonly Musuarios Usuario = new Musuarios();
     public SubMenuClientes(Musuarios usuario)
 	{
 		InitializeComponent();

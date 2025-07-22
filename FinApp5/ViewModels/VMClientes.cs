@@ -45,8 +45,7 @@ namespace FinApp5.ViewModels
         }
 
         public async Task InicializarAsync()
-        {
-            List<Mbarrio> barrios;
+        {           
             if (CONEXIONMAESTRA.VerificarCon() && Usuario?.CodigoCobr != null)
             {
                 var barriosOnLine  = await App.SQLiteDB.LlenarBarriosAsync();
@@ -255,44 +254,7 @@ namespace FinApp5.ViewModels
             {
                 await DisplayAlert("Error", "Error" + ex.Message, "OK");
             }
-        }
-        private async void ConsultarCliente(object obj)
-        {
-            try
-            {
-                if (!String.IsNullOrEmpty(TxtId))
-                {
-
-
-                    Mcliente cliente = new Mcliente();
-                    var funcion = new Dclientes();
-
-                    cliente = funcion.ConsultarCliente(TxtId);
-                    if (cliente != null)
-                    {
-                        TxtNombre = cliente.cteNombApel;
-                        TxtDirDomicilio = cliente.cteDireccion;
-                        cmbBarrioDomicilio = cliente.cteCodBarDom;
-                        TxtDirCobro = cliente.cteDirCobCte;
-                        // = cliente.cteCodBarCob;
-                        TxtLatitud = cliente.latitud;
-                        TxtLongitud = cliente.longitud;
-                        TxtTelefono1 = cliente.cteTeleCelu;
-                        TxtTelefono2 = cliente.cteTeleFijo;
-                        TxtNotas = cliente.cteNotasGenerales;
-                        ModoEdit = true;
-                    }
-                    else
-                        limpiar();
-
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", "Error" + ex.Message, "OK");
-            }
-        }
-
+        }       
 
         #endregion
         #region COMANDOS

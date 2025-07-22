@@ -129,18 +129,22 @@ namespace FinApp5.Data
 
 
 
-        public async Task SincronizarCreditos(string usuario) //inserta los nuevos creditos en el servidor
+        public async Task SincronizarCreditos(Musuarios usuario) //inserta los nuevos creditos en el servidor
         {
-            Prestamos prestamo = new Prestamos();
+            int nuevoIdPrestamo = 0;
+            Prestamos prestamo = new();
             try
             {
-                SqlCommand cmd = new SqlCommand("GrabaCredito", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new("GrabaCreditoOffLine", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
                 var prestamosList = await App.SQLiteDB.GetNewPrestamos();
                 if (prestamosList != null)
                 {
                     foreach (var p in prestamosList)
                     {
+                        int numPrestamo = p.NumPrestamo;
                         prestamo = await App.SQLiteDB.GetPrestamosByIdAsync(p.NumPrestamo);
                         if (prestamo != null && p.codigoRuta != null && p.idCliente != null && p.codigoPlan != null && p.desDiaPago != null)
                         {
@@ -167,23 +171,33 @@ namespace FinApp5.Data
                             cmd.Parameters.AddWithValue("@intNumDiaPPC", p.diaProPagCre);//21
                             cmd.Parameters.AddWithValue("@dblTotPagCre", p.totalPagCre);//22
                             cmd.Parameters.AddWithValue("@strNomCteCre", p.nombreCliente);//23
-                            cmd.Parameters.AddWithValue("@strLoginUsSe", usuario); //24
+                            cmd.Parameters.AddWithValue("@strLoginUsSe", usuario.Usuario); //24
                             cmd.Parameters.AddWithValue("@NotaCredit", p.observaciones); //25
 
                             CONEXIONMAESTRA.Abrir();
-                            cmd.ExecuteReader();
+                            //cmd.ExecuteReader();
+                            object? result = await cmd.ExecuteScalarAsync();
+                            if (result != null && int.TryParse(result.ToString(), out int id))
+                            {
+                                nuevoIdPrestamo = id;
+                            }
+                            else
+                            {
+                                Console.WriteLine("No se pudo obtener el nuevo ID del préstamo desde el servidor.");
+                                continue;
+                            }
                             cmd.Parameters.Clear();
-
                             prestamo.nuevo = 0;
                             var respuesta = App.SQLiteDB.UpdatePrestamoAsync(prestamo);
                         }
                         CONEXIONMAESTRA.Cerrar();
+                        int sincronizados = await App.SQLiteDB.SincronizarMovimientosOfflineAsync(usuario, nuevoIdPrestamo, numPrestamo);
+
                     }
                 }
             }
             catch (Exception ex)
-            {
-                //_ = DisplayAlert("error", ex.Message, "OK");
+            {               
                 Console.WriteLine(ex.Message);
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
@@ -355,8 +369,10 @@ namespace FinApp5.Data
             try
             {
                 //CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("ConsultarTodosClientes", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("ConsultarTodosClientes", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
                 cmd.Parameters.AddWithValue("@strCodRutaTra", CodigoRuta);
                 cmd.Parameters.AddWithValue("@intOpcionFil", 1);
                 cmd.Parameters.AddWithValue("@strCriterio", 1);
@@ -392,7 +408,11 @@ namespace FinApp5.Data
                     CONEXIONMAESTRA.Cerrar();
                 }
                 else
+                {
+                    CONEXIONMAESTRA.Cerrar();
                     Console.WriteLine("Habia registros pendientes por actualizar");
+                }
+                   
                 //await DisplayAlert("Actualizar", "Habia registros pendientes por actualizar", "OK");
             }
             catch (Exception ex)
@@ -495,9 +515,10 @@ namespace FinApp5.Data
                             }
 
                         }
+                        CONEXIONMAESTRA.Cerrar();
                     }
                 }
-                CONEXIONMAESTRA.Cerrar();
+               CONEXIONMAESTRA.Cerrar();
             }
             catch (Exception ex)
             {
@@ -508,9 +529,9 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-        public Task<List<Prestamos>> GetCreditos()
+        public Task<List<Prestamos>> GetCreditosOffLineNew()
         {
-            return db.Table<Prestamos>().Where(c => c.nuevo != 1).ToListAsync();
+            return db.Table<Prestamos>().Where(c => c.nuevo == 1).ToListAsync();
         }
         /// <summary>
         /// Obtener todos los creditos
@@ -753,7 +774,7 @@ namespace FinApp5.Data
         public Task<int> DeleteBarrios()
         {
             return db.DeleteAllAsync<Mbarrio>();
-        }
+        }        
 
         public Task<List<Mmovimiento>> GetAbonosNewOffLine()
         {
@@ -1152,6 +1173,131 @@ namespace FinApp5.Data
             }
             return row;
         }
+
+
+        public async Task<bool> PuedeContinuarAutenticacionAsync(Musuarios usuario)
+        {
+
+            int prestamos = await App.SQLiteDB.CountNewPrestamos();
+
+            if (prestamos > 0)
+            {
+                // 1. ¿Hay prestamos nuevos sin sincronizar?
+                bool hayConflictos = await VerificarPrestamosDeOtrasRutasAsync(usuario);
+                // Si hay conflictos, interrumpimos el proceso de autenticación.
+                if (hayConflictos)
+                    return false;
+            }
+
+            // 1. ¿Hay abonos nuevos sin sincronizar?
+            int movimientoNew = await App.SQLiteDB.CountNewAbonos();           
+
+            if (movimientoNew > 0 )
+            {
+                // 2. ¿Pertenecen a rutas distintas?
+                bool hayConflictos = await VerificarMovimientosDeOtrasRutasAsync(usuario);
+
+                // Si hay conflictos, interrumpimos el proceso de autenticación.
+                if (hayConflictos)
+                    return false;
+            }
+
+            // No hay conflictos: se puede continuar.
+            return true;
+        }
+
+        public async Task<bool> VerificarPrestamosDeOtrasRutasAsync(Musuarios usuario)
+        {
+            var prestamos = await App.SQLiteDB.GetCreditosOffLineNew();
+
+            var rutasDistintas = prestamos
+                .Where(m => m.codigoRuta.Trim() != usuario.CodigoCobr.Trim())
+                .Select(m => m.codigoRuta.Trim())
+                .Distinct()
+                .ToList();
+
+            if (rutasDistintas.Any())
+            {
+                string rutasTexto = string.Join(", ", rutasDistintas);
+                await App.Current.MainPage.DisplayAlert(
+                    "Atención",
+                    $"Hay prestamos pendientes por sincronizar de las rutas: {rutasTexto}, debes finalizar este procesos para continuar.",
+                    "OK"
+                );
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> VerificarMovimientosDeOtrasRutasAsync(Musuarios usuario)
+        {
+            var movimientos = await App.SQLiteDB.GetAbonosNewOffLine();
+
+            var rutasDistintas = movimientos
+                .Where(m => m.strCodigoRut.Trim() != usuario.CodigoCobr.Trim())
+                .Select(m => m.strCodigoRut.Trim())
+                .Distinct()
+                .ToList();
+
+            if (rutasDistintas.Any())
+            {
+                string rutasTexto = string.Join(", ", rutasDistintas);
+                await App.Current.MainPage.DisplayAlert(
+                    "Atención",
+                    $"Hay movimientos pendientes por sincronizar de las rutas: {rutasTexto}, debes finalizar este procesos para continuar.",
+                    "OK"
+                );
+                return true;
+            }
+
+            return false;
+        }
+
+
+        public async Task<int> SincronizarMovimientosOfflineAsync(Musuarios usuario, int nuevoIdPrestamoc, int NumPrestamo)
+        {
+            int movimientoNew = await App.SQLiteDB.CountNewAbonos(); // Verifica si hay movimientos nuevos
+
+            if (movimientoNew > 0)
+            {
+                int registrosSincronizados = 0;
+                var movimientos = await App.SQLiteDB.GetAbonosNewOffLine(); // Obtiene los movimientos nuevos
+                
+                var mov = movimientos
+                    .Where(m => m.NumeroCreAfe?.Trim() == NumPrestamo.ToString())
+                    .ToList();
+
+                if (mov.Count > 0)
+                {
+                    foreach (var item in mov)
+                    {
+                        // Actualiza el número de crédito afectado con el nuevo ID del préstamo
+                        item.NumeroCreAfe = nuevoIdPrestamoc.ToString();
+                        // Guarda el movimiento actualizado
+                        registrosSincronizados += await App.SQLiteDB.SincronizarAbono(item, usuario);
+                    }
+                    //foreach (var item in movimientos)
+                    //{
+                    //    registrosSincronizados += await App.SQLiteDB.SincronizarAbono(item, usuario);
+                    //}
+                }
+                    if (registrosSincronizados > 0)
+                {
+                    await App.Current.MainPage.DisplayAlert(
+                        "Exitoso",
+                        $"{registrosSincronizados} registro(s) guardado(s) con éxito",
+                        "OK"
+                    );
+                }
+
+                return registrosSincronizados;
+            }
+
+            // No había movimientos nuevos
+            return 0;
+        }
+
 
     }
 }
