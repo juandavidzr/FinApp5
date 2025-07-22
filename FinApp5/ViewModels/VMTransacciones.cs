@@ -136,8 +136,10 @@ namespace FinApp5.ViewModels
             {
                 if (CONEXIONMAESTRA.VerificarCon())
                 {
-                    SqlCommand cmd = new SqlCommand("permisoCreditos", CONEXIONMAESTRA.conectar);
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlCommand cmd = new("permisoCreditos", CONEXIONMAESTRA.conectar)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
                     cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
                     CONEXIONMAESTRA.Abrir();
                     SqlDataReader rdr = cmd.ExecuteReader();
@@ -167,8 +169,10 @@ namespace FinApp5.ViewModels
         {
             try
             {
-                SqlCommand cmd = new SqlCommand("permisoGastos", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new("permisoGastos", CONEXIONMAESTRA.conectar)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
                 cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
                 CONEXIONMAESTRA.Abrir();
                 SqlDataReader rdr = cmd.ExecuteReader();

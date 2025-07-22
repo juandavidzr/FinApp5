@@ -12,18 +12,13 @@ namespace FinApp5.Views;
 
 public partial class ListaCreditos : ContentPage
 {
-    Musuarios Usuario = new Musuarios();
+    private readonly Musuarios Usuario = new();
     public ListaCreditos(Musuarios usuario)
     {
         InitializeComponent();
         NavigationPage.SetHasBackButton(this, false);
         NavigationPage.SetHasNavigationBar(this, false);
         Usuario = usuario;
-        //VMAbono abono = new VMAbono(null, Usuario);
-
-        //ToDo sincronizar Abonos
-        //_ = abono.SincronizarAbonosAsync();
-
 
         OrdenList = GetOrden();
         cmbOrden.ItemsSource = OrdenList;
@@ -208,7 +203,7 @@ public partial class ListaCreditos : ContentPage
         if (CONEXIONMAESTRA.VerificarCon())
         {
             VMAbono abono = new VMAbono(null, Usuario);            
-            await abono.SincronizarAbonosAsync();
+            await abono.SincronizarTodoAsync();
 
             await CargarCreditosAsync();
         }

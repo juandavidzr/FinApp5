@@ -31,23 +31,30 @@ namespace FinApp5.ViewModels
         {
             if (CONEXIONMAESTRA.VerificarCon() && Usuario?.CodigoCobr != null)
             {
-                // Se conserva el nombre SyncRuta
-
-
-                await App.SQLiteDB.SyncRuta(Usuario.CodigoCobr);
-
-                await Task.Run(() => App.SQLiteDB.SincronizarEnrrutarCartera(Usuario.CodigoCobr));
-                await Task.Run(() => App.SQLiteDB.EjecutarCierre());
-                await Task.Run(() => App.SQLiteDB.GetBarrios(Usuario.CodigoCobr));
-                await Task.Run(() => App.SQLiteDB.GetTiposGastosMigrator());
-
-                await App.SQLiteDB.SyncCobros(Usuario.CodigoCobr, "Ruta");
-                await App.SQLiteDB.GetClientes(Usuario.CodigoCobr);
-                await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
-
+                bool puedeContinuar = await App.SQLiteDB.PuedeContinuarAutenticacionAsync(Usuario);
+                if (!puedeContinuar)
+                {
+                    // Si no puede continuar, mostramos un mensaje y salimos del proceso.
+                    return;
+                }
                 if (!string.IsNullOrWhiteSpace(Usuario.Usuario))
                 {
-                    await App.SQLiteDB.SincronizarCreditos(Usuario.Usuario);
+                    // Se conserva el nombre SyncRuta
+                    await App.SQLiteDB.SyncRuta(Usuario.CodigoCobr);
+
+                    await Task.Run(() => App.SQLiteDB.SincronizarEnrrutarCartera(Usuario.CodigoCobr));
+                    await Task.Run(() => App.SQLiteDB.EjecutarCierre());
+                    await Task.Run(() => App.SQLiteDB.GetBarrios(Usuario.CodigoCobr));
+                    await Task.Run(() => App.SQLiteDB.GetTiposGastosMigrator());
+
+                    await App.SQLiteDB.SincronizarCreditos(Usuario);
+
+                    //int sincronizados = await App.SQLiteDB.SincronizarMovimientosOfflineAsync(Usuario);
+                    await App.SQLiteDB.SyncCobros(Usuario.CodigoCobr, "Ruta");
+
+                    await App.SQLiteDB.GetClientes(Usuario.CodigoCobr);
+                    await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
+
                     await App.SQLiteDB.SincronizarGastos(Usuario.Usuario);
                 }
                 else
@@ -96,7 +103,7 @@ namespace FinApp5.ViewModels
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
-        
+
         private async Task ejecutarCierre()
         {
             try
@@ -109,7 +116,7 @@ namespace FinApp5.ViewModels
 
             }
             catch (Exception ex)
-            {              
+            {
 
                 DisplayAlert("error(142)", ex.Message, "OK");
 
@@ -117,7 +124,7 @@ namespace FinApp5.ViewModels
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-       
+
         private void SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
         {
 
