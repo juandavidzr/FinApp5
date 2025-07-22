@@ -32,6 +32,8 @@ namespace FinApp5.ViewModels
             if (CONEXIONMAESTRA.VerificarCon() && Usuario?.CodigoCobr != null)
             {
                 // Se conserva el nombre SyncRuta
+
+
                 await App.SQLiteDB.SyncRuta(Usuario.CodigoCobr);
 
                 await Task.Run(() => App.SQLiteDB.SincronizarEnrrutarCartera(Usuario.CodigoCobr));

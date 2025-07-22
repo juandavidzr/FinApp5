@@ -29,6 +29,13 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+
+                <Label Text="Cantidad Microseguros: " x:Name="lblCantidadMicroseguros" />
+                <Label Text="Total Microseguros: " x:Name="lblTotalMicroseguros" />
+                <Label Text="Cantidad Abonos: " x:Name="lblCantidadAbonos" />
+                <Label Text="Total Abonos: " x:Name="lblTotalAbonos" />
+                <Label Text="Saldo Actual: " x:Name="lblSaldoActual" />
+                
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

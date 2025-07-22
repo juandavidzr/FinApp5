@@ -49,9 +49,18 @@ public partial class Abonos : ContentPage
     {
         bool respuesta;
         if (string.IsNullOrEmpty(txtAbono.Text))
-            respuesta = false;
+        {
+                respuesta = false;
+        }
         else
-            respuesta = true;
+        {
+            int abono = int.Parse(txtAbono.Text);
+            int saldo = int.Parse(txtSaldo.Text);
+            if (abono > saldo)
+                respuesta = false;
+            else
+                respuesta = true;
+        }
 
         return respuesta;
     }
@@ -76,7 +85,17 @@ public partial class Abonos : ContentPage
                 }
                 GrabarAbono(p, abono);
 
-                await Navigation.PushAsync(new ListaCreditos(Usuario));
+                // Original line causing the error
+                // int saldo = txtSaldo.Text;
+
+                // Fixed line
+                int saldo = int.TryParse(txtSaldo.Text, out int parsedSaldo) ? parsedSaldo : 0;
+                saldo -= Convert.ToInt32(txtAbono.Text.Trim());
+                
+                txtSaldo.Text = saldo.ToString();
+
+                //await Navigation.PushAsync(new ListaCreditos(Usuario));
+                await Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
             }
             else
             {
@@ -203,7 +222,6 @@ public partial class Abonos : ContentPage
         {            
                 DisplayAlert("Registro", "El registro se guardo localmente de manera exitosa", "OK");
         }
-
     }
 
     public class TiposAbono
@@ -257,6 +275,7 @@ public partial class Abonos : ContentPage
     }
     private void btnPagos_Clicked(object sender, EventArgs e)
     {
+
         if (CONEXIONMAESTRA.VerificarCon())
             Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
         else
@@ -366,4 +385,8 @@ public partial class Abonos : ContentPage
         HideKeyboard();
     }
 
+    private async void btnVolver_Clicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ListaCreditos(Usuario));
+    }
 }

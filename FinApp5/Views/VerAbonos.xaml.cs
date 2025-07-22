@@ -48,6 +48,30 @@ public partial class VerAbonos : ContentPage
                 {
                     lstMovimientos.ItemsSource = MovimientosCollection;
                 }
+                var abonos = MovimientosCollection
+                    .Where(m => m.strCodTipMov == "AB") // Reemplaza con el código real si es distinto
+                    .ToList();
+
+                int cantidadAbonos = abonos.Count;
+                double totalAbonos = abonos.Sum(a => a.ValorMovto);
+
+                lblCantidadAbonos.Text = $"Cantidad Abonos: {cantidadAbonos}";
+                lblTotalAbonos.Text = $"Total Abonos: $ {totalAbonos:N0}";
+
+                var microseguros = MovimientosCollection
+                    .Where(m => m.strCodTipMov == "MS") 
+                    .ToList();
+
+                int cantidadMicroseguros = microseguros.Count;
+                double totalMicroseguros = microseguros.Sum(a => a.ValorMovto);
+
+                lblCantidadMicroseguros.Text = $"Cantidad Microseguros: {cantidadMicroseguros}";
+                lblTotalMicroseguros.Text = $"Total Microseguros: $ {totalMicroseguros:N0}";
+
+                if (double.TryParse(saldo, out double saldoActual))
+                    lblSaldoActual.Text = $"Saldo Actual: $ {saldoActual:N0}";
+                else
+                    lblSaldoActual.Text = "Saldo Actual: No válido";
             }
             else
                 DisplayAlert("Sin Internet", "Esta trabajando sin Internet (53)", "OK");
@@ -58,5 +82,9 @@ public partial class VerAbonos : ContentPage
             throw;
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
+    }
+
+    private async void Button_Cerrar_Clicked(object sender, EventArgs e)
+    {
     }
 }
