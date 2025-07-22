@@ -29,10 +29,10 @@
                             FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="0,5"/>
 
                 <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-                <Label Text="ID CLIENTE                                              | NOMBRE CLIENTE " Margin="5,2"/>
-                <Label Text="ID CREDITO                                             | FECHA PRESTAMO   " Margin="5,2" />
-                <Label Text="SALDO                                                      | ULTIMO PAGO" Margin="5,2"/>
-                <Label Text="PISTA DE COBRO                                    | DIA DE COBRO" Margin="5,2"/>
+                <Label Text="ID CLIENTE                                | NOMBRE CLIENTE " Margin="5,2"/>
+                <Label Text="ID CREDITO                               | FECHA PRESTAMO   " Margin="5,2" />
+                <Label Text="SALDO                                        | ULTIMO PAGO" Margin="5,2"/>
+                <Label Text="PISTA DE COBRO                      | DIA DE COBRO" Margin="5,2"/>
                 
 
                 <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
@@ -50,7 +50,7 @@
                                         
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="250"/>
+                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
 
                                     </Grid.ColumnDefinitions>
