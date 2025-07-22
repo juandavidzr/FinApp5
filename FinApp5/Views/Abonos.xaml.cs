@@ -45,7 +45,7 @@ public partial class Abonos : ContentPage
         p = Prestamo;
     }
 
-    private bool validarDatos()
+    private bool validarDatos() //
     {
         bool respuesta;
         if (string.IsNullOrEmpty(txtAbono.Text))
