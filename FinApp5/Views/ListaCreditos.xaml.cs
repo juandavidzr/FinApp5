@@ -24,6 +24,8 @@ public partial class ListaCreditos : ContentPage
         cmbOrden.ItemsSource = OrdenList;
         if (cmbOrden.SelectedIndex == -1)
             cmbOrden.SelectedIndex = 0;
+        //if (CONEXIONMAESTRA.VerificarCon())
+        //    _ = App.SQLiteDB.SincronizarAbonos(usuario);
     }
 
 
@@ -204,7 +206,7 @@ public partial class ListaCreditos : ContentPage
         {
             VMAbono abono = new VMAbono(null, Usuario);            
             await abono.SincronizarTodoAsync();
-
+            await App.SQLiteDB.SincronizarAbonos(Usuario);
             await CargarCreditosAsync();
         }
         else 

@@ -23,7 +23,12 @@ public partial class ListarClientes : ContentPage
 
                 _ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
                 if (Usuario?.Usuario != null)
+                {
                     _ = App.SQLiteDB.SincronizarCreditos(Usuario); //inserta los nuevos creditos en el servidor
+
+                   _ = App.SQLiteDB.SincronizarAbonos(usuario);
+                }
+
                 else
                     Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
 

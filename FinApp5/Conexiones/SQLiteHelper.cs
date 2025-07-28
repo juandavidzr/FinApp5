@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using SQLite;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Runtime.Intrinsics.Arm;
 using System.Threading;
 
 namespace FinApp5.Data
@@ -114,6 +115,7 @@ namespace FinApp5.Data
 
                     }
                 }
+                rdr.Close();
                 if (cmd.Connection.State == ConnectionState.Open)
                     cmd.Connection.Close();
                 
@@ -192,7 +194,6 @@ namespace FinApp5.Data
                         }
                         CONEXIONMAESTRA.Cerrar();
                         int sincronizados = await App.SQLiteDB.SincronizarMovimientosOfflineAsync(usuario, nuevoIdPrestamo, numPrestamo);
-
                     }
                 }
             }
@@ -240,8 +241,9 @@ namespace FinApp5.Data
                     };
                  App.SQLiteDB.SaveTipoGasto(gasto);
                 }
-                CONEXIONMAESTRA.Cerrar();
                 rdr.Close();
+                CONEXIONMAESTRA.Cerrar();
+                
             }
             catch (Exception ex)
             {
@@ -272,8 +274,9 @@ namespace FinApp5.Data
                     //if (barrio == null)
                   await  App.SQLiteDB.SaveBarrios(bar);
                 }
-                CONEXIONMAESTRA.Cerrar();
                 rdr.Close();
+                CONEXIONMAESTRA.Cerrar();
+                
             }
             catch (Exception ex)
             {
@@ -323,6 +326,10 @@ namespace FinApp5.Data
                 cmd.Parameters.AddWithValue("@strCriterio", 1);
 
                 var clientesNew = await App.SQLiteDB.CountNewClient();
+                if (clientesNew == null)
+                {
+
+                }
                 if (clientesNew == 0)
                 {
                     await App.SQLiteDB.DeleteClientes<Task>();
@@ -378,6 +385,10 @@ namespace FinApp5.Data
                 cmd.Parameters.AddWithValue("@strCriterio", 1);
 
                 var clientesNew = await App.SQLiteDB.CountNewClient();
+                if (clientesNew == null)
+                {
+
+                }
                 if (clientesNew == 0)
                 {
                     await App.SQLiteDB.DeleteClientes<Task>();
@@ -878,17 +889,16 @@ namespace FinApp5.Data
                     };
                  await  App.SQLiteDB.savePrestamos(prestamos);
                 }
-                CONEXIONMAESTRA.Cerrar();
-
                 rdr.Close();
+                CONEXIONMAESTRA.Cerrar();
             }
             catch (Exception ex)
             {
                 var err = ex.Message;
                 throw;
-
+                
             }
-            finally { CONEXIONMAESTRA.Cerrar(); }
+            finally { CONEXIONMAESTRA.Cerrar();  }
         }
 
 
@@ -916,8 +926,9 @@ namespace FinApp5.Data
                     };
                  await   App.SQLiteDB.SaveRuta(ruta);
                 }
-                CONEXIONMAESTRA.Cerrar();
                 rdr.Close();
+                CONEXIONMAESTRA.Cerrar();
+                
             }
             catch (Exception ex)
             {
@@ -963,44 +974,54 @@ namespace FinApp5.Data
             }
             finally { CONEXIONMAESTRA.Cerrar(); }
         }
-
+        private static readonly object _locker = new object();
         public bool UpdatePrestamos(Prestamos prestamo)
         {
-            try
+            lock (_locker) // Evita conflictos de acceso concurrente
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3")))
+                try
                 {
-                    SQLite.SQLiteCommand com = new SQLite.SQLiteCommand(connection);
+                    var dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3");
 
-                    if (prestamo.fechaCancelacion == "01/01/0001")
+                    using (var connection = new SQLiteConnection(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "db.db3")))
+                    
                     {
-                        com.CommandText = "UPDATE Prestamos SET saldoActualCre = " + prestamo.saldoActualCre +
-                                          ", marAboCreDia = " + prestamo.marAboCreDia +
-                                          ", fecUltPag = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
-                                          ", valUltPag = " + prestamo.valUltPag +
-                                          ", fechaCancelacion = '" + prestamo.fechaCancelacion + "'" +
-                                          " WHERE NumPrestamo = " + prestamo.NumPrestamo;
+                        SQLite.SQLiteCommand com = new SQLite.SQLiteCommand(connection);
+
+                        if (prestamo.fechaCancelacion == "01/01/0001")
+                        {
+                            com.CommandText = "UPDATE Prestamos SET saldoActualCre = " + prestamo.saldoActualCre +
+                                              ", marAboCreDia = " + prestamo.marAboCreDia +
+                                              ", fecUltPag = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
+                                              ", valUltPag = " + prestamo.valUltPag +
+                                              ", fechaCancelacion = '" + prestamo.fechaCancelacion + "'" +
+                                              " WHERE NumPrestamo = " + prestamo.NumPrestamo;
+                        }
+                        else
+                        {
+                            com.CommandText = "UPDATE Prestamos SET saldoActualCre = " + prestamo.saldoActualCre +
+                                              ", marAboCreDia = " + prestamo.marAboCreDia +
+                                              ", fecUltPag = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
+                                              ", valUltPag = " + prestamo.valUltPag +
+                                              ", fechaCancelacion = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
+                                              " WHERE NumPrestamo = " + prestamo.NumPrestamo;
+                        }
+                        com.ExecuteNonQuery();
+                        //connection.Close();
+                        return true;
                     }
-                    else
-                    {
-                        com.CommandText = "UPDATE Prestamos SET saldoActualCre = " + prestamo.saldoActualCre +
-                                          ", marAboCreDia = " + prestamo.marAboCreDia +
-                                          ", fecUltPag = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
-                                          ", valUltPag = " + prestamo.valUltPag +
-                                          ", fechaCancelacion = '" + DateTime.Today.ToString("M/dd/yyyy") + "'" +
-                                          " WHERE NumPrestamo = " + prestamo.NumPrestamo;
-                    }
-                    com.ExecuteNonQuery();
-                    connection.Close();
-                    return true;
                 }
+                catch (Exception ex)
+                {
+                    //var err = ex.Message;
+                    //return false;
+                    Console.WriteLine("Error al actualizar préstamo: " + ex.Message);
+                    Console.WriteLine("Stack Trace: " + ex.StackTrace);
+                    throw; // opcional: para ver la línea exacta
+                }
+                finally { CONEXIONMAESTRA.Cerrar(); }
+
             }
-            catch (Exception ex)
-            {
-                var err = ex.Message;
-                return false;
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
         }
 
         internal void marcarRetaque(string idCredito)
@@ -1157,7 +1178,9 @@ namespace FinApp5.Data
                     cmd.Parameters.AddWithValue("@lngNumCreAfe", mmovimiento.NumeroCreAfe);
                     cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.Usuario);
                     cmd.Parameters.AddWithValue("@strComentAbo", "");
-                    row = await cmd.ExecuteNonQueryAsync() * -1;
+                    //row = await cmd.ExecuteNonQueryAsync() * -1;
+                    cmd.ExecuteReader();
+                    row = 1;
                     if (row > 0)
                         App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
                 }
@@ -1298,6 +1321,39 @@ namespace FinApp5.Data
             return 0;
         }
 
+        public async Task<int> SincronizarAbonos(Musuarios usuario)
+        {
+            int movimientoNew = await App.SQLiteDB.CountNewAbonos(); // Verifica si hay movimientos nuevos
+
+            if (movimientoNew > 0)
+            {
+                int registrosSincronizados = 0;
+                var movimientos = await App.SQLiteDB.GetAbonosNewOffLine(); // Obtiene los movimientos nuevos
+               
+
+                if (movimientos.Count > 0)
+                {
+                    foreach (var item in movimientos)
+                    {
+                        registrosSincronizados += await App.SQLiteDB.SincronizarAbono(item, usuario);
+                    }
+                }
+
+                //if (registrosSincronizados > 0)
+                //{
+                //    await App.Current.MainPage.DisplayAlert(
+                //        "Exitoso",
+                //        $"{registrosSincronizados} registro(s) guardado(s) con éxito",
+                //        "OK"
+                //    );
+                //}
+
+                return registrosSincronizados;
+            }
+
+            // No había movimientos nuevos
+            return 0;
+        }
 
     }
 }

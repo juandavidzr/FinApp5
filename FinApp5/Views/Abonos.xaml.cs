@@ -96,8 +96,10 @@ public partial class Abonos : ContentPage
                 
                 txtSaldo.Text = saldo.ToString();
 
-                //await Navigation.PushAsync(new ListaCreditos(Usuario));
-                await Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+                if (CONEXIONMAESTRA.VerificarCon())
+                    await Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+                else
+                    await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
             else
             {
@@ -165,6 +167,7 @@ public partial class Abonos : ContentPage
     }
 
     private void GrabarOffLine(Mmovimiento abono , int nuevoparam = 1)
+    //private async Task GrabarOffLineAsync(Mmovimiento abono, int nuevoparam = 1)
     {
         abono = new Mmovimiento
         {
@@ -180,7 +183,7 @@ public partial class Abonos : ContentPage
             Descripcion = (cmbTipoAbono.SelectedItem as TiposAbono)?.tipoAbono,
             nuevo = nuevoparam
         };
-        App.SQLiteDB.SaveAbono(abono);
+       App.SQLiteDB.SaveAbono(abono);
 
         int nuevoSaldo;
         if (abono.strCodTipMov == "02")
@@ -212,7 +215,9 @@ public partial class Abonos : ContentPage
                 fechaCancelacion = DateTime.Today.ToString("dd/MM/yyyy")
             };
         }
+        Thread.Sleep(100);
         var respuesta = App.SQLiteDB.UpdatePrestamos(prestamo);
+       //await App.SQLiteDB.UpdatePrestamos(prestamo);
 
         if (!respuesta)
         {
