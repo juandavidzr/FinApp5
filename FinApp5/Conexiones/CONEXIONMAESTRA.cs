@@ -4,13 +4,9 @@ namespace FinApp5.Conexiones
 {
     public class CONEXIONMAESTRA
     {
-        //public static string conexion = "Server=138.128.171.162; Database=creditosjgvcc; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
+       
         public static string conexion = "Server=138.128.171.162; Database=prueba; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162; Database=jhonjj27; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162; Database=fuentedeinversiones; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162; Database=credicristianwil; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162; Database=creditosmag; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162; Database=creditosmag1; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
+       
 
         public static SqlConnection conectar = new SqlConnection(conexion);
         public static void Abrir()
