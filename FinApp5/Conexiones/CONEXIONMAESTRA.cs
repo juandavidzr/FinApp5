@@ -12,8 +12,6 @@ namespace FinApp5.Conexiones
         //public static string conexion = "Server=138.128.171.162; Database=creditosmag; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
         //public static string conexion = "Server=138.128.171.162; Database=creditosmag1; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
 
-        //public static string conexion = "workstation id = capricornioDB.mssql.somee.com; packet size = 4096; user id = capri_SQLLogin_1; pwd=gkhj6yjsqc;data source = capricornioDB.mssql.somee.com; persist security info=False;initial catalog = capricornioDB; TrustServerCertificate=True";
-
         public static SqlConnection conectar = new SqlConnection(conexion);
         public static void Abrir()
         {
