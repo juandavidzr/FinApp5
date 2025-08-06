@@ -26,7 +26,6 @@ namespace FinApp5.Conexiones
                 System.Diagnostics.Debug.WriteLine("ERROR al abrir conexión: " + ex.Message);
                 throw; // re-lanzamos para no ocultarlo                
             }
-           
         }
         public static void Cerrar()
         {
