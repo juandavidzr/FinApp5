@@ -33,12 +33,12 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.19</string>
+	<string>2.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.19</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.companyname.finapp</string>
+	<string>2.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>FinAppXO</string>
+	<string>FinAppCreditosjg</string>
+	<key>CFBundleIdentifier</key>
+	<string>FinAppCreditosjg</string>
 </dict>
 </plist>

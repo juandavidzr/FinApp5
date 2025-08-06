@@ -1,3 +1,4 @@
+using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using FinApp5.ViewModels;
 
@@ -11,6 +12,15 @@ public partial class Balance : ContentPage
 	{
 		InitializeComponent();
         Usuario = usuario;
-        BindingContext = new VMBalance(Navigation, Usuario);
+        if (CONEXIONMAESTRA.VerificarCon())
+        {
+            BindingContext = new VMBalance(Navigation, Usuario);
+        }
+        else
+        {
+            DisplayAlert("Sin Internet", "Informe no disponible sin internet (21)", "OK");
+            
+        }
     }
+    
 }

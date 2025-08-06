@@ -345,6 +345,7 @@ namespace FinApp5.Data
                             cteCodBarDom = rdr["cteCodBarDom"].ToString(),
                             cteDireccion = rdr["cteDirCobCte"].ToString(),
                             cteCodBarCob = rdr["cteCodBarCob"].ToString(),
+                            cteCodRutReg = rdr["cteCodRutReg"].ToString(),
                             cteTeleCelu = rdr["cteTeleCelu"].ToString(),
                             cteTeleFijo = rdr["cteTeleFijo"].ToString(),
                             cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
@@ -406,6 +407,7 @@ namespace FinApp5.Data
                             cteCodBarCob = rdr["cteCodBarCob"].ToString(),
                             cteTeleCelu = rdr["cteTeleCelu"].ToString(),
                             cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+                            cteCodRutReg = rdr["cteCodRutReg"].ToString(),
                             cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
                             latitud = rdr["latitud"].ToString(),
                             longitud = rdr["longitud"].ToString(),
@@ -745,9 +747,26 @@ namespace FinApp5.Data
         /// Recuperar todos los clientes
         /// </summary>
         /// <returns></returns>
-        public Task<List<Mcliente>> GetClientesAsync()
+        public async Task<List<Mcliente>> GetClientesAsync(string codigoRuta)
         {
-            return db.Table<Mcliente>().OrderBy(x => x.cteNumIdenti).ToListAsync();
+            //return db.Table<Mcliente>().OrderBy(x => x.cteNumIdenti).ToListAsync();
+            /*
+            return db.Table<Mcliente>()
+                .Where(c => c.cteCodRutReg != null && c.cteCodRutReg.Contains("00022"))
+                .OrderBy(x => x.cteNumIdenti)
+                .ToListAsync();*/
+
+            var clientes = await db.Table<Mcliente>().ToListAsync();  // Espera la lista
+
+            var filtrados = clientes
+                .Where(c => !string.IsNullOrEmpty(c.cteCodRutReg) &&
+                            c.cteCodRutReg.Contains("00022"))
+                .OrderBy(c => c.cteNumIdenti)
+                .ToList();
+
+            Console.WriteLine($"Se encontraron {filtrados.Count} resultados.");
+            return filtrados;
+
         }
 
         /// <summary>

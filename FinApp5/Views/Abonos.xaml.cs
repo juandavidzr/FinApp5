@@ -286,7 +286,7 @@ public partial class Abonos : ContentPage
         if (CONEXIONMAESTRA.VerificarCon())
             Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
         else
-            DisplayAlert("Sin Internet", "Esta trabajando sin Internet (239)", "OK");
+            DisplayAlert("Sin Internet", "Esta opción no esta disponible sin intenet (289)", "OK");
     }
     private void Button_WhatsApp(object sender, EventArgs e)
     {

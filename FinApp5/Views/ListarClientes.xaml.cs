@@ -88,7 +88,7 @@ public partial class ListarClientes : ContentPage
             else
             {
                 await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
-                var clienteList = await App.SQLiteDB.GetClientesAsync();
+                var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
                 if (clienteList != null)
                 {
                     lstClientes.ItemsSource = clienteList;
@@ -105,7 +105,7 @@ public partial class ListarClientes : ContentPage
             }
             lstClientes.SelectedItem = null;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             if (cmd.Connection.State == ConnectionState.Open)
                 cmd.Connection.Close();

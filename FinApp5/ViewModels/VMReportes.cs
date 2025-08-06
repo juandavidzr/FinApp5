@@ -40,11 +40,11 @@ namespace FinApp5.ViewModels
         }
         public void IrAInformeDia()
         {
-            Navigation.PushAsync(new InformeDia(Usuario));
+            Navigation?.PushAsync(new InformeDia(Usuario));
         }
         public void IrABalance()
         {
-            Navigation.PushAsync(new Balance(Usuario));
+            Navigation?.PushAsync(new Balance(Usuario));
         }
         #endregion
         #region COMANDOS

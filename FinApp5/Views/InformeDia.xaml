@@ -7,7 +7,7 @@
         
         <ScrollView>
             
-            <StackLayout Margin="5">
+            <StackLayout Margin="15">
                 
                 <Label Text="Nombre                     | ID Crédito      |            Valor " />
                 <Label Text="Hora                           | Tipo" />
@@ -32,7 +32,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Label Text="{Binding NombreCteCre}" Grid.Row="0" Grid.Column="0" TextColor="Black"/>
                                     <Label Text="{Binding NumeroCreAfe}" Grid.Row="0" Grid.Column="1" TextColor="Black" />
-                                    <Label Text="{Binding ValorMovto, StringFormat='{0}'}"   Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="End" />
+                                    <Label Text="{Binding ValorMovto, StringFormat='{0}'}"   Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="Center" />
                                     <Label Text="{Binding FechaHoraReg, StringFormat='{0:hh:mm:ss tt}'}" Grid.Row="1" Grid.Column="0" TextColor="Black"/>
                                     <Label Text="{Binding Descripcion}"  Grid.Row="1" Grid.Column="1" TextColor="Black" />
                                     <Label Text="{Binding strComentAbo}"  Grid.Row="2" Grid.Column="0" TextColor="Black" />

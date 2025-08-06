@@ -132,17 +132,23 @@ namespace FinApp5.ViewModels
 
         private bool PermisoCreditos()
         {
+            SqlDataReader rdr;
             try
             {
                 if (CONEXIONMAESTRA.VerificarCon())
                 {
-                    SqlCommand cmd = new("permisoCreditos", CONEXIONMAESTRA.conectar)
-                    {
-                        CommandType = CommandType.StoredProcedure
-                    };
+                    //SqlCommand cmd = new("permisoCreditos", CONEXIONMAESTRA.conectar)
+                    //{
+                    //    CommandType = CommandType.StoredProcedure
+                    //};
+                    SqlCommand cmd = new SqlCommand();
+                    cmd = new SqlCommand("permisoCreditos", CONEXIONMAESTRA.conectar);
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
                     CONEXIONMAESTRA.Abrir();
-                    SqlDataReader rdr = cmd.ExecuteReader();
+                    
+                    rdr = cmd.ExecuteReader();
+
                     if (rdr.Read())
                     {
                         var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"].ToString());
