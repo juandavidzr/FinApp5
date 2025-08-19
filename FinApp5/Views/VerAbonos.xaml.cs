@@ -11,12 +11,13 @@ using System.Collections.ObjectModel;
 public partial class VerAbonos : ContentPage
 {
     public ObservableCollection<Mmovimiento> MovimientosCollection = new ObservableCollection<Mmovimiento>();
-
-    public VerAbonos(string lngNumeroUniCre, string strNombreCliente, string saldo)
+    Musuarios Usuario = new Musuarios();
+    public VerAbonos(string lngNumeroUniCre, string strNombreCliente, string saldo, Musuarios usuario)
 	{
 		InitializeComponent();
         llenarAbonos(lngNumeroUniCre, strNombreCliente, saldo);
-
+       
+        Usuario = usuario;
     }
 
     private void llenarAbonos(string lngNumeroUniCre, string strNombreCliente, string saldo)
@@ -86,5 +87,10 @@ public partial class VerAbonos : ContentPage
 
     private async void Button_Cerrar_Clicked(object sender, EventArgs e)
     {
+    }
+
+    private async void btnVolver_Clicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ListaCreditos(Usuario));
     }
 }

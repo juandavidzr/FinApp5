@@ -2,48 +2,92 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.ListarClientes"
-             Title="Clientes para credito"
+             Title="Clientes para crédito"
              Shell.NavBarHasShadow="False"
              Shell.NavBarIsVisible="False">
-    
-    <ContentPage.Content>
-        
-        <StackLayout>
-            <Label Text="Clientes para credito" HorizontalTextAlignment="Center" FontSize="Title"></Label>
-            <Button x:Name="btnTransacciones" Text="Ir a Transacciones" Clicked="btnTransacciones_Clicked" Margin="5"></Button>
-            <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
-            <SearchBar  Placeholder="Buscar por nombre" Keyboard="Chat" 
-                        TextChanged="SearchBar_TextChanged" MaxLength="30" 
-                        FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="5"/>
-            
-            <Label Text="ID CLIENTE              | NOMBRE CLIENTE"   Grid.Row="0" Grid.Column="0"/>
-            <Label Text="TELEFONO              | DIRECCION"        Grid.Row="0" Grid.Column="1"/>
 
-            <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-            <ListView x:Name="lstClientes" ItemSelected= "lstClientes_ItemSelected">
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+
+            <Label Text="Clientes para crédito"
+                   HorizontalTextAlignment="Center"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,10" />
+
+            <Button x:Name="btnTransacciones"
+                    Text="Ir a Transacciones"
+                    Clicked="btnTransacciones_Clicked"
+                    Margin="0,0,0,5" />
+
+            <Button x:Name="btnInicio"
+                    Text="Ir a menú principal"
+                    Clicked="btnInicio_Clicked"
+                    Margin="0,0,0,15" />
+
+            <SearchBar Placeholder="Buscar por nombre"
+                       Keyboard="Chat"
+                       TextChanged="SearchBar_TextChanged"
+                       MaxLength="30"
+                       FontSize="15"
+                       HeightRequest="40"
+                       BackgroundColor="White"
+                       CancelButtonColor="Black"
+                       Margin="0,0,0,10" />
+
+            <!-- Encabezados -->
+            <Grid Padding="5" BackgroundColor="#eeeeee">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="4*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Primera fila -->
+                <Label Text="ID CLIENTE" Grid.Row="0" Grid.Column="0" FontAttributes="Bold" FontSize="14" VerticalTextAlignment="Center" />
+                <Label Text="NOMBRE CLIENTE" Grid.Row="0" Grid.Column="1" FontAttributes="Bold" FontSize="14" VerticalTextAlignment="Center" />
+
+                <!-- Segunda fila -->
+                <Label Text="TELÉFONO" Grid.Row="1" Grid.Column="0" FontAttributes="Bold" FontSize="14" VerticalTextAlignment="Center" />
+                <Label Text="DIRECCIÓN" Grid.Row="1" Grid.Column="1" FontAttributes="Bold" FontSize="14" VerticalTextAlignment="Center" />
+            </Grid>
+
+            <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="0,0,0,5" />
+
+            <!-- Lista de clientes -->
+            <ListView x:Name="cvClientes" ItemSelected="lstClientes_ItemSelected" HasUnevenRows="True" SeparatorVisibility="Default">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Text="{Binding cteNumIdenti}"  Grid.Row="0" Grid.Column="0" TextColor="Blue"/>
-                                <Label Text="{Binding cteNombApel}"   Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray"/>
-                                <Label Text="{Binding cteTeleCelu}"   Grid.Row="1" Grid.Column="0" TextColor="Orange"/>
-                                <Label Text="{Binding cteDirCobCte}"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" TextColor="Gray"/>
-                            </Grid>
+                            <StackLayout Padding="5">
+                                <!-- Primera fila -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="4*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding cteNumIdenti}" FontSize="14" TextColor="Blue" VerticalTextAlignment="Center" />
+                                    <Label Text="{Binding cteNombApel}" Grid.Column="1" FontSize="14" TextColor="Black" LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
+                                </Grid>
+
+                                <!-- Segunda fila -->
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="4*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Text="{Binding cteTeleCelu}" FontSize="13" TextColor="Orange" VerticalTextAlignment="Center" />
+                                    <Label Text="{Binding cteDirCobCte}" Grid.Column="1" FontSize="13" TextColor="Gray" LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
+                                </Grid>
+                            </StackLayout>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </StackLayout>
 
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

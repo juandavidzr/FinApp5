@@ -206,6 +206,7 @@ public partial class ListaCreditos : ContentPage
         {
             VMAbono abono = new VMAbono(null, Usuario);            
             await abono.SincronizarTodoAsync();
+
             await App.SQLiteDB.SincronizarAbonos(Usuario);
             await CargarCreditosAsync();
         }

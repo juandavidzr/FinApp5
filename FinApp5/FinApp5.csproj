@@ -41,8 +41,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
-	  <CodesignKey>iPhone Distribution</CodesignKey>
-	  <CodesignProvision></CodesignProvision>
+	  <CodesignKey>Apple Distribution: JUAN DAVID ZAPATA ROBLEDO (4VS2J48HYH)</CodesignKey>
+	  <CodesignProvision>com.companyname.finapp5</CodesignProvision>
 	  <ProvisioningType>manual</ProvisioningType>
 	</PropertyGroup>
 

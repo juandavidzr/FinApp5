@@ -335,25 +335,28 @@ public partial class Creditos : ContentPage
                     cmd.Parameters.AddWithValue("@dblSaldoAcCr", intSaldoActualCre); //  dblNetoEnCre);//8
                     cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag); //  intNumCuoPag);//9
                     cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen); //  intNumCuoPen);//10
-                    cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd")); //  DateTime.Today.ToString("yyyy-MM-dd"));//11
+                    cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd")); //11
                     cmd.Parameters.AddWithValue("@dblValUltPag", "0"); //   0);//12
                     cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd")); //  dteFechaVenCre);//13
                     cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito); //  intPosCredito);//14
                     cmd.Parameters.AddWithValue("@intTieDiaCre", "0"); //   0);//15
-                    cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex] + " - " + txtGuiaPago.Text.Trim()); //  txtGuiaPago);//16
+                    cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex]+"-"+ txtGuiaPago.Text.Trim()); //16
                     cmd.Parameters.AddWithValue("@dblValMicSeg", "0"); //   0);//17
                     cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre); //  dblTotPagCre);//18
-                    cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd")); //  DateTime.Today.ToString("yyyy-MM-dd"));//19
+                    cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd")); //19
                     cmd.Parameters.AddWithValue("@dblValCuoPag", dblValCuoPag); //  dblValCuoPag);//20
                     cmd.Parameters.AddWithValue("@intNumDiaPPC", "0"); //   0);//21
                     cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre); //  dblTotPagCre);//22
                     cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim()); //  txtNombreCli.Text.Trim());//23
                     cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);  //24
-                    cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim()); //  txtNotas.Text.Trim()); //24
+                    cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim()); 
 
                     cmd.ExecuteReader();
                     CONEXIONMAESTRA.Cerrar();
                     DisplayAlert("Credito creado", "Credito creado", "OK");
+
+                    
+                    
                 }
                 else
                 {

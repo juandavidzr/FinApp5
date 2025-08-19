@@ -97,7 +97,7 @@ public partial class Abonos : ContentPage
                 txtSaldo.Text = saldo.ToString();
 
                 if (CONEXIONMAESTRA.VerificarCon())
-                    await Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+                    await Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text, Usuario));
                 else
                     await Navigation.PushAsync(new ListaCreditos(Usuario));
             }
@@ -284,7 +284,7 @@ public partial class Abonos : ContentPage
     {
 
         if (CONEXIONMAESTRA.VerificarCon())
-            Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text));
+            Navigation.PushAsync(new VerAbonos(txtIdCredito.Text, txtNombre.Text, txtSaldo.Text, Usuario));
         else
             DisplayAlert("Sin Internet", "Esta opción no esta disponible sin intenet (289)", "OK");
     }

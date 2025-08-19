@@ -2,6 +2,7 @@
 using FinApp5.Modelo;
 using System;
 using Microsoft.Maui.Controls;
+using FinApp5.Conexiones;
 
 namespace FinApp5.Views;
 
@@ -30,6 +31,10 @@ public partial class Transacciones : ContentPage
     public Transacciones(Musuarios usuario) : this() // Llama al constructor sin parámetros
     {
         Usuario = usuario;
+
+        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+            App.SQLiteDB.SyncCobros(usuario.CodigoCobr, "Ruta");
+
     }
 
     private void btn1_Tapped(object sender, EventArgs e)

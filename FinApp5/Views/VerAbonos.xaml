@@ -4,9 +4,11 @@
              x:Class="FinApp5.Views.VerAbonos"
              Title="Ver Abonos">
     <ContentPage.Content>
+        
         <ScrollView>
             
             <StackLayout Margin="10">
+                <Button x:Name="btnVolver" Text="Volver a creditos" Clicked="btnVolver_Clicked" Margin="5"/>
                 <Label Text="FECHA                             |      VALOR      |                   TIPO" />
                 <ListView x:Name="lstMovimientos" Margin="10">
                     <ListView.ItemTemplate>

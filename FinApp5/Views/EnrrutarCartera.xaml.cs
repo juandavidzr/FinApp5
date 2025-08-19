@@ -171,7 +171,7 @@ public partial class EnrrutarCartera : ContentPage
 
                     if (!string.IsNullOrEmpty(ruta))
                     {
-                      await  App.SQLiteDB.SyncCobros(ruta, "Ruta");
+                        await  App.SQLiteDB.SyncCobros(ruta, "Ruta");
                     }
                 }
                 else

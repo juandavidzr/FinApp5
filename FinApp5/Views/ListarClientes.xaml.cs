@@ -14,31 +14,34 @@ public partial class ListarClientes : ContentPage
     private readonly Musuarios Usuario = new();
     public ListarClientes(Musuarios usuario)
     {
+        Usuario = usuario;
+        _ =ListarClientesAsync(Usuario);
+    }
+    public async Task ListarClientesAsync(Musuarios usuario)
+    {
         InitializeComponent();
         try
         {
-            Usuario = usuario;
+            
             if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
             {
-
-                _ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+                //_ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+                await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
                 if (Usuario?.Usuario != null)
                 {
-                    _ = App.SQLiteDB.SincronizarCreditos(Usuario); //inserta los nuevos creditos en el servidor
-
-                   _ = App.SQLiteDB.SincronizarAbonos(usuario);
+                    //_ = App.SQLiteDB.SincronizarCreditos(Usuario); //inserta los nuevos creditos en el servidor
+                    //_ = App.SQLiteDB.SincronizarAbonos(usuario);
+                    await App.SQLiteDB.SincronizarCreditos(usuario);
+                    await App.SQLiteDB.SincronizarAbonos(usuario);
                 }
-
                 else
-                    Console.WriteLine("⚠️ Error: Usuario.Usuario es null.");
-
+                    Console.WriteLine("Error: Usuario.Usuario es null.");
             }
-
             llenarDatos(usuario);
         }
         catch (Exception ex)
         {
-
+            Console.WriteLine($"Excepción: {ex.Message}");
             throw;
         }
        
@@ -80,7 +83,7 @@ public partial class ListarClientes : ContentPage
                         cteDirCobCte = rdr["cteDirCobCte"].ToString(),
                     });
                 }
-                lstClientes.ItemsSource = clientsCollection;
+                cvClientes.ItemsSource = clientsCollection;
 
                 if (cmd.Connection.State == ConnectionState.Open)
                     cmd.Connection.Close();
@@ -91,7 +94,7 @@ public partial class ListarClientes : ContentPage
                 var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
                 if (clienteList != null)
                 {
-                    lstClientes.ItemsSource = clienteList;
+                    cvClientes.ItemsSource = clienteList;
                     clientsCollection.Clear();
                     foreach (var cliente in clienteList)
                     {
@@ -99,11 +102,11 @@ public partial class ListarClientes : ContentPage
                     }
                     if (clientsCollection != null)
                     {
-                        lstClientes.ItemsSource = clientsCollection;
+                        cvClientes.ItemsSource = clientsCollection;
                     }
                 }
             }
-            lstClientes.SelectedItem = null;
+            cvClientes.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -123,12 +126,12 @@ public partial class ListarClientes : ContentPage
         {
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
             {
-                lstClientes.ItemsSource = clientsCollection.ToList();
+                cvClientes.ItemsSource = clientsCollection.ToList();
             }
             else
             {
                 //lstClientes.ItemsSource = clientsCollection.Where(i => i.cteNombApel.ToLower().Contains(e.NewTextValue.ToLower()));
-                lstClientes.ItemsSource = clientsCollection
+                cvClientes.ItemsSource = clientsCollection
                                             .Where(i => (i.cteNombApel?.ToLower() ?? "").Contains(e.NewTextValue.ToLower()))
                                             .ToList();
 
@@ -160,11 +163,44 @@ public partial class ListarClientes : ContentPage
 
     private void btnTransacciones_Clicked(object sender, EventArgs e)
     {
+
         Navigation.PushAsync(new Transacciones(Usuario));
     }
 
     private void btnInicio_Clicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new MenuPpal(Usuario));
+    }
+
+    private void cvClientes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            // Asegurarse de que haya al menos un elemento seleccionado
+            if (e.CurrentSelection != null && e.CurrentSelection.Count > 0)
+            {
+                var cli = (Mcliente)e.CurrentSelection.FirstOrDefault();
+                if (cli == null)
+                    return;
+
+                // Crear el objeto cliente que se pasará a la siguiente página
+                Mcliente cliente = new Mcliente
+                {
+                    cteNumIdenti = cli.cteNumIdenti,
+                    cteNombApel = cli.cteNombApel
+                };
+
+                // Navegar a la página de créditos
+                Navigation.PushAsync(new Creditos(cliente, Usuario));
+
+                // Opcional: limpiar la selección para que no quede resaltado
+                ((CollectionView)sender).SelectedItem = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Error", "Error " + ex.Message, "OK");
+            throw;
+        }
     }
 }

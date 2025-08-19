@@ -1,4 +1,5 @@
-﻿using FinApp5.Conexiones;
+﻿
+using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using SQLite;
@@ -89,6 +90,8 @@ namespace FinApp5.Data
             var barriosList = await App.SQLiteDB.GetBarriosAsync();
             return barriosList;
         }
+
+        /*
         public async Task<List<Mbarrio>> LlenarBarriosAsync()
         {
             List<Mbarrio> barrios = new();
@@ -128,8 +131,45 @@ namespace FinApp5.Data
 
             return barrios;
         }        
+        */
 
+        public async Task<List<Mbarrio>> LlenarBarriosAsync()
+        {
+            var barrios = new List<Mbarrio>();
 
+            try
+            {
+                using (var con = CONEXIONMAESTRA.GetConnection())
+                {
+                    await con.OpenAsync();
+
+                    using (var cmd = new SqlCommand("CargarItemsDeBarriosEnGral", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (var rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await rdr.ReadAsync())
+                            {
+                                barrios.Add(new Mbarrio
+                                {
+                                    IdBarrio = rdr["rbcCodigo"].ToString(),
+                                    NombreBarrio = rdr["rbcNombre"].ToString()
+                                });
+                                
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en LlenarBarriosAsync: {ex.Message}");
+            }
+
+            return barrios;
+        }
 
         public async Task SincronizarCreditos(Musuarios usuario) //inserta los nuevos creditos en el servidor
         {
@@ -257,9 +297,10 @@ namespace FinApp5.Data
             try
             {
                 CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("FiltrarBarriosPorRuta", CONEXIONMAESTRA.conectar);
+                //SqlCommand cmd = new SqlCommand("FiltrarBarriosPorRuta", CONEXIONMAESTRA.conectar);
+                SqlCommand cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
+                //cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
                 SqlDataReader rdr = cmd.ExecuteReader();
                 await App.SQLiteDB.DeleteBarrios();
 
@@ -270,9 +311,8 @@ namespace FinApp5.Data
                         IdBarrio = rdr["rbcCodigo"].ToString(),
                         NombreBarrio = rdr["rbcNombre"].ToString()
                     };
-                    //var barrio = App.SQLiteDB.GetBarrioByIdAsync(bar.IdBarrio);
-                    //if (barrio == null)
-                  await  App.SQLiteDB.SaveBarrios(bar);
+
+                    await  App.SQLiteDB.SaveBarrios(bar);
                 }
                 rdr.Close();
                 CONEXIONMAESTRA.Cerrar();
@@ -520,11 +560,15 @@ namespace FinApp5.Data
                                 cmd.Parameters.AddWithValue("@strNotasCte", a.cteNotasGenerales);
 
                                 CONEXIONMAESTRA.Abrir();
+                                
+                                cliente.nuevo = 0;
+                                await App.SQLiteDB.UpdateClienteAsync(cliente);
 
                                 cmd.ExecuteReader();
                                 cmd.Parameters.Clear();
-                                cliente.nuevo = 0;
-                                await App.SQLiteDB.UpdateClienteAsync(cliente);
+                                
+                                //cliente.nuevo = 0;
+                                //await App.SQLiteDB.UpdateClienteAsync(cliente);
                             }
 
                         }
@@ -760,7 +804,7 @@ namespace FinApp5.Data
 
             var filtrados = clientes
                 .Where(c => !string.IsNullOrEmpty(c.cteCodRutReg) &&
-                            c.cteCodRutReg.Contains("00022"))
+                            c.cteCodRutReg.Contains(codigoRuta))
                 .OrderBy(c => c.cteNumIdenti)
                 .ToList();
 
@@ -847,7 +891,18 @@ namespace FinApp5.Data
             return db.InsertAsync(prestamos);
         }
 
+        public async Task SavePrestamosBulkAsync(List<Prestamos> prestamos)
+        {
+            await db.RunInTransactionAsync(conn =>
+            {
+                foreach (var p in prestamos)
+                {
+                    conn.Insert(p);
+                }
+            });
+        }
 
+        /*
         public async Task SyncCobros(string ruta, string filtro)
         {
             try
@@ -869,7 +924,8 @@ namespace FinApp5.Data
                         idCliente = rdr["pmoIdentifiCli"].ToString(),
                         fechaPrestamo = (rdr["pmoFechaPre"].ToString()),
                         codigoRuta = ruta,
-                        cantidadPrestada = Convert.ToDouble(rdr["pmoTotalPagCre"].ToString()),
+                        //cantidadPrestada = Convert.ToDouble(rdr["pmoTotalPagCre"].ToString()),
+                        cantidadPrestada = rdr["pmoTotalPagCre"] != DBNull.Value ? Convert.ToDouble(rdr["pmoTotalPagCre"]) : 0,
                         nombreCliente = rdr["cteNombApel"].ToString(),
                         interes = Convert.ToDouble(rdr["pmoInteresPre"]),
                         codigoPlan = rdr["pmoCodigoPla"].ToString(),
@@ -906,7 +962,7 @@ namespace FinApp5.Data
                         DiaSemana = Convert.ToString(rdr["pmoDiaSemana"]),
                         nuevo = 0
                     };
-                 await  App.SQLiteDB.savePrestamos(prestamos);
+                    await  App.SQLiteDB.savePrestamos(prestamos);
                 }
                 rdr.Close();
                 CONEXIONMAESTRA.Cerrar();
@@ -918,6 +974,91 @@ namespace FinApp5.Data
                 
             }
             finally { CONEXIONMAESTRA.Cerrar();  }
+        }
+
+        */
+
+        public async Task SyncCobros(string ruta, string filtro)
+        {
+            try
+            {
+                using (var con = new SqlConnection(CONEXIONMAESTRA.conexion))
+                {
+                    await con.OpenAsync();
+
+                    using (var cmd = new SqlCommand("DescargarCarteraCompleta", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+
+                        using (var rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            // Limpiar tabla Prestamos en SQLite local
+                            await App.SQLiteDB.DeletePrestamosAsync<Prestamos>();
+
+                            var listaPrestamos = new List<Prestamos>();
+
+                            while (await rdr.ReadAsync())
+                            {
+                                var prestamos = new Prestamos
+                                {
+                                    rowid = rdr["pmoNumeroPre"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumeroPre"]) : 0,
+                                    NumPrestamo = rdr["pmoNumeroPre"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumeroPre"]) : 0,
+                                    idCliente = rdr["pmoIdentifiCli"]?.ToString(),
+                                    fechaPrestamo = rdr["pmoFechaPre"]?.ToString(),
+                                    codigoRuta = ruta,
+                                    cantidadPrestada = rdr["pmoTotalPagCre"] != DBNull.Value ? Convert.ToDouble(rdr["pmoTotalPagCre"]) : 0,
+                                    nombreCliente = rdr["cteNombApel"]?.ToString(),
+                                    interes = rdr["pmoInteresPre"] != DBNull.Value ? Convert.ToDouble(rdr["pmoInteresPre"]) : 0,
+                                    codigoPlan = rdr["pmoCodigoPla"]?.ToString(),
+                                    numeroCuotas = rdr["pmoNumeroCuo"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumeroCuo"]) : 0,
+                                    observaciones = rdr["pmoObservaciones"]?.ToString(),
+                                    vigente = rdr["pmoVigente"] != DBNull.Value ? Convert.ToInt32(rdr["pmoVigente"]) : 0,
+                                    activo = rdr["pmoActivo"] != DBNull.Value ? Convert.ToInt32(rdr["pmoActivo"]) : 0,
+                                    fechaCancelacion = rdr["pmpFechaCan"]?.ToString(),
+                                    refinanciado = rdr["pmoRefinanciado"] != DBNull.Value ? Convert.ToInt32(rdr["pmoRefinanciado"]) : 0,
+                                    trasladado = rdr["pmoTrasladado"] != DBNull.Value ? Convert.ToInt32(rdr["pmoTrasladado"]) : 0,
+                                    fechaTraCue = rdr["pmoFechaTraCue"]?.ToString(),
+                                    cantidadCreVig = rdr["pmoCantidadCreVig"] != DBNull.Value ? Convert.ToDouble(rdr["pmoCantidadCreVig"]) : 0,
+                                    saldoActualCre = rdr["pmoSaldoActualCte"] != DBNull.Value ? Convert.ToDouble(rdr["pmoSaldoActualCte"]) : 0,
+                                    numCuoPag = rdr["pmoNumCuoPag"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumCuoPag"]) : 0,
+                                    numCuoPen = rdr["pmoNumCuoPen"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumCuoPen"]) : 0,
+                                    fecUltPag = rdr["pmoFecUltPag"]?.ToString(),
+                                    valUltPag = rdr["pmoValUltPag"] != DBNull.Value ? Convert.ToInt32(rdr["pmoValUltPag"]) : 0,
+                                    fecVenCre = rdr["pmoFecVenCre"]?.ToString(),
+                                    numCuoAtra = rdr["pmoNumCuoAtra"] != DBNull.Value ? Convert.ToInt32(rdr["pmoNumCuoAtra"]) : 0,
+                                    valorAtrazo = rdr["pmoValorAtrazo"] != DBNull.Value ? Convert.ToDouble(rdr["pmoValorAtrazo"]) : 0,
+                                    valorCuoPen = rdr["pmoValorCuoPen"] != DBNull.Value ? Convert.ToDouble(rdr["pmoValorCuoPen"]) : 0,
+                                    posRutCre = rdr["pmoPosRutCre"] != DBNull.Value ? Convert.ToInt32(rdr["pmoPosRutCre"]) : 0,
+                                    tiempoDias = rdr["pmoTiempoDias"] != DBNull.Value ? Convert.ToInt32(rdr["pmoTiempoDias"]) : 0,
+                                    desDiaPago = rdr["pmoDesDiaPago"]?.ToString(),
+                                    valorMicroSeg = rdr["pmoValorMicroSeg"] != DBNull.Value ? Convert.ToDouble(rdr["pmoValorMicroSeg"]) : 0,
+                                    salTotPenCte = rdr["pmoSalTotPenCte"] != DBNull.Value ? Convert.ToDouble(rdr["pmoSalTotPenCte"]) : 0,
+                                    fechaUltCreOto = rdr["pmoFechaUltCreOto"]?.ToString(),
+                                    valCuotaPag = rdr["pmoValCuotaPag"] != DBNull.Value ? Convert.ToDouble(rdr["pmoValCuotaPag"]) : 0,
+                                    diaProPagCre = rdr["pmoDiaProPagCre"] != DBNull.Value ? Convert.ToInt32(rdr["pmoDiaProPagCre"]) : 0,
+                                    marAboCreDia = rdr["pmoMarAboCreDia"] != DBNull.Value ? Convert.ToInt32(rdr["pmoMarAboCreDia"]) : 0,
+                                    totalPagCre = rdr["pmoTotalPagCre"] != DBNull.Value ? Convert.ToDouble(rdr["pmoTotalPagCre"]) : 0,
+                                    verificado = rdr["pmoVerificado"] != DBNull.Value ? Convert.ToInt32(rdr["pmoVerificado"]) : 0,
+                                    IndicaRetaque = rdr["pmoIndicaRetaque"] != DBNull.Value ? Convert.ToInt32(rdr["pmoIndicaRetaque"]) : 0,
+                                    DiaSemana = rdr["pmoDiaSemana"]?.ToString(),
+                                    nuevo = 0
+                                };
+
+                                listaPrestamos.Add(prestamos);
+                            }
+
+                            // Guardar en bloque
+                            await App.SQLiteDB.SavePrestamosBulkAsync(listaPrestamos);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en SyncCobrosAsync: {ex.Message}");
+                throw;
+            }
         }
 
 

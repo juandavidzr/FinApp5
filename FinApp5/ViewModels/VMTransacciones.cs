@@ -68,13 +68,10 @@ namespace FinApp5.ViewModels
                     {
                         var permiso = usuario.PermisoAbonar;
                         if (permiso == "1")
-                        {
-                            await Navigation.PushAsync(new ListarClientes(Usuario));
-                        }
+                            if (Navigation != null)
+                                await Navigation.PushAsync(new ListarClientes(Usuario));
                         else
-                        {
                             await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
-                        }
                     }
                 }
             }
@@ -83,7 +80,6 @@ namespace FinApp5.ViewModels
         {
             UserDialogs.Instance.Loading();
             Task.Delay(3000);
-
 
             await Navigation.PushAsync(new ListaCreditos(Usuario));
 
