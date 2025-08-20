@@ -190,6 +190,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Resources\Splash\logo.png">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Views\Abonos.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </None>
