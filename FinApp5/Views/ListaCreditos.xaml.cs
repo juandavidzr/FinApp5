@@ -195,6 +195,46 @@ public partial class ListaCreditos : ContentPage
         }
     }
 
+    private void lstCreditos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        try
+        {
+            // Tomamos el primer elemento de la selección
+            var prestamo = e.CurrentSelection.FirstOrDefault() as Prestamos;
+
+            if (prestamo == null)
+            {
+                DisplayAlert("Error", "No hay elementos seleccionados", "OK");
+                return;
+            }
+
+            // Navegación
+            Navigation.PushAsync(new Abonos(prestamo, Usuario));
+
+            // Deseleccionar el ítem para permitir otra selección
+            //((CollectionView)sender).SelectedItem = null;
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Error", ex.Message, "OK");
+        }
+    }
+
+    private async void OnItemTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is Frame frame)
+        {
+            // Animación pequeña (hace zoom in/out rápido)
+            await frame.ScaleTo(0.95, 100, Easing.CubicInOut);
+            await frame.ScaleTo(1, 100, Easing.CubicInOut);
+        }
+
+        if (e.Parameter is Prestamos prestamo)
+        {
+            await Navigation.PushAsync(new Abonos(prestamo, Usuario));
+        }
+    }
+
     private void btnInicio_Clicked(object sender, EventArgs e)
     {
         Navigation.PushAsync(new MenuPpal(Usuario));
@@ -235,4 +275,6 @@ public partial class ListaCreditos : ContentPage
     {
         Navigation.PushAsync(new Transacciones(Usuario));
     }
+
+    
 }

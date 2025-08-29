@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.ListaCreditos"
@@ -7,70 +6,140 @@
              Shell.NavBarHasShadow="False"
              Shell.NavBarIsVisible="false">
 
-    <ContentPage.Content>
-        <ScrollView>
-            <StackLayout>
-                <Label Text="Creditos" HorizontalTextAlignment="Center" FontSize="Title"></Label>
-                <Button x:Name="btnTransacciones" Text="Ir a Transacciones" Clicked="btnTransacciones_Clicked" Margin="5"></Button>
-                <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
-                <Label Text="Ordernar por: "></Label>
-                <Picker x:Name="cmbOrden"
-                        ItemsSource="{Binding OrdenList}"
-                        ItemDisplayBinding="{Binding orden}"
-                        SelectedItem="{Binding id}"
-                        SelectedIndex="0"
-                        Title="Seleccione una opción"
-                        VerticalOptions="Start"
-                        FontSize="20"
-                        SelectedIndexChanged="cmbOrden_SelectedIndexChanged">
-                </Picker>
-                <Label Text="Escriba el nombre que desea buscar: "></Label>
-                <SearchBar Placeholder="Buscar por nombre" Keyboard="Chat" TextChanged="SearchBar_TextChanged" MaxLength="20" 
-                            FontSize="15" HeightRequest="35" Background="White" CancelButtonColor="Black" Margin="0,5"/>
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *">
 
-                <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-                <Label Text="ID CLIENTE                                | NOMBRE CLIENTE " Margin="5,2"/>
-                <Label Text="ID CREDITO                               | FECHA PRESTAMO   " Margin="5,2" />
-                <Label Text="SALDO                                        | ULTIMO PAGO" Margin="5,2"/>
-                <Label Text="DIA DE COBRO - PISTA DE COBRO                      " Margin="5,2"/>
-                
+        <!-- Título -->
+        <Label Text="Creditos" HorizontalTextAlignment="Center" FontSize="Title" Grid.Row="0"/>
 
-                <BoxView HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
-                <ListView x:Name="lstCreditos" ItemSelected="lstCreditos_ItemSelected" Margin="4" 
-                          HeightRequest="500" HasUnevenRows="True" VerticalOptions="FillAndExpand">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
+        <!-- Botones -->
+        <Button x:Name="btnTransacciones" Text="Ir a Transacciones" Clicked="btnTransacciones_Clicked" Margin="5" Grid.Row="1"/>
+        <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5" Grid.Row="2"/>
 
-                                    </Grid.ColumnDefinitions>
+        <!-- Ordenamiento -->
+        <Label Text="Ordernar por:" Grid.Row="3"/>
+        <Picker x:Name="cmbOrden"
+                ItemsSource="{Binding OrdenList}"
+                ItemDisplayBinding="{Binding orden}"
+                SelectedItem="{Binding id}"
+                SelectedIndex="0"
+                Title="Seleccione una opción"
+                FontSize="20"
+                SelectedIndexChanged="cmbOrden_SelectedIndexChanged"
+                Grid.Row="4"/>
 
-                                    <Label Text="{Binding idCliente}"       Grid.Row="0" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start" />
-                                    <Label Text="{Binding nombreCliente}"   Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
-                                    <Label Text="{Binding NumPrestamo}"     Grid.Row="1" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
-                                    <Label Text="{Binding fechaPrestamo}"   Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
-                                    <Label Text="{Binding cantidadPrestada, StringFormat='{}{0:C0}'}" Grid.Row="2" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
-                                    <Label Text="{Binding valUltPag, StringFormat='{}{0:C0}'}"        Grid.Row="2" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
-                                    <Label Text="{Binding desDiaPago}"      Grid.Row="3" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start" />
-                                    
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackLayout>
-        </ScrollView>
-    </ContentPage.Content>
+        <!-- Buscar -->
+        <SearchBar Placeholder="Buscar por nombre" 
+                   Keyboard="Chat"
+                   TextChanged="SearchBar_TextChanged"
+                   FontSize="15"
+                   HeightRequest="35"
+                   Background="White"
+                   CancelButtonColor="Black"
+                   Margin="0,5"
+                   Grid.Row="5"/>
+
+        <!-- Lista con encabezados -->
+        <CollectionView x:Name="lstCreditos"
+                        Grid.Row="6"
+                        SelectionMode="Single"
+                        SelectionChanged="lstCreditos_SelectionChanged"
+                        Margin="4">
+
+            <!-- Encabezados -->
+            <CollectionView.Header>
+                <Grid Padding="5" BackgroundColor="#EEEEEE">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Línea superior -->
+                    <BoxView Grid.Row="0" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
+
+                    <!-- Fila 1 -->
+                    <Label Text="ID CLIENTE" Grid.Row="1" Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Start" Margin="5,2"/>
+                    <Label Text="NOMBRE CLIENTE" Grid.Row="1" Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="End" Margin="5,2"/>
+
+                    <!-- Fila 2 -->
+                    <Label Text="ID CREDITO" Grid.Row="2" Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Start" Margin="5,2"/>
+                    <Label Text="FECHA PRESTAMO" Grid.Row="2" Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="End" Margin="5,2"/>
+
+                    <!-- Fila 3 -->
+                    <Label Text="SALDO" Grid.Row="3" Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Start" Margin="5,2"/>
+                    <Label Text="ULTIMO PAGO" Grid.Row="3" Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="End" Margin="5,2"/>
+
+                    <!-- Fila 4 -->
+                    <Label Text="DIA DE COBRO - PISTA DE COBRO" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" FontAttributes="Bold" HorizontalTextAlignment="Start" Margin="5,2"/>
+
+                    <!-- Línea inferior -->
+                    <BoxView Grid.Row="5" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="Black" HorizontalOptions="Fill" Margin="5,2"/>
+                </Grid>
+            </CollectionView.Header>
 
 
+
+            <!-- Items -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <Frame Padding="5" 
+                           BorderColor="Black"
+                           CornerRadius="0"
+                           HasShadow="False"
+                           Margin="0,2"
+                           InputTransparent="False">
+
+
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Tapped="OnItemTapped"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <Grid Padding="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Fila 1 -->
+                            <Label Text="{Binding idCliente}"       Grid.Row="0" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+                            <Label Text="{Binding nombreCliente}"   Grid.Row="0" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
+
+                            <!-- Fila 2 -->
+                            <Label Text="{Binding NumPrestamo}"     Grid.Row="1" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+                            <Label Text="{Binding fechaPrestamo}"   Grid.Row="1" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
+
+                            <!-- Fila 3 -->
+                            <Label Text="{Binding cantidadPrestada, StringFormat='{}{0:C0}'}" Grid.Row="2" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+                            <Label Text="{Binding valUltPag, StringFormat='{}{0:C0}'}"        Grid.Row="2" Grid.Column="1" TextColor="Black" HorizontalTextAlignment="End"/>
+
+                            <!-- Fila 4 -->
+                            <Label Text="{Binding desDiaPago}"      Grid.Row="3" Grid.Column="0" TextColor="Black" HorizontalTextAlignment="Start"/>
+
+
+                        </Grid>
+
+                    </Frame>
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>
