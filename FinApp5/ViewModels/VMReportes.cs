@@ -1,4 +1,5 @@
-﻿using FinApp5.Modelo;
+﻿using FinApp5.Conexiones;
+using FinApp5.Modelo;
 using FinApp5.Views;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,14 @@ namespace FinApp5.ViewModels
         }
         public void IrABalance()
         {
-            Navigation?.PushAsync(new Balance(Usuario));
+            if (CONEXIONMAESTRA.VerificarCon())
+            {
+                Navigation?.PushAsync(new Balance(Usuario));
+            }
+            else
+            {
+                DisplayAlert("Sin Internet", "Informe no disponible sin internet (21)", "OK");
+            }
         }
         #endregion
         #region COMANDOS

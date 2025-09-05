@@ -3,6 +3,7 @@ using Controls.UserDialogs.Maui;
 using FinApp5.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using System.Net;
 
 namespace FinApp5
 {
@@ -10,6 +11,8 @@ namespace FinApp5
     {
         public static MauiApp CreateMauiApp()
         {
+            ServicePointManager.SecurityProtocol =
+            SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
             var builder = MauiApp.CreateBuilder();
             builder

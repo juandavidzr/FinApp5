@@ -46,13 +46,24 @@ namespace FinApp5.ViewModels
             {
                 if (PermisoCreditos())
                 {
-                    UserDialogs.Instance.Loading();
-                    await Task.Delay(3000);
-                    if (Usuario != null) // Ensure Usuario is not null  
+                    //UserDialogs.Instance.Loading();
+                    //await Task.Delay(3000);
+                    //if (Usuario != null) // Ensure Usuario is not null  
+                    //{
+                    //    await Navigation.PushAsync(new ListarClientes(Usuario));
+                    //}
+                    //UserDialogs.Instance.HideHud();
+
+                    using (UserDialogs.Instance.Loading())
                     {
-                        await Navigation.PushAsync(new ListarClientes(Usuario));
+                        await Task.Delay(3000);
+
+                        if (Usuario != null)
+                        {
+                            await Navigation.PushAsync(new ListarClientes(Usuario));
+                        }
                     }
-                    UserDialogs.Instance.HideHud();
+
                 }
                 else
                 {
