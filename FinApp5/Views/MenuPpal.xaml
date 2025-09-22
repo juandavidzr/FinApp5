@@ -4,93 +4,231 @@
              x:Class="FinApp5.Views.MenuPpal"
              Title="Menu Principal"
              Shell.NavBarHasShadow="False"
-             Shell.NavBarIsVisible="False">
-    <VerticalStackLayout VerticalOptions="Center" >
-        <Label Text="Menu Principal" HorizontalTextAlignment="Center" FontSize="Title"></Label>
-        <Button x:Name="btnInicio" Text="Cerrar sesión" Clicked="btnInicio_Clicked" Margin="5"></Button>
-        <ImageButton Source="maestros.png"
-                     Aspect="AspectFit"
-                     BorderColor="Black"
-                     BorderWidth="0"
-                     CornerRadius="10"
-                     Padding="5"
-                     IsEnabled="True"
-                     Command="{Binding subMenuClientesCommand}" 
-                     WidthRequest="300" HeightRequest="200" 
-                     BackgroundColor="White">
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="White"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Pressed">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightGray"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </VisualStateManager.VisualStateGroups>
-        </ImageButton>
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
 
-        <ImageButton Source="transacciones.png"
-                     Aspect="AspectFit"
-                     BorderColor="Black"
-                     BorderWidth="0"
-                     CornerRadius="10"
-                     Padding="5"
-                     IsEnabled="True"
-                     Command="{Binding IrATransaccionesCommand}" 
-                     WidthRequest="300" HeightRequest="200" 
-                     BackgroundColor="White">
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="White"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Pressed">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightGray"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </VisualStateManager.VisualStateGroups>
-        </ImageButton>
+    <ScrollView>
+        <VerticalStackLayout Spacing="20">
 
-        <ImageButton Source="reportes.png"
-                     Aspect="AspectFit"
-                     BorderColor="Black"
-                     BorderWidth="0"
-                     CornerRadius="10"
-                     Padding="5"
-                     IsEnabled="True"
-                     Command="{Binding IrAReportesCommand}" 
-                     WidthRequest="300" HeightRequest="200" 
-                     BackgroundColor="White">
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="White"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Pressed">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="LightGray"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </VisualStateManager.VisualStateGroups>
-        </ImageButton>
+            <!-- Header con diseño bonito pero estructura simple -->
+            <Border StrokeThickness="0"
+                    StrokeShape="RoundRectangle 0,0,40,40"
+                    Padding="25,60,25,40"
+                    HeightRequest="280">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#1A237E" Offset="0.0" />
+                        <GradientStop Color="#283593" Offset="0.5" />
+                        <GradientStop Color="#3949AB" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
 
-    </VerticalStackLayout>
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                    <!-- Saludo y avatar -->
+                    <VerticalStackLayout Grid.Row="0" VerticalOptions="Start">
+                        <Label Text="Bienvenido"
+                               FontSize="16"
+                               TextColor="White"
+                               Opacity="0.8"/>
+                        <Label Text="¡Hola Usuario!"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                    </VerticalStackLayout>
+
+                    <!-- Avatar -->
+                    <Border Grid.Column="1" Grid.Row="0"
+                            BackgroundColor="#FFB300"
+                            StrokeShape="RoundRectangle 25"
+                            HeightRequest="50"
+                            WidthRequest="50"
+                            VerticalOptions="Start"
+                            HorizontalOptions="End">
+                        <Label Text="U"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="White"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                    </Border>
+
+                    <!-- Logo FA y texto FINAPP - MÁS ARRIBA -->
+                    <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" Margin="0,20,0,0">
+                        <Border BackgroundColor="White"
+                                StrokeShape="RoundRectangle 12"
+                                HeightRequest="60"
+                                WidthRequest="60"
+                                VerticalOptions="Center">
+                            <Label Text="FA"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="#FFB300"
+                                   FontSize="18"
+                                   FontAttributes="Bold"/>
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" Margin="20,0,0,0" VerticalOptions="Center">
+                            <Label Text="FINAPP"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
+                            <Label Text="Finanzas Digitales"
+                                   FontSize="14"
+                                   TextColor="White"
+                                   Opacity="0.8"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Tarjeta Maestros - ESTRUCTURA MÁS SIMPLE -->
+            <Frame CornerRadius="20"
+                   Padding="20"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="20,0">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}" />
+                </Frame.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Icono circular dorado usando Frame -->
+                    <Frame BackgroundColor="#FFB300"
+                           CornerRadius="25"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           VerticalOptions="Center"
+                           HasShadow="False"
+                           Padding="0">
+                        <Label Text="$"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="White"
+                               FontSize="24"
+                               FontAttributes="Bold"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0">
+                        <Label Text="Maestros"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#2D2D2D"/>
+                        <Label Text="Gestión de datos maestros del sistema"
+                               FontSize="13"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Tarjeta Transacciones - ESTRUCTURA MÁS SIMPLE -->
+            <Frame CornerRadius="20"
+                   Padding="20"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="20,0">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}" />
+                </Frame.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Icono circular verde usando Frame -->
+                    <Frame BackgroundColor="#4CAF50"
+                           CornerRadius="25"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           VerticalOptions="Center"
+                           HasShadow="False"
+                           Padding="0">
+                        <Label Text="💳"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="20"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0">
+                        <Label Text="Transacciones"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#2D2D2D"/>
+                        <Label Text="Registro y seguimiento de movimientos"
+                               FontSize="13"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Tarjeta Reportes - ESTRUCTURA MÁS SIMPLE -->
+            <Frame CornerRadius="20"
+                   Padding="20"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="20,0">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}" />
+                </Frame.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Icono circular naranja usando Frame -->
+                    <Frame BackgroundColor="#FF5722"
+                           CornerRadius="25"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           VerticalOptions="Center"
+                           HasShadow="False"
+                           Padding="0">
+                        <Label Text="📊"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="18"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0">
+                        <Label Text="Reportes"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#2D2D2D"/>
+                        <Label Text="Análisis y estadísticas financieras"
+                               FontSize="13"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Botón Cerrar Sesión - ESTRUCTURA MÁS SIMPLE -->
+            <Frame CornerRadius="20"
+                   Padding="20"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Margin="20,0,20,20">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="btnInicio_Clicked" />
+                </Frame.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Icono circular gris azulado usando Frame -->
+                    <Frame BackgroundColor="#607D8B"
+                           CornerRadius="25"
+                           HeightRequest="50"
+                           WidthRequest="50"
+                           VerticalOptions="Center"
+                           HasShadow="False"
+                           Padding="0">
+                        <Label Text="🔓"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="White"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                    </Frame>
+
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0">
+                        <Label Text="Cerrar Sesión"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#2D2D2D"/>
+                        <Label Text="Salir de la aplicación de forma segura"
+                               FontSize="13"
+                               TextColor="#888888"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
