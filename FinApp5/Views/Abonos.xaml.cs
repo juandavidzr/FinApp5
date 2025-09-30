@@ -85,7 +85,7 @@ public partial class Abonos : ContentPage
                 }
 
 
-                GrabarAbono(p, abono);
+               await GrabarAbonoAsync(p, abono);
 
                 // Original line causing the error
                 
@@ -114,57 +114,225 @@ public partial class Abonos : ContentPage
         }
         finally { CONEXIONMAESTRA.Cerrar(); }
     }
-    private void GrabarAbono(Prestamos p, Mmovimiento abono)
+
+    //private async Task GrabarAbonoAsync(Prestamos p, Mmovimiento abono)
+    //{
+    //    try
+    //    {
+    //        if (CONEXIONMAESTRA.VerificarCon())
+    //        {
+    //            await Task.Run(() =>
+    //            {
+    //                CONEXIONMAESTRA.Abrir();
+    //                using (SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar))
+    //                {
+    //                    cmd.CommandType = CommandType.StoredProcedure;
+    //                    cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
+    //                    cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
+    //                    cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov);
+    //                    cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
+    //                    cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
+    //                    cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente);
+    //                    cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
+    //                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
+    //                    cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
+
+    //                    using (var reader = cmd.ExecuteReader())
+    //                    {
+    //                        if (reader.Read())
+    //                        {
+    //                            int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
+    //                            int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
+
+    //                            if (update4 > 0 && update5 > 0)
+    //                            {
+    //                                GrabarOffLine(abono, 0);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            });
+
+    //            await DisplayAlert("Registro guardado", "Registro guardado con éxito", "OK");
+    //        }
+    //        else
+    //        {
+    //            await DisplayAlert("Conexión", "Estas trabajando sin conexión", "OK");
+    //            GrabarOffLine(abono, 1);
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await DisplayAlert("Error", "Error " + ex.Message, "OK");
+    //        throw;
+    //    }
+    //    finally
+    //    {
+    //        CONEXIONMAESTRA.Cerrar();
+    //    }
+    //}
+
+    private async Task GrabarAbonoAsync(Prestamos p, Mmovimiento abono)
     {
-        bool Estado = CONEXIONMAESTRA.VerificarCon();
         try
         {
-            if (Estado)
+            if (CONEXIONMAESTRA.VerificarCon())
             {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
-                cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
-                cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov);
-                cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
-                cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
-                cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente);
-                cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
-                cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
-                cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
-                var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                await Task.Run(() =>
                 {
-
-                    //int update1 = Convert.ToInt32(reader["AfectóUpdateSaldoMayorACero"]);
-                    //int update2 = Convert.ToInt32(reader["AfectóUpdateSaldoMenorOIgualACero"]);
-                    //int update3 = Convert.ToInt32(reader["AfectóUpdateReaMayorACero"]);
-                    int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
-                    int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
-
-                     
-                    if (update4 > 0 && update5 > 0)
+                    using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+                    using (SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", con))
                     {
-                        GrabarOffLine(abono, 0);
-                    }                    
-                }
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
+                        cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
+                        cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov);
+                        cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
+                        cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
+                        cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente);
+                        cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
+                        cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
+                        cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
 
-                DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
+                        con.Open();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
+                                int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
+
+                                if (update4 > 0 && update5 > 0)
+                                {
+                                    GrabarOffLine(abono, 0);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                await DisplayAlert("Registro guardado", "Registro guardado con éxito", "OK");
             }
             else
             {
-                DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
-                GrabarOffLine(abono, 1 );
+                await DisplayAlert("Conexión", "Estas trabajando sin conexión", "OK");
+                GrabarOffLine(abono, 1);
             }
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", "Error" + ex.Message, "OK");
+            await DisplayAlert("Error", "Error " + ex.Message, "OK");
             throw;
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
     }
+
+
+    //private void GrabarAbono(Prestamos p, Mmovimiento abono)
+    //{
+    //    try
+    //    {
+    //        if (CONEXIONMAESTRA.VerificarCon())
+    //        {
+    //            using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+    //            {
+    //                con.Open();
+
+    //                using (SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", con))
+    //                {
+    //                    cmd.CommandType = CommandType.StoredProcedure;
+
+    //                    cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr ?? string.Empty);
+    //                    cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov ?? string.Empty);
+    //                    cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov ?? string.Empty);
+    //                    cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
+    //                    cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
+    //                    cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente ?? string.Empty);
+    //                    cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
+    //                    cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel ?? string.Empty);
+    //                    cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
+
+    //                    using (SqlDataReader reader = cmd.ExecuteReader())
+    //                    {
+    //                        if (reader.Read())
+    //                        {
+    //                            int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
+    //                            int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
+
+    //                            if (update4 > 0 && update5 > 0)
+    //                            {
+    //                                GrabarOffLine(abono, 0);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //            }
+
+    //            DisplayAlert("Registro guardado", "Registro guardado con éxito", "OK");
+    //        }
+    //        else
+    //        {
+    //            DisplayAlert("Conexión", "Estás trabajando sin conexión", "OK");
+    //            GrabarOffLine(abono, 1);
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        DisplayAlert("Error", "Error: " + ex.Message, "OK");
+    //        throw;
+    //    }
+    //}
+
+    //private void GrabarAbono(Prestamos p, Mmovimiento abono)
+    //{
+    //    bool Estado = CONEXIONMAESTRA.VerificarCon();
+    //    try
+    //    {
+    //        if (Estado)
+    //        {
+    //            CONEXIONMAESTRA.Abrir();
+    //            SqlCommand cmd = new SqlCommand("RegistraAboMovCon1", CONEXIONMAESTRA.conectar);
+    //            cmd.CommandType = CommandType.StoredProcedure;
+    //            cmd.Parameters.AddWithValue("@strCodigoRut", Usuario.CodigoCobr);
+    //            cmd.Parameters.AddWithValue("@strCodTipMov", abono.strCodTipMov);
+    //            cmd.Parameters.AddWithValue("@strCodConMov", abono.strCodConMov);
+    //            cmd.Parameters.AddWithValue("@dblValAboCre", txtAbono.Text.Trim());
+    //            cmd.Parameters.AddWithValue("@strObservaRA", txtObservaciones.Text.Trim());
+    //            cmd.Parameters.AddWithValue("@strNombreCte", p.nombreCliente);
+    //            cmd.Parameters.AddWithValue("@lngNumCreAfe", p.NumPrestamo);
+    //            cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
+    //            cmd.Parameters.AddWithValue("@strComentAbo", "abono desde nueva app");
+    //            var reader = cmd.ExecuteReader();
+    //            if (reader.Read())
+    //            {
+
+    //                //int update1 = Convert.ToInt32(reader["AfectóUpdateSaldoMayorACero"]);
+    //                //int update2 = Convert.ToInt32(reader["AfectóUpdateSaldoMenorOIgualACero"]);
+    //                //int update3 = Convert.ToInt32(reader["AfectóUpdateReaMayorACero"]);
+    //                int update4 = Convert.ToInt32(reader["AfectóUpdateReaMenorOIgualACero"]);
+    //                int update5 = Convert.ToInt32(reader["AfectóUpdateUltimoPago"]);
+
+
+    //                if (update4 > 0 && update5 > 0)
+    //                {
+    //                    GrabarOffLine(abono, 0);
+    //                }                    
+    //            }
+
+    //            DisplayAlert("Registro guardado", "Registo guardado con exito", "OK");
+    //        }
+    //        else
+    //        {
+    //            DisplayAlert("Conexion", "Estas trabajando sin conexion", "OK");
+    //            GrabarOffLine(abono, 1 );
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        DisplayAlert("Error", "Error" + ex.Message, "OK");
+    //        throw;
+    //    }
+    //    finally { CONEXIONMAESTRA.Cerrar(); }
+    //}
 
     private void GrabarOffLine(Mmovimiento abono , int nuevoparam = 1)
     //private async Task GrabarOffLineAsync(Mmovimiento abono, int nuevoparam = 1)
@@ -266,20 +434,48 @@ public partial class Abonos : ContentPage
     {
         try
         {
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("MarcarCreditoParaRetaquePosterior", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@lngNumeroCredito", txtIdCredito.Text);
-            cmd.ExecuteReader();
-            CONEXIONMAESTRA.Cerrar();
+            using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+            {
+                con.Open();
+
+                using (SqlCommand cmd = new SqlCommand("MarcarCreditoParaRetaquePosterior", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@lngNumeroCredito", txtIdCredito.Text);
+
+                    // Como no usas resultados, mejor ExecuteNonQuery en lugar de ExecuteReader
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
             Navigation.PushAsync(new ListaCreditos(Usuario));
         }
         catch (Exception ex)
         {
-            throw ex;
+            // Mejor lanzar la excepción directamente para conservar la pila
+            throw;
         }
-        finally {  }
     }
+
+
+    //private void btnRetaque_Clicked(object sender, EventArgs e)
+    //{
+    //    try
+    //    {
+    //        CONEXIONMAESTRA.Abrir();
+    //        SqlCommand cmd = new SqlCommand("MarcarCreditoParaRetaquePosterior", CONEXIONMAESTRA.conectar);
+    //        cmd.CommandType = CommandType.StoredProcedure;
+    //        cmd.Parameters.AddWithValue("@lngNumeroCredito", txtIdCredito.Text);
+    //        cmd.ExecuteReader();
+    //        CONEXIONMAESTRA.Cerrar();
+    //        Navigation.PushAsync(new ListaCreditos(Usuario));
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+    //    finally {  }
+    //}
     private void btnPagos_Clicked(object sender, EventArgs e)
     {
 
@@ -328,36 +524,77 @@ public partial class Abonos : ContentPage
             throw new Exception(ex.Message);
         }
     }
+
     private void Navegar_Clicked(object sender, EventArgs e)
     {
         try
         {
-            CONEXIONMAESTRA.Abrir();
-            SqlCommand cmd = new SqlCommand("consultarUbicacion", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@idCliente", txtId.Text.Trim());
-            SqlDataReader rdr = cmd.ExecuteReader();
-            if (rdr.Read())
+            using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
             {
-                var longitud = rdr["longitud"].ToString();
-                var latitud = rdr["latitud"].ToString();
-                if (!string.IsNullOrWhiteSpace(longitud) && !string.IsNullOrWhiteSpace(latitud))
+                con.Open();
+
+                using (SqlCommand cmd = new SqlCommand("consultarUbicacion", con))
                 {
-                    var ubi = "https://waze.com/ul?q=your address&ll=" + latitud + "," + longitud + "&navigate=yes";
-                    Launcher.OpenAsync(new Uri(ubi));
-                }
-                else
-                {
-                    DisplayAlert("Sin Información", "No tiene la ubicación de este cliente guardada", "OK");
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@idCliente", txtId.Text.Trim());
+
+                    using (SqlDataReader rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            var longitud = rdr["longitud"].ToString();
+                            var latitud = rdr["latitud"].ToString();
+
+                            if (!string.IsNullOrWhiteSpace(longitud) && !string.IsNullOrWhiteSpace(latitud))
+                            {
+                                var ubi = $"https://waze.com/ul?q=your address&ll={latitud},{longitud}&navigate=yes";
+                                Launcher.OpenAsync(new Uri(ubi));
+                            }
+                            else
+                            {
+                                DisplayAlert("Sin Información", "No tiene la ubicación de este cliente guardada", "OK");
+                            }
+                        }
+                    }
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"Error en Navegar_Clicked: {ex.Message}");
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
     }
+
+    //private void Navegar_Clicked(object sender, EventArgs e)
+    //{
+    //    try
+    //    {
+    //        CONEXIONMAESTRA.Abrir();
+    //        SqlCommand cmd = new SqlCommand("consultarUbicacion", CONEXIONMAESTRA.conectar);
+    //        cmd.CommandType = CommandType.StoredProcedure;
+    //        cmd.Parameters.AddWithValue("@idCliente", txtId.Text.Trim());
+    //        SqlDataReader rdr = cmd.ExecuteReader();
+    //        if (rdr.Read())
+    //        {
+    //            var longitud = rdr["longitud"].ToString();
+    //            var latitud = rdr["latitud"].ToString();
+    //            if (!string.IsNullOrWhiteSpace(longitud) && !string.IsNullOrWhiteSpace(latitud))
+    //            {
+    //                var ubi = "https://waze.com/ul?q=your address&ll=" + latitud + "," + longitud + "&navigate=yes";
+    //                Launcher.OpenAsync(new Uri(ubi));
+    //            }
+    //            else
+    //            {
+    //                DisplayAlert("Sin Información", "No tiene la ubicación de este cliente guardada", "OK");
+    //            }
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine(ex.Message);
+    //    }
+    //    finally { CONEXIONMAESTRA.Cerrar(); }
+    //}
 
     double _lastScrollY = 0;
     double _maxScrollY = 0;

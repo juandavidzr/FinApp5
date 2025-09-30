@@ -60,72 +60,140 @@ public partial class ListaCreditos : ContentPage
     }
 
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();
-    public async Task CargarCreditosAsync()
+    //public async Task CargarCreditosAsync(Musuarios Usuario)
+    //{
+    //    try
+    //    {
+
+    //        creditosCollection.Clear();
+    //        var prestamos = new List<Prestamos>();
+    //        //prestamos = await App.SQLiteDB.GetCreditos();
+
+    //        var ruta = Usuario.CodigoCobr;
+    //        var filtro = string.Empty;
+    //        if (cmbOrden.SelectedIndex == -1)
+    //            filtro = "Ruta";
+    //        if (cmbOrden.SelectedIndex == 0)
+    //            filtro = "Ruta";
+    //        if (cmbOrden.SelectedIndex == 1)
+    //            filtro = "Mora";
+    //        if (cmbOrden.SelectedIndex == 2)
+    //            filtro = "Abona";
+    //        if (cmbOrden.SelectedIndex == 3)
+    //            filtro = "Reta";
+
+    //        SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", CONEXIONMAESTRA.conectar);
+    //        cmd.CommandType = CommandType.StoredProcedure;
+    //        cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+    //        cmd.Parameters.AddWithValue("@strModoFil", filtro);
+    //        CONEXIONMAESTRA.Abrir();
+    //        //SqlDataReader rdr = cmd.ExecuteReader();
+    //        using (SqlDataReader rdr = cmd.ExecuteReader()) // Usa 'await'
+    //        {
+
+    //            while (rdr.Read())
+    //            {
+    //                creditosCollection.Add(new Prestamos()
+    //                {
+
+    //                    idCliente = rdr["pmoIdentifiCli"].ToString(),
+    //                    nombreCliente = rdr["cteNombApel"].ToString(),
+    //                    NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
+    //                    fechaPrestamo = rdr["pmoFechaPre"].ToString(),
+    //                    cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+    //                    valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
+
+    //                    DireccionCobro = rdr["cteDirCobCte"].ToString(),
+    //                    TelefonoCell = rdr["cteTeleCelu"].ToString(),
+    //                    numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
+    //                    valCuotaPag = Convert.ToInt32(rdr["pmoValCuotaPag"]),
+    //                    desDiaPago = rdr["pmoDesDiaPago"].ToString(),
+    //                    numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
+    //                    saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+    //                    IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
+    //                    fecVenCre = rdr["pmoFecVenCre"].ToString(),
+    //                    totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
+    //                    marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
+    //                    observaciones = (rdr["pmoObservaciones"].ToString()),
+
+    //                });
+    //            }
+    //        }
+
+
+    //        if (creditosCollection != null)
+    //        {
+    //            //lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
+    //            //                                                                p.marAboCreDia == 0)
+    //            //                                            .OrderBy(p => p.posRutCre).ToList();
+    //            lstCreditos.ItemsSource = creditosCollection;
+    //        }
+
+    //        UserDialogs.Instance.HideHud();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await DisplayAlert("error", ex.Message, "OK");
+    //        throw;
+    //    }
+    //    finally { CONEXIONMAESTRA.Cerrar(); }
+    //}
+
+    public async Task CargarCreditosAsync(Musuarios Usuario)
     {
         try
         {
-
             creditosCollection.Clear();
-            var prestamos = new List<Prestamos>();
-            //prestamos = await App.SQLiteDB.GetCreditos();
 
             var ruta = Usuario.CodigoCobr;
-            var filtro = string.Empty;
-            if (cmbOrden.SelectedIndex == -1)
-                filtro = "Ruta";
-            if (cmbOrden.SelectedIndex == 0)
-                filtro = "Ruta";
-            if (cmbOrden.SelectedIndex == 1)
-                filtro = "Mora";
-            if (cmbOrden.SelectedIndex == 2)
-                filtro = "Abona";
-            if (cmbOrden.SelectedIndex == 3)
-                filtro = "Reta";
+            var filtro = "Ruta";
+            if (cmbOrden.SelectedIndex == 1) filtro = "Mora";
+            if (cmbOrden.SelectedIndex == 2) filtro = "Abona";
+            if (cmbOrden.SelectedIndex == 3) filtro = "Reta";
 
-            SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", CONEXIONMAESTRA.conectar);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-            cmd.Parameters.AddWithValue("@strModoFil", filtro);
-            CONEXIONMAESTRA.Abrir();
-            //SqlDataReader rdr = cmd.ExecuteReader();
-            using (SqlDataReader rdr = cmd.ExecuteReader()) // Usa 'await'
+            // Aquí usamos directamente la cadena de conexión
+            using (SqlConnection cn = new SqlConnection(CONEXIONMAESTRA.conexion))
             {
+                await cn.OpenAsync();
 
-                while (rdr.Read())
+                using (SqlCommand cmd = new SqlCommand("DecargarCarteraSegunModo", cn))
                 {
-                    creditosCollection.Add(new Prestamos()
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+                    cmd.Parameters.AddWithValue("@strModoFil", filtro);
+
+                    using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
                     {
-
-                        idCliente = rdr["pmoIdentifiCli"].ToString(),
-                        nombreCliente = rdr["cteNombApel"].ToString(),
-                        NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
-                        fechaPrestamo = rdr["pmoFechaPre"].ToString(),
-                        cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
-                        valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
-
-                        DireccionCobro = rdr["cteDirCobCte"].ToString(),
-                        TelefonoCell = rdr["cteTeleCelu"].ToString(),
-                        numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
-                        valCuotaPag = Convert.ToInt32(rdr["pmoValCuotaPag"]),
-                        desDiaPago = rdr["pmoDesDiaPago"].ToString(),
-                        numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
-                        saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
-                        IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
-                        fecVenCre = rdr["pmoFecVenCre"].ToString(),
-                        totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
-                        marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
-                        observaciones = (rdr["pmoObservaciones"].ToString()),
-
-                    });
+                        while (await rdr.ReadAsync())
+                        {
+                            creditosCollection.Add(new Prestamos()
+                            {
+                                idCliente = rdr["pmoIdentifiCli"].ToString(),
+                                nombreCliente = rdr["cteNombApel"].ToString(),
+                                NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"]),
+                                fechaPrestamo = rdr["pmoFechaPre"].ToString(),
+                                cantidadPrestada = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+                                valUltPag = Convert.ToInt32(rdr["pmoValUltPag"]),
+                                DireccionCobro = rdr["cteDirCobCte"].ToString(),
+                                TelefonoCell = rdr["cteTeleCelu"].ToString(),
+                                numCuoAtra = Convert.ToInt32(rdr["pmoNumCuoAtra"]),
+                                valCuotaPag = Convert.ToInt32(rdr["pmoValCuotaPag"]),
+                                desDiaPago = rdr["pmoDesDiaPago"].ToString(),
+                                numCuoPen = Convert.ToInt32(rdr["pmoNumCuoPen"]),
+                                saldoActualCre = Convert.ToInt32(rdr["pmoSaldoActualCte"]),
+                                IndicaRetaque = Convert.ToInt32(rdr["pmoIndicaRetaque"]),
+                                fecVenCre = rdr["pmoFecVenCre"].ToString(),
+                                totalPagCre = Convert.ToDouble(rdr["TotalCre"].ToString()),
+                                marAboCreDia = Convert.ToInt16(rdr["pmoMarAboCreDia"].ToString()),
+                                observaciones = rdr["pmoObservaciones"].ToString(),
+                            });
+                        }
+                    }
                 }
             }
 
-
             if (creditosCollection != null)
             {
-                //lstCreditos.ItemsSource = creditosCollection.Where(p => p.IndicaRetaque == 0 &&
-                //                                                                p.marAboCreDia == 0)
-                //                                            .OrderBy(p => p.posRutCre).ToList();
                 lstCreditos.ItemsSource = creditosCollection;
             }
 
@@ -133,11 +201,11 @@ public partial class ListaCreditos : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("error", ex.Message, "OK");
+            await DisplayAlert("Error", ex.Message, "OK");
             throw;
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
     }
+
 
     /// <summary>
     /// Cargar Creditos offLine
@@ -248,7 +316,7 @@ public partial class ListaCreditos : ContentPage
             await abono.SincronizarTodoAsync();
 
             await App.SQLiteDB.SincronizarAbonos(Usuario);
-            await CargarCreditosAsync();
+            await CargarCreditosAsync(Usuario);
         }
         else 
         {

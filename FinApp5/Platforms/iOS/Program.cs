@@ -5,6 +5,9 @@ namespace FinApp5
 {
     public class Program
     {
+        public static IServiceProvider Services { get; private set; }
+
+
         // This is the main entry point of the application.
         static void Main(string[] args)
         {

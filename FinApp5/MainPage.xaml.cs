@@ -1,6 +1,7 @@
 ﻿using FinApp5.Modelo;
 using FinApp5.ViewModels;
 using FinApp5.Views;
+using FinAppMaui.Services;
 using System.Windows.Input;
 
 namespace FinApp5
@@ -8,14 +9,19 @@ namespace FinApp5
     public partial class MainPage : ContentPage
     {
         Musuarios Usuario = new Musuarios();
-        public MainPage()
+
+        public MainPage(VMingresar vm)
         {
             InitializeComponent();
-            Loaded += (s, e) => SetFocus();
+            
+            Loaded += (object? s, EventArgs e) => SetFocus();
+
             TxtUsuario.Text = string.Empty;
             TxtPW.Text = string.Empty;
-            BindingContext = new VMingresar(Navigation, Usuario);
+
+            BindingContext = vm; // Usa el que MAUI inyecta
         }
+
         private void SetFocus()
         {
             TxtUsuario.Focus();

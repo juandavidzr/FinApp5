@@ -1,40 +1,70 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.Maui.Networking;
 
 namespace FinApp5.Conexiones
 {
     public class CONEXIONMAESTRA
     {
+        //public static string conexion = "Server=138.128.171.162; Database=credicristianwil; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
         //public static string conexion = "Server=138.128.171.162; Database=creditosGonzalez; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
         public static string conexion = "Server=138.128.171.162; Database=creditosjgvcc; User Id=sa; Password=!6ks4cgmyjD%duB;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162,1433; Database=prueba; User Id=sa; Password=!6ks4cgmyjD%duB;Encrypt=True;Connection Timeout=30;TrustServerCertificate=true";
-        //public static string conexion = "Server=138.128.171.162,1433; Database=creditosmag1; User Id=sa; Password=!6ks4cgmyjD%duB;Encrypt=True;Connection Timeout=30;TrustServerCertificate=true";
+        //public static string conexion = "Server=138.128.171.162; Database=prueba; User Id=sa; Password=!6ks4cgmyjD%duB; Encrypt=True; TrustServerCertificate=True;";
+        //;Encrypt=False;TrustServerCertificate=true
+        // "Server=138.128.171.162,1433;Database=Finanzas;User Id=sa;Password=TuClaveSegura;Encrypt=False;"
+
+        //public static string conexion = "Server=138.128.171.162,1433; Database=creditosmag1; User Id=sa; Password=!6ks4cgmyjD%duB;Encrypt=False;Connection Timeout=30;TrustServerCertificate=false";
+
+        //string connString = _config.GetConnectionString("SqlServer");
 
         public static SqlConnection conectar = new SqlConnection(conexion);
-
+        
         public static SqlConnection GetConnection()
         {
             return new SqlConnection(conexion);
         }
 
-        public static void Abrir()
+        //public static void Abrir()
+        //{
+        //    try
+        //    {
+        //        if (conectar.State == System.Data.ConnectionState.Closed)
+        //            conectar.Open();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Este log momentáneo ayuda a encontrar el error real
+        //        System.Diagnostics.Debug.WriteLine("ERROR al abrir conexión: " + ex.Message);
+        //        throw; // re-lanzamos para no ocultarlo                
+        //    }
+        //}
+        //public static void Cerrar()
+        //{
+        //    if (conectar.State == System.Data.ConnectionState.Open)
+        //        conectar.Close();
+        //}
+
+        public static void Cerrar()
         {
             try
             {
-                if (conectar.State == System.Data.ConnectionState.Closed)
-                    conectar.Open();
+                if (conectar != null && conectar.State != System.Data.ConnectionState.Closed)
+                {
+                    conectar.Close();
+                }
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                // Este log momentáneo ayuda a encontrar el error real
-                System.Diagnostics.Debug.WriteLine("ERROR al abrir conexión: " + ex.Message);
-                throw; // re-lanzamos para no ocultarlo                
+                // Puedes registrar el error pero no interrumpir la app
+                Console.WriteLine("Error al cerrar conexión: " + ex.Message);
+            }
+            finally
+            {
+                if (conectar != null)
+                    conectar.Dispose();
             }
         }
-        public static void Cerrar()
-        {
-            if (conectar.State == System.Data.ConnectionState.Open)
-                conectar.Close();
-        }
+
+
         public static bool VerificarCon()
         {
             bool estado = false;
@@ -73,6 +103,12 @@ namespace FinApp5.Conexiones
             {
                 return false;
             }
+        }
+
+        public static bool VerificarConexion()
+        {
+            var estado = Connectivity.NetworkAccess;
+            return estado == NetworkAccess.Internet;
         }
     }
 }

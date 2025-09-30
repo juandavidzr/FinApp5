@@ -1,15 +1,19 @@
 using FinApp5.Modelo;
 using FinApp5.ViewModels;
 namespace FinApp5.Views;
-
+[QueryProperty(nameof(Usuario), "Usuario")]
 public partial class MenuPpal : ContentPage
 {
     double _lastScrollY = 0;
     double _maxScrollY = 0;
-
+   // private Musuarios _usuario;
     private VMmenuPrincipal viewModel;
+    public Musuarios? Usuario { get; set; }
+
+
     public MenuPpal(Musuarios usuario)
 	{
+
         InitializeComponent();
         viewModel = new VMmenuPrincipal(Navigation, usuario);
         BindingContext = viewModel;
@@ -22,9 +26,15 @@ public partial class MenuPpal : ContentPage
         await viewModel.InicializarAsync(); // ahora inicializa todo de forma asincrónica
     }
 
-    private void btnInicio_Clicked(object sender, EventArgs e)
+    //private void btnInicio_Clicked(object sender, EventArgs e)
+    //{
+    //    Navigation.PushAsync(new MainPage());
+    //}
+
+    private async void btnInicio_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushAsync(new MainPage());
+        var mainPage = App.Services.GetRequiredService<MainPage>();
+        await Navigation.PushAsync(mainPage);
     }
 
     private void OnScrollViewScrolled(object sender, ScrolledEventArgs e)

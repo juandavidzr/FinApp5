@@ -40,20 +40,52 @@ namespace FinApp5.ViewModels
         {
 
         }
+        //public async void ListarClientes()
+        //{
+        //    if (CONEXIONMAESTRA.VerificarCon())
+        //    {
+        //        if (PermisoCreditos())
+        //        {
+        //            using (UserDialogs.Instance.Loading())
+        //            {
+        //                await Task.Delay(3000);
+
+        //                if (Usuario != null)
+        //                {
+        //                    await Navigation.PushAsync(new ListarClientes(Usuario));
+        //                }
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (Usuario != null) // Ensure Usuario is not null  
+        //        {
+        //            Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
+        //            if (usuario.PermisoAbonar != null)
+        //            {
+        //                var permiso = usuario.PermisoAbonar;
+        //                if (permiso == "1")
+        //                    if (Navigation != null)
+        //                        await Navigation.PushAsync(new ListarClientes(Usuario));
+        //                else
+        //                    await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+        //            }
+        //        }
+        //    }
+        //}
+
         public async void ListarClientes()
         {
-            if (CONEXIONMAESTRA.VerificarCon())
+            if (CONEXIONMAESTRA.VerificarCon()) // Conexión online
             {
-                if (PermisoCreditos())
+                if (await PermisoCreditosAsync())
                 {
-                    //UserDialogs.Instance.Loading();
-                    //await Task.Delay(3000);
-                    //if (Usuario != null) // Ensure Usuario is not null  
-                    //{
-                    //    await Navigation.PushAsync(new ListarClientes(Usuario));
-                    //}
-                    //UserDialogs.Instance.HideHud();
-
                     using (UserDialogs.Instance.Loading())
                     {
                         await Task.Delay(3000);
@@ -62,31 +94,57 @@ namespace FinApp5.ViewModels
                         {
                             await Navigation.PushAsync(new ListarClientes(Usuario));
                         }
+                        else
+                        {
+                            await DisplayAlert("ADVERTENCIA", "No se pudo obtener el usuario en línea", "OK");
+                        }
                     }
-
                 }
                 else
                 {
                     await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
                 }
             }
-            else
+            else // Modo offline
             {
-                if (Usuario != null) // Ensure Usuario is not null  
+                if (Usuario != null) // Verificamos que Usuario tenga algo
                 {
                     Musuarios usuario = await App.SQLiteDB.GetUsuarioById(Usuario.CodigoCobr);
-                    if (usuario.PermisoAbonar != null)
+
+                    if (usuario != null) // validamos si encontró el registro en SQLite
                     {
-                        var permiso = usuario.PermisoAbonar;
-                        if (permiso == "1")
-                            if (Navigation != null)
-                                await Navigation.PushAsync(new ListarClientes(Usuario));
+                        if (!string.IsNullOrEmpty(usuario.PermisoAbonar))
+                        {
+                            var permiso = usuario.PermisoAbonar;
+
+                            if (permiso == "1")
+                            {
+                                if (Navigation != null)
+                                    await Navigation.PushAsync(new ListarClientes(Usuario));
+                            }
+                            else
+                            {
+                                await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                            }
+                        }
                         else
-                            await DisplayAlert("ADVERTENCIA", "No tiene permisos para realizar esta transacción", "OK");
+                        {
+                            await DisplayAlert("ADVERTENCIA", "El campo PermisoAbonar está vacío en la base local", "OK");
+                        }
                     }
+                    else
+                    {
+                        await DisplayAlert("ADVERTENCIA", "Usuario no encontrado en la base local", "OK");
+                    }
+                }
+                else
+                {
+                    await DisplayAlert("ADVERTENCIA", "No hay usuario cargado en memoria", "OK");
                 }
             }
         }
+
+
         public async void ListarCreditos()
         {
             UserDialogs.Instance.Loading();
@@ -137,74 +195,215 @@ namespace FinApp5.ViewModels
             UserDialogs.Instance.HideHud();
         }
 
-        private bool PermisoCreditos()
+        //private bool PermisoCreditos()
+        //{
+        //    SqlDataReader rdr;
+        //    try
+        //    {
+        //        if (CONEXIONMAESTRA.VerificarCon())
+        //        {
+
+        //            SqlCommand cmd = new SqlCommand();
+        //            cmd = new SqlCommand("permisoCreditos", CONEXIONMAESTRA.conectar);
+        //            cmd.CommandType = CommandType.StoredProcedure;
+        //            cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
+        //            CONEXIONMAESTRA.Abrir();
+
+        //            rdr = cmd.ExecuteReader();
+
+        //            if (rdr.Read())
+        //            {
+        //                var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"].ToString());
+        //                if (permiso == 1)
+        //                    return true;
+        //                else
+        //                    return false;
+        //            }
+        //            else { return false; }
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return false;
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
+
+        private async Task<bool> PermisoCreditosAsync()
         {
-            SqlDataReader rdr;
             try
             {
-                if (CONEXIONMAESTRA.VerificarCon())
+                using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+                using (SqlCommand cmd = new SqlCommand("permisoCreditos", con))
                 {
-                    //SqlCommand cmd = new("permisoCreditos", CONEXIONMAESTRA.conectar)
-                    //{
-                    //    CommandType = CommandType.StoredProcedure
-                    //};
-                    SqlCommand cmd = new SqlCommand();
-                    cmd = new SqlCommand("permisoCreditos", CONEXIONMAESTRA.conectar);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
-                    CONEXIONMAESTRA.Abrir();
-                    
-                    rdr = cmd.ExecuteReader();
 
-                    if (rdr.Read())
+                    await con.OpenAsync();
+
+                    using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
                     {
-                        var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"].ToString());
-                        if (permiso == 1)
-                            return true;
-                        else
-                            return false;
+                        if (await rdr.ReadAsync())
+                        {
+                            var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"]);
+                            return permiso == 1;
+                        }
                     }
-                    else { return false; }
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
-            finally { CONEXIONMAESTRA.Cerrar(); }
         }
+
+
+        //private bool PermisoCreditos()
+        //{
+        //    try
+        //    {
+        //        if (!CONEXIONMAESTRA.VerificarCon())
+        //            return false;
+
+        //        using (SqlConnection conn = CONEXIONMAESTRA.GetConnection())
+        //        {
+        //            conn.Open();
+
+        //            using (SqlCommand cmd = new SqlCommand("permisoCreditos", conn))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
+
+        //                using (SqlDataReader rdr = cmd.ExecuteReader())
+        //                {
+        //                    if (rdr.Read())
+        //                    {
+        //                        var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"]);
+        //                        return permiso == 1;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        return false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error en PermisoCreditos: {ex.Message}");
+        //        return false;
+        //    }
+        //}
+
+
+        //private bool PermisoCreditos()
+        //{
+        //    try
+        //    {
+        //        if (CONEXIONMAESTRA.VerificarCon())
+        //        {
+        //            using (SqlCommand cmd = new SqlCommand("permisoCreditos", CONEXIONMAESTRA.conectar))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
+
+        //                CONEXIONMAESTRA.Abrir();
+
+        //                using (SqlDataReader rdr = cmd.ExecuteReader())
+        //                {
+        //                    if (rdr.Read())
+        //                    {
+        //                        var permiso = Convert.ToInt16(rdr["cbrIndAutConCre"].ToString());
+        //                        return permiso == 1;
+        //                    }
+        //                    else
+        //                    {
+        //                        return false;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //    finally
+        //    {
+        //        CONEXIONMAESTRA.Cerrar();
+        //    }
+        //}
+
+
+        //private bool ValidarPermisos()
+        //{
+        //    try
+        //    {
+        //        SqlCommand cmd = new("permisoGastos", CONEXIONMAESTRA.conectar)
+        //        {
+        //            CommandType = CommandType.StoredProcedure
+        //        };
+        //        cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlDataReader rdr = cmd.ExecuteReader();
+        //        if (rdr.Read())
+        //        {
+        //            var permiso = Convert.ToInt16(rdr["cbrFlagPerGraGas"].ToString());
+        //            if (permiso == 1)
+        //                return true;
+        //            else
+        //                return false;
+        //        }
+        //        else { return false; }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
 
         private bool ValidarPermisos()
         {
             try
             {
-                SqlCommand cmd = new("permisoGastos", CONEXIONMAESTRA.conectar)
+                using (var connection = CONEXIONMAESTRA.GetConnection())
+                using (var cmd = new SqlCommand("permisoGastos", connection))
                 {
-                    CommandType = CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
-                CONEXIONMAESTRA.Abrir();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.Read())
-                {
-                    var permiso = Convert.ToInt16(rdr["cbrFlagPerGraGas"].ToString());
-                    if (permiso == 1)
-                        return true;
-                    else
-                        return false;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@strCodigoRutaAc", Usuario.CodigoCobr);
+
+                    connection.Open();
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            var permiso = Convert.ToInt16(rdr["cbrFlagPerGraGas"].ToString());
+                            return permiso == 1;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
-                else { return false; }
             }
             catch (Exception)
             {
                 return false;
             }
-            finally { CONEXIONMAESTRA.Cerrar(); }
         }
+
 
         #endregion
         #region COMANDOS

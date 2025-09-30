@@ -15,25 +15,25 @@ namespace FinApp5.Datos
     {
         SqlCommand cmd = new SqlCommand();
 
-        private bool ValidarPermisos(Mgasto mgasto)
-        {
-            try
-            {
-                SqlCommand cmd = new SqlCommand("permisoGastos", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRutaAc", mgasto.strCodigoRuta);
-                CONEXIONMAESTRA.Abrir();
-                SqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.Read())
-                    return true;
-                else
-                    return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
+        //private bool ValidarPermisos(Mgasto mgasto)
+        //{
+        //    try
+        //    {
+        //        SqlCommand cmd = new SqlCommand("permisoGastos", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@strCodigoRutaAc", mgasto.strCodigoRuta);
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlDataReader rdr = cmd.ExecuteReader();
+        //        if (rdr.Read())
+        //            return true;
+        //        else
+        //            return false;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
     }
 }

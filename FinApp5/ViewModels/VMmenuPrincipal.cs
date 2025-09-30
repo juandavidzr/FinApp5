@@ -104,175 +104,175 @@ namespace FinApp5.ViewModels
         }
 
 
-        private async Task ejecutarCierre()
-        {
-            try
-            {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.ExecuteReader();
-                CONEXIONMAESTRA.Cerrar();
+        //private async Task ejecutarCierre()
+        //{
+        //    try
+        //    {
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlCommand cmd = new SqlCommand("ejecutarCierre", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+        //        cmd.ExecuteReader();
+        //        CONEXIONMAESTRA.Cerrar();
 
-            }
-            catch (Exception ex)
-            {
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                DisplayAlert("error(142)", ex.Message, "OK");
+        //        DisplayAlert("error(142)", ex.Message, "OK");
 
 
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
 
-        private void SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
-        {
+        //private void SyncRuta(string codigoRuta) // llena la tabla ruta para poder enrrutar el cobro al momento de crearlo localmente
+        //{
 
-            try
-            {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
-                SqlDataReader rdr = cmd.ExecuteReader();
+        //    try
+        //    {
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
+        //        SqlDataReader rdr = cmd.ExecuteReader();
 
-                App.SQLiteDB.DeleteRutaAsync<Task>();
+        //        App.SQLiteDB.DeleteRutaAsync<Task>();
 
-                Mruta ruta = new Mruta();
+        //        Mruta ruta = new Mruta();
 
-                while (rdr.Read())
-                {
-                    ruta = new Mruta
-                    {
-                        nombreCliente = rdr["cteNombApel"].ToString() + " - " + rdr["pmoPosRutCre"].ToString(),
-                        posicion = Convert.ToInt32(rdr["pmoPosRutCre"].ToString()),
-                    };
-                    App.SQLiteDB.SaveRuta(ruta);
-                }
-                CONEXIONMAESTRA.Cerrar();
-                rdr.Close();
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("error(233)", ex.Message, "OK");
+        //        while (rdr.Read())
+        //        {
+        //            ruta = new Mruta
+        //            {
+        //                nombreCliente = rdr["cteNombApel"].ToString() + " - " + rdr["pmoPosRutCre"].ToString(),
+        //                posicion = Convert.ToInt32(rdr["pmoPosRutCre"].ToString()),
+        //            };
+        //            App.SQLiteDB.SaveRuta(ruta);
+        //        }
+        //        CONEXIONMAESTRA.Cerrar();
+        //        rdr.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        DisplayAlert("error(233)", ex.Message, "OK");
 
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
         [Obsolete]
-        private void GetTiposGastos()
-        {
-            try
-            {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                SqlDataReader rdr = cmd.ExecuteReader();
+        //private void GetTiposGastos()
+        //{
+        //    try
+        //    {
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        SqlDataReader rdr = cmd.ExecuteReader();
 
-                while (rdr.Read())
-                {
-                    MtipoGastos gasto = new MtipoGastos
-                    {
-                        claCodigo = rdr["claCodigo"].ToString().Trim(),
-                        claDescripcion = rdr["claDescripcion"].ToString().Trim()
-                    };
-                    App.SQLiteDB.SaveTipoGasto(gasto);
-                }
-                CONEXIONMAESTRA.Cerrar();
-                rdr.Close();
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("error(215)", ex.Message, "OK");
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
-        [Obsolete]
-        private void GetBarrios(string codigoRuta)
-        {
-            try
-            {
-                CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("FiltrarBarriosPorRuta", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
-                SqlDataReader rdr = cmd.ExecuteReader();
-                App.SQLiteDB.DeleteBarrios();
+        //        while (rdr.Read())
+        //        {
+        //            MtipoGastos gasto = new MtipoGastos
+        //            {
+        //                claCodigo = rdr["claCodigo"].ToString().Trim(),
+        //                claDescripcion = rdr["claDescripcion"].ToString().Trim()
+        //            };
+        //            App.SQLiteDB.SaveTipoGasto(gasto);
+        //        }
+        //        CONEXIONMAESTRA.Cerrar();
+        //        rdr.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        DisplayAlert("error(215)", ex.Message, "OK");
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
+        //[Obsolete]
+        //private void GetBarrios(string codigoRuta)
+        //{
+        //    try
+        //    {
+        //        CONEXIONMAESTRA.Abrir();
+        //        SqlCommand cmd = new SqlCommand("FiltrarBarriosPorRuta", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@strCodigoRut", codigoRuta);
+        //        SqlDataReader rdr = cmd.ExecuteReader();
+        //        App.SQLiteDB.DeleteBarrios();
 
-                while (rdr.Read())
-                {
-                    Mbarrio bar = new Mbarrio
-                    {
-                        IdBarrio = rdr["rbcCodigo"].ToString(),
-                        NombreBarrio = rdr["rbcNombre"].ToString()
-                    };
-                    //var barrio = App.SQLiteDB.GetBarrioByIdAsync(bar.IdBarrio);
-                    //if (barrio == null)
-                    App.SQLiteDB.SaveBarrios(bar);
-                }
-                CONEXIONMAESTRA.Cerrar();
-                rdr.Close();
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("error(245)", ex.Message, "OK");
+        //        while (rdr.Read())
+        //        {
+        //            Mbarrio bar = new Mbarrio
+        //            {
+        //                IdBarrio = rdr["rbcCodigo"].ToString(),
+        //                NombreBarrio = rdr["rbcNombre"].ToString()
+        //            };
+        //            //var barrio = App.SQLiteDB.GetBarrioByIdAsync(bar.IdBarrio);
+        //            //if (barrio == null)
+        //            App.SQLiteDB.SaveBarrios(bar);
+        //        }
+        //        CONEXIONMAESTRA.Cerrar();
+        //        rdr.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        DisplayAlert("error(245)", ex.Message, "OK");
 
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
-        [Obsolete]
-        private async void GetClientes(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
-        {
-            try
-            {
-                //CONEXIONMAESTRA.Abrir();
-                SqlCommand cmd = new SqlCommand("ConsultarTodosClientes", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodRutaTra", CodigoRuta);
-                cmd.Parameters.AddWithValue("@intOpcionFil", 1);
-                cmd.Parameters.AddWithValue("@strCriterio", 1);
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
+        //[Obsolete]
+        //private async void GetClientes(string CodigoRuta) // Trae del servidor todos los clientes y los guarda en el cell localmente
+        //{
+        //    try
+        //    {
+        //        //CONEXIONMAESTRA.Abrir();
+        //        SqlCommand cmd = new SqlCommand("ConsultarTodosClientes", CONEXIONMAESTRA.conectar);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@strCodRutaTra", CodigoRuta);
+        //        cmd.Parameters.AddWithValue("@intOpcionFil", 1);
+        //        cmd.Parameters.AddWithValue("@strCriterio", 1);
 
-                var clientesNew = await App.SQLiteDB.CountNewClient();
-                //var clientesNew = 0;
-                if (clientesNew == 0)
-                {
-                    App.SQLiteDB.DeleteClientes<Task>();
-                    CONEXIONMAESTRA.Abrir();
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        Mcliente cli = new Mcliente
-                        {
-                            cteNumIdenti = rdr["cteNumIdenti"].ToString(),
-                            cteNombApel = rdr["cteNombApel"].ToString(),
-                            cteDirCobCte = rdr["cteDirCobCte"].ToString(),
-                            cteCodBarDom = rdr["cteCodBarDom"].ToString(),
-                            cteDireccion = rdr["cteDirCobCte"].ToString(),
-                            cteCodBarCob = rdr["cteCodBarCob"].ToString(),
-                            cteTeleCelu = rdr["cteTeleCelu"].ToString(),
-                            cteTeleFijo = rdr["cteTeleFijo"].ToString(),
-                            cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
-                            latitud = rdr["latitud"].ToString(),
-                            longitud = rdr["longitud"].ToString(),
-                            nuevo = 0
-                        };
-                        //await App.SQLiteDB.SaveClienteAsync(cli);
-                        App.SQLiteDB.SaveClienteAsync(cli);
-                    }
+        //        var clientesNew = await App.SQLiteDB.CountNewClient();
+        //        //var clientesNew = 0;
+        //        if (clientesNew == 0)
+        //        {
+        //            App.SQLiteDB.DeleteClientes<Task>();
+        //            CONEXIONMAESTRA.Abrir();
+        //            SqlDataReader rdr = cmd.ExecuteReader();
+        //            while (rdr.Read())
+        //            {
+        //                Mcliente cli = new Mcliente
+        //                {
+        //                    cteNumIdenti = rdr["cteNumIdenti"].ToString(),
+        //                    cteNombApel = rdr["cteNombApel"].ToString(),
+        //                    cteDirCobCte = rdr["cteDirCobCte"].ToString(),
+        //                    cteCodBarDom = rdr["cteCodBarDom"].ToString(),
+        //                    cteDireccion = rdr["cteDirCobCte"].ToString(),
+        //                    cteCodBarCob = rdr["cteCodBarCob"].ToString(),
+        //                    cteTeleCelu = rdr["cteTeleCelu"].ToString(),
+        //                    cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+        //                    cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
+        //                    latitud = rdr["latitud"].ToString(),
+        //                    longitud = rdr["longitud"].ToString(),
+        //                    nuevo = 0
+        //                };
+        //                //await App.SQLiteDB.SaveClienteAsync(cli);
+        //                App.SQLiteDB.SaveClienteAsync(cli);
+        //            }
 
-                    rdr.Close();
-                    CONEXIONMAESTRA.Cerrar();
-                }
-                else
-                    await DisplayAlert("Actualizar", "Habia registros pendientes por actualizar", "OK");
-            }
-            catch (Exception ex)
-            {
-                DisplayAlert("error(296)", ex.Message, "OK");
+        //            rdr.Close();
+        //            CONEXIONMAESTRA.Cerrar();
+        //        }
+        //        else
+        //            await DisplayAlert("Actualizar", "Habia registros pendientes por actualizar", "OK");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        DisplayAlert("error(296)", ex.Message, "OK");
 
-            }
-            finally { CONEXIONMAESTRA.Cerrar(); }
-        }
+        //    }
+        //    finally { CONEXIONMAESTRA.Cerrar(); }
+        //}
         public async Task ProcesoAsyncrono()
         {
 

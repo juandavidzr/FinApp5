@@ -163,45 +163,45 @@ public partial class Clientes : ContentPage
             cmbBarrioDom.ItemsSource = barriosList;
         }
     }
-    private async void llenarBarrios()
-    {
-        try
-        {
-            SqlCommand cmd = new SqlCommand();
-            cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
-            CONEXIONMAESTRA.Abrir();
-            cmd.CommandType = CommandType.StoredProcedure;
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
-            SqlDataReader rdr = cmd.ExecuteReader();
+    //private async void llenarBarrios()
+    //{
+    //    try
+    //    {
+    //        SqlCommand cmd = new SqlCommand();
+    //        cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
+    //        CONEXIONMAESTRA.Abrir();
+    //        cmd.CommandType = CommandType.StoredProcedure;
+    //        if (cmd.Connection.State == ConnectionState.Closed)
+    //            cmd.Connection.Open();
+    //        SqlDataReader rdr = cmd.ExecuteReader();
 
-            if (rdr.HasRows)
-            {
-                //await App.SQLiteDB.DeleteBarrios();
-                while (rdr.Read())
-                {
-                    barrio.Add(new Mbarrio
-                    {
-                        IdBarrio = rdr["rbcCodigo"].ToString(),
-                        NombreBarrio = rdr["rbcNombre"].ToString()
-                    });
+    //        if (rdr.HasRows)
+    //        {
+    //            //await App.SQLiteDB.DeleteBarrios();
+    //            while (rdr.Read())
+    //            {
+    //                barrio.Add(new Mbarrio
+    //                {
+    //                    IdBarrio = rdr["rbcCodigo"].ToString(),
+    //                    NombreBarrio = rdr["rbcNombre"].ToString()
+    //                });
                     
-                }
-            }
-            if (cmd.Connection.State == ConnectionState.Open)
-                cmd.Connection.Close();
-            if (barrio != null)
-            {
-                cmbBarrioCobro.ItemsSource = barrio;
-                cmbBarrioDom.ItemsSource = barrio;
-            }
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", "Error" + ex.Message, "OK");
-        }
-        finally { CONEXIONMAESTRA.Cerrar(); }
-    }
+    //            }
+    //        }
+    //        if (cmd.Connection.State == ConnectionState.Open)
+    //            cmd.Connection.Close();
+    //        if (barrio != null)
+    //        {
+    //            cmbBarrioCobro.ItemsSource = barrio;
+    //            cmbBarrioDom.ItemsSource = barrio;
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await DisplayAlert("Error", "Error" + ex.Message, "OK");
+    //    }
+    //    finally { CONEXIONMAESTRA.Cerrar(); }
+    //}
     string? uidBarrioDom;
     string? uidBarrioCobro;
     private void cmbBarrioDom_SelectedIndexChanged(object sender, EventArgs e)

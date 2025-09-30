@@ -8,12 +8,22 @@
     xmlns:views="clr-namespace:FinApp5.Views"
     Title="FinApp5">
 
-    <ShellContent
+    <!--<ShellContent
         Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />-->
+
+    <!--<ShellContent Route="Transacciones" ContentTemplate="{DataTemplate views:Transacciones}" />-->
+
+    <ShellContent
+        Title="Login"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
-    <ShellContent Route="Transacciones" ContentTemplate="{DataTemplate views:Transacciones}" />
+    <ShellContent
+        Title="Menú Principal"
+        ContentTemplate="{DataTemplate views:MenuPpal}"
+        Route="MenuPpal" />
 
 
 </Shell>

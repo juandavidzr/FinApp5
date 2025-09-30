@@ -36,46 +36,46 @@ namespace FinApp5.ViewModels
 
        
 
-        public List<String> llenarBarrios()
-        {
-            SqlCommand cmd = new SqlCommand();
-            try
-            {
-                List<String> barrio = new List<String>();
-                cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
-                CONEXIONMAESTRA.Abrir();
+        //public List<String> llenarBarrios()
+        //{
+        //    SqlCommand cmd = new SqlCommand();
+        //    try
+        //    {
+        //        List<String> barrio = new List<String>();
+        //        cmd = new SqlCommand("CargarItemsDeBarriosEnGral", CONEXIONMAESTRA.conectar);
+        //        CONEXIONMAESTRA.Abrir();
 
-                cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.CommandType = CommandType.StoredProcedure;
 
-                if (cmd.Connection.State == ConnectionState.Closed)
-                    cmd.Connection.Open();
+        //        if (cmd.Connection.State == ConnectionState.Closed)
+        //            cmd.Connection.Open();
 
-                SqlDataReader rdr = cmd.ExecuteReader();
+        //        SqlDataReader rdr = cmd.ExecuteReader();
 
-                if (rdr.HasRows)
-                {
-                    while (rdr.Read())
-                    {
-                        barrio.Add(rdr["rbcNombre"].ToString());
-                    }
-                }
-                if (cmd.Connection.State == ConnectionState.Open)
-                    cmd.Connection.Close();
-                return barrio;
-            }
-            catch (Exception)
-            {
-                if (cmd.Connection.State == ConnectionState.Open)
-                    cmd.Connection.Close();
-                return null;
-            }
-            finally
-            {
-                if (cmd.Connection.State == ConnectionState.Open)
-                    cmd.Connection.Close();
-            }
+        //        if (rdr.HasRows)
+        //        {
+        //            while (rdr.Read())
+        //            {
+        //                barrio.Add(rdr["rbcNombre"].ToString());
+        //            }
+        //        }
+        //        if (cmd.Connection.State == ConnectionState.Open)
+        //            cmd.Connection.Close();
+        //        return barrio;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        if (cmd.Connection.State == ConnectionState.Open)
+        //            cmd.Connection.Close();
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        if (cmd.Connection.State == ConnectionState.Open)
+        //            cmd.Connection.Close();
+        //    }
 
-        }
+        //}
 
         private Mbarrio selectedBarrio;
 

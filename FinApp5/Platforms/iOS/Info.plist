@@ -2,10 +2,32 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationUsageDescription</key>
-	<string></string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>La aplicación necesita acceso al calendario para gestionar eventos y recordatorios.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>La aplicación necesita acceder a la cámara para tomar fotos o escanear documentos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>La aplicación necesita acceder a tus fotos para adjuntar imágenes desde la galería.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>La aplicación necesita acceso al micrófono para grabar audio o notas de voz.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Needs Location when in use</string>
+	<string>La aplicación necesita tu ubicación para mostrar información relevante cerca de ti.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>La aplicación necesita acceso a tus contactos para compartir información con ellos.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>La aplicación usa Bluetooth para conectarse a dispositivos cercanos.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>La aplicación usa Face ID para una autenticación más segura.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>La aplicación necesita acceso a tus recordatorios para programar tareas.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>calcular rutas</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Esta aplicación necesita acceso a tu música para ofrecer una mejor experiencia.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Esta aplicación necesita acceso a Siri para ayudarte a interactuar con comandos de voz.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Esta aplicación necesita acceso a tu ubicación para mostrar información relevante en tiempo real.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIDeviceFamily</key>
@@ -32,11 +54,11 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
-	<key>CFBundleShortVersionString</key>
-	<string>2.5</string>
-	<key>CFBundleVersion</key>
-	<string>2.5</string>
 	<key>CFBundleIdentifier</key>
 	<string></string>
+	<key>CFBundleShortVersionString</key>
+	<string>3.2</string>
+	<key>CFBundleVersion</key>
+	<string>3.2</string>
 </dict>
 </plist>

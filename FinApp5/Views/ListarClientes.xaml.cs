@@ -37,7 +37,7 @@ public partial class ListarClientes : ContentPage
                 else
                     Console.WriteLine("Error: Usuario.Usuario es null.");
             }
-            llenarDatos(usuario);
+            await LlenarDatosAsync(usuario);
         }
         catch (Exception ex)
         {
@@ -48,10 +48,81 @@ public partial class ListarClientes : ContentPage
 
         //BindingContext = new VMTransacciones(Navigation, usuario);
     }
-    
-    private async void llenarDatos(Musuarios usuario)
+
+    //private async void llenarDatos(Musuarios usuario)
+    //{
+    //    SqlCommand cmd = new SqlCommand();
+    //    try
+    //    {
+    //        var ruta = usuario.CodigoCobr;
+    //        var intOpcionFil = 1;
+    //        var criterio = "";
+
+    //        clientsCollection.Clear();
+
+    //        if (CONEXIONMAESTRA.VerificarCon())
+    //        {
+    //            CONEXIONMAESTRA.Abrir();
+    //            cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
+    //            cmd.CommandType = CommandType.StoredProcedure;
+    //            cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
+    //            cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
+    //            cmd.Parameters.AddWithValue("@strCriterio", criterio);
+    //            if (cmd.Connection.State == ConnectionState.Closed)
+    //                cmd.Connection.Open();
+    //            SqlDataReader rdr = cmd.ExecuteReader();
+
+    //            while (rdr.Read())
+    //            {
+    //                clientsCollection.Add(new Mcliente()
+    //                {
+    //                    cteNumIdenti = rdr["cteNumIdenti"].ToString(),
+    //                    cteNombApel = rdr["cteNombApel"].ToString(),
+    //                    cteTeleCelu = rdr["cteTeleCelu"].ToString(),
+    //                    cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+    //                    cteDirCobCte = rdr["cteDirCobCte"].ToString(),
+    //                });
+    //            }
+    //            cvClientes.ItemsSource = clientsCollection;
+
+    //            if (cmd.Connection.State == ConnectionState.Open)
+    //                cmd.Connection.Close();
+    //        }
+    //        else
+    //        {
+    //            await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
+    //            var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
+    //            if (clienteList != null)
+    //            {
+    //                cvClientes.ItemsSource = clienteList;
+    //                clientsCollection.Clear();
+    //                foreach (var cliente in clienteList)
+    //                {
+    //                    clientsCollection.Add(cliente);
+    //                }
+    //                if (clientsCollection != null)
+    //                {
+    //                    cvClientes.ItemsSource = clientsCollection;
+    //                }
+    //            }
+    //        }
+    //        cvClientes.SelectedItem = null;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        if (cmd.Connection.State == ConnectionState.Open)
+    //            cmd.Connection.Close();
+    //        throw;
+    //    }
+    //    //finally
+    //    //{
+    //    //    if (cmd.Connection.State == ConnectionState.Open)
+    //    //        cmd.Connection.Close();
+    //    //}
+    //}
+
+    private async Task LlenarDatosAsync(Musuarios usuario)
     {
-        SqlCommand cmd = new SqlCommand();
         try
         {
             var ruta = usuario.CodigoCobr;
@@ -62,64 +133,63 @@ public partial class ListarClientes : ContentPage
 
             if (CONEXIONMAESTRA.VerificarCon())
             {
-                CONEXIONMAESTRA.Abrir();
-                cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
-                cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
-                cmd.Parameters.AddWithValue("@strCriterio", criterio);
-                if (cmd.Connection.State == ConnectionState.Closed)
-                    cmd.Connection.Open();
-                SqlDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
+                using (SqlConnection conn = CONEXIONMAESTRA.GetConnection())
                 {
-                    clientsCollection.Add(new Mcliente()
-                    {
-                        cteNumIdenti = rdr["cteNumIdenti"].ToString(),
-                        cteNombApel = rdr["cteNombApel"].ToString(),
-                        cteTeleCelu = rdr["cteTeleCelu"].ToString(),
-                        cteTeleFijo = rdr["cteTeleFijo"].ToString(),
-                        cteDirCobCte = rdr["cteDirCobCte"].ToString(),
-                    });
-                }
-                cvClientes.ItemsSource = clientsCollection;
+                    await conn.OpenAsync();
 
-                if (cmd.Connection.State == ConnectionState.Open)
-                    cmd.Connection.Close();
+                    using (SqlCommand cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
+                        cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
+                        cmd.Parameters.AddWithValue("@strCriterio", criterio);
+
+                        using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await rdr.ReadAsync())
+                            {
+                                clientsCollection.Add(new Mcliente()
+                                {
+                                    cteNumIdenti = rdr["cteNumIdenti"].ToString(),
+                                    cteNombApel = rdr["cteNombApel"].ToString(),
+                                    cteTeleCelu = rdr["cteTeleCelu"].ToString(),
+                                    cteTeleFijo = rdr["cteTeleFijo"].ToString(),
+                                    cteDirCobCte = rdr["cteDirCobCte"].ToString(),
+                                });
+                            }
+                        }
+                    }
+                }
+
+                cvClientes.ItemsSource = clientsCollection;
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
+                await DisplayAlert("Sin Internet", "Está trabajando sin Internet (75)", "OK");
+
                 var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
                 if (clienteList != null)
                 {
-                    cvClientes.ItemsSource = clienteList;
                     clientsCollection.Clear();
                     foreach (var cliente in clienteList)
                     {
                         clientsCollection.Add(cliente);
                     }
-                    if (clientsCollection != null)
-                    {
-                        cvClientes.ItemsSource = clientsCollection;
-                    }
+
+                    cvClientes.ItemsSource = clientsCollection;
                 }
             }
+
             cvClientes.SelectedItem = null;
         }
         catch (Exception ex)
         {
-            if (cmd.Connection.State == ConnectionState.Open)
-                cmd.Connection.Close();
-            throw;
+            Console.WriteLine($"Error en LlenarDatosAsync: {ex.Message}");
+            await DisplayAlert("Error", ex.Message, "OK");
         }
-        //finally
-        //{
-        //    if (cmd.Connection.State == ConnectionState.Open)
-        //        cmd.Connection.Close();
-        //}
     }
+
+
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         try

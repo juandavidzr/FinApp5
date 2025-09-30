@@ -18,12 +18,12 @@ public partial class InformeDia : ContentPage
         Usuario = usuario;
         CargarMovimientosAsync();
     }
+
     public async Task CargarMovimientosAsync()
     {
         try
         {
             lstMovimientos.ItemsSource = null;
-
             MovimientosCollection.Clear();
 
             if (Usuario.CodigoCobr != null)
@@ -31,58 +31,191 @@ public partial class InformeDia : ContentPage
 
             if (CONEXIONMAESTRA.VerificarCon())
             {
-                SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", CONEXIONMAESTRA.conectar);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+                // Lista temporal para evitar problemas de acceso cross-thread
+                var movimientosTemp = new List<Mmovimiento>();
 
-                CONEXIONMAESTRA.Abrir();
-                SqlDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
+                await Task.Run(() =>
                 {
-                    MovimientosCollection.Add(new Mmovimiento()
+                    using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
                     {
-                        NombreCteCre = rdr["mrcNombreCteCre"].ToString(),
-                        NumeroCreAfe = rdr["mrcNumeroCreAfe"].ToString(),
-                        ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
-                        FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
-                        Descripcion = rdr["tmcDescripcion"].ToString(),
-                        strComentAbo = rdr["mrcComentarioAbo"].ToString()
-                    });
-                }
+                        con.Open();
+
+                        using (SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", con))
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta ?? string.Empty);
+
+                            using (SqlDataReader rdr = cmd.ExecuteReader())
+                            {
+                                while (rdr.Read())
+                                {
+                                    movimientosTemp.Add(new Mmovimiento()
+                                    {
+                                        NombreCteCre = rdr["mrcNombreCteCre"].ToString(),
+                                        NumeroCreAfe = rdr["mrcNumeroCreAfe"].ToString(),
+                                        ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
+                                        FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
+                                        Descripcion = rdr["tmcDescripcion"].ToString(),
+                                        strComentAbo = rdr["mrcComentarioAbo"].ToString()
+                                    });
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Actualizamos la colección en el hilo de UI
+                foreach (var mov in movimientosTemp)
+                    MovimientosCollection.Add(mov);
             }
             else
             {
-                //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
                 lblMensaje.Text = "Sin Internet";
                 var abonosList = await App.SQLiteDB.GetAbonosNewOffLine();
                 if (abonosList != null)
                 {
-                    //lstMovimientos.ItemsSource = abonosList;
                     MovimientosCollection.Clear();
                     foreach (var abono in abonosList)
-                    {
                         MovimientosCollection.Add(abono);
-                    }
                 }
             }
+
             if (MovimientosCollection != null)
-            {
-                //lstMovimientos.ItemsSource = MovimientosCollection.OrderBy(p => p.FechaHoraReg).ToList();
                 lstMovimientos.ItemsSource = MovimientosCollection;
-            }
         }
         catch (Exception ex)
         {
             await DisplayAlert("error", ex.Message, "OK");
             throw;
         }
-        finally { CONEXIONMAESTRA.Cerrar(); }
     }
-    //private void lstCreditos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-    //{
 
+    //public async Task CargarMovimientosAsync()
+    //{
+    //    try
+    //    {
+    //        lstMovimientos.ItemsSource = null;
+
+    //        MovimientosCollection.Clear();
+
+    //        if (Usuario.CodigoCobr != null)
+    //            ruta = Usuario.CodigoCobr;
+
+    //        if (CONEXIONMAESTRA.VerificarCon())
+    //        {
+    //            SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", CONEXIONMAESTRA.conectar);
+    //            cmd.CommandType = CommandType.StoredProcedure;
+    //            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+
+    //            CONEXIONMAESTRA.Abrir();
+    //            SqlDataReader rdr = cmd.ExecuteReader();
+
+    //            while (rdr.Read())
+    //            {
+    //                MovimientosCollection.Add(new Mmovimiento()
+    //                {
+    //                    NombreCteCre = rdr["mrcNombreCteCre"].ToString(),
+    //                    NumeroCreAfe = rdr["mrcNumeroCreAfe"].ToString(),
+    //                    ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
+    //                    FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
+    //                    Descripcion = rdr["tmcDescripcion"].ToString(),
+    //                    strComentAbo = rdr["mrcComentarioAbo"].ToString()
+    //                });
+    //            }
+    //        }
+    //        else
+    //        {
+    //            //await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (56)", "OK");
+    //            lblMensaje.Text = "Sin Internet";
+    //            var abonosList = await App.SQLiteDB.GetAbonosNewOffLine();
+    //            if (abonosList != null)
+    //            {
+    //                //lstMovimientos.ItemsSource = abonosList;
+    //                MovimientosCollection.Clear();
+    //                foreach (var abono in abonosList)
+    //                {
+    //                    MovimientosCollection.Add(abono);
+    //                }
+    //            }
+    //        }
+    //        if (MovimientosCollection != null)
+    //        {
+    //            //lstMovimientos.ItemsSource = MovimientosCollection.OrderBy(p => p.FechaHoraReg).ToList();
+    //            lstMovimientos.ItemsSource = MovimientosCollection;
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await DisplayAlert("error", ex.Message, "OK");
+    //        throw;
+    //    }
+    //    finally { CONEXIONMAESTRA.Cerrar(); }
     //}
+
+    //public async Task CargarMovimientosAsync()
+    //{
+    //    try
+    //    {
+    //        lstMovimientos.ItemsSource = null;
+    //        MovimientosCollection.Clear();
+
+    //        if (Usuario.CodigoCobr != null)
+    //            ruta = Usuario.CodigoCobr;
+
+    //        if (CONEXIONMAESTRA.VerificarCon())
+    //        {
+    //            await Task.Run(() =>
+    //            {
+    //                using (SqlConnection con = new SqlConnection(CONEXIONMAESTRA.conexion))
+    //                using (SqlCommand cmd = new SqlCommand("DescargaDeMovtosDiariosGeneradosPorRuta", con))
+    //                {
+    //                    cmd.CommandType = CommandType.StoredProcedure;
+    //                    cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
+
+    //                    con.Open();
+
+    //                    using (SqlDataReader rdr = cmd.ExecuteReader())
+    //                    {
+    //                        while (rdr.Read())
+    //                        {
+    //                            MovimientosCollection.Add(new Mmovimiento()
+    //                            {
+    //                                NombreCteCre = rdr["mrcNombreCteCre"].ToString(),
+    //                                NumeroCreAfe = rdr["mrcNumeroCreAfe"].ToString(),
+    //                                ValorMovto = Convert.ToDouble(rdr["mrcValorMovto"].ToString()),
+    //                                FechaHoraReg = Convert.ToDateTime(rdr["mcrFechaHoraReg"].ToString()),
+    //                                Descripcion = rdr["tmcDescripcion"].ToString(),
+    //                                strComentAbo = rdr["mrcComentarioAbo"].ToString()
+    //                            });
+    //                        }
+    //                    }
+    //                }
+    //            });
+    //        }
+    //        else
+    //        {
+    //            lblMensaje.Text = "Sin Internet";
+    //            var abonosList = await App.SQLiteDB.GetAbonosNewOffLine();
+    //            if (abonosList != null)
+    //            {
+    //                MovimientosCollection.Clear();
+    //                foreach (var abono in abonosList)
+    //                {
+    //                    MovimientosCollection.Add(abono);
+    //                }
+    //            }
+    //        }
+
+    //        if (MovimientosCollection != null)
+    //            lstMovimientos.ItemsSource = MovimientosCollection;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await DisplayAlert("error", ex.Message, "OK");
+    //        throw;
+    //    }
+    //}
+
 
     private void lstMovimientos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {

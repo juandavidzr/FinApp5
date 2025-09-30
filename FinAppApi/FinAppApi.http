@@ -1,0 +1,6 @@
+@FinAppApi_HostAddress = http://localhost:5107
+
+GET {{FinAppApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
