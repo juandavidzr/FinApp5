@@ -69,6 +69,20 @@
             <Entry x:Name="TxtTelefono2" Text="{Binding TxtTelefono2}"/>
             <Label Text="Notas Generales" />
             <Entry x:Name="TxtNotas" Text="{Binding TxtNotas}" />
+
+            <Label Text="Foto del Cliente" />
+
+            <Image x:Name="ImgCliente"
+                   WidthRequest="200"
+                   HeightRequest="200"
+                   Aspect="AspectFill"
+                   BackgroundColor="LightGray"/>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5">
+                <Button Text="Tomar Foto" Clicked="BtnTomarFoto_Clicked" />
+                <Button Text="Seleccionar Foto" Clicked="BtnSeleccionarFoto_Clicked" />
+            </StackLayout>
+
             <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >
                 <Button x:Name="BtnLimpiar" Text="Limpiar" WidthRequest="150" Margin="1,1,10,1" Clicked="BtnLimpiar_Clicked"/>
                 <Button x:Name="BtnGuardar" Text="Grabar" WidthRequest="150" Clicked="Button_Clicked_Guardar" />

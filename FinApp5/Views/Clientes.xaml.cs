@@ -4,22 +4,38 @@ using FinApp5.Conexiones;
 using FinApp5.Datos;
 using FinApp5.Modelo;
 using FinApp5.ViewModels;
+using FinAppMaui.Services;
 using Microsoft.Data.SqlClient;
+using Microsoft.Maui.Graphics.Platform;
+using Microsoft.Maui.Media;
+
+using SkiaSharp;
 using System.Data;
+using static System.Net.WebRequestMethods;
 
 public partial class Clientes : ContentPage
 {
+    private readonly HttpClient _http;
+    private readonly ClienteService _clienteService;
+
+    // Inyección del cliente configurado en MauiProgram
+
+
     bool ModoEdit = false;
     Musuarios Usuario = new Musuarios();
     private VMClientes viewModel;
 
     Mcliente cliente = new Mcliente();
-    public Clientes(Musuarios usuario)
+
+    private FileResult _fotoCliente;
+    public Clientes(Musuarios usuario, ClienteService clienteService)
     {
         InitializeComponent();
         viewModel = new VMClientes(Navigation, usuario);
         BindingContext = viewModel;
         Usuario = usuario;
+
+        _clienteService = clienteService;
 
         Loaded += (s, e) => SetFocus();       
     }
@@ -28,13 +44,24 @@ public partial class Clientes : ContentPage
     {
         base.OnAppearing();
 
-        await viewModel.InicializarAsync(); // ahora inicializa todo de forma asincrónica
+        //await viewModel.InicializarAsync(); // ahora inicializa todo de forma asincrónica
+
+        try
+        {
+            await viewModel.InicializarAsync();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error crítico", ex.Message, "OK");
+        }
     }
 
     private void SetFocus()
     {
         TxtId.Focus();
     }
+
+
     private async void TxtId_Unfocused(object sender, FocusEventArgs e)
     {
         try
@@ -69,6 +96,15 @@ public partial class Clientes : ContentPage
                         TxtTelefono2.Text = cliente.cteTeleFijo;
                         TxtTelefono2.IsEnabled = false;
                         TxtNotas.Text = cliente.cteNotasGenerales;
+                        if (cliente.Foto != null && cliente.Foto.Length > 0)
+                        {
+                            MemoryStream ms = new MemoryStream(cliente.Foto);
+                            ImgCliente.Source = ImageSource.FromStream(() => ms);
+                        }
+                        else
+                        {
+                            ImgCliente.Source = null; // o una imagen predeterminada
+                        }
                         ModoEdit = true;
                     }
                     else
@@ -326,6 +362,7 @@ public partial class Clientes : ContentPage
             TxtTelefono2.Text = string.Empty;
             TxtTelefono2.IsEnabled = true;
             TxtNotas.Text = string.Empty;
+            ImgCliente.Source = null;
         }
         catch (Exception ex)
         {
@@ -363,7 +400,7 @@ public partial class Clientes : ContentPage
                     ModoEdit = false;
                     if (exito)
                     {
-                        await DisplayAlert("Actualizar", "Datos actualizados", "OK");
+                         await DisplayAlert("Actualizar", "Datos actualizados", "OK");
                         TxtId.Text = string.Empty;
                         limpiar();
                     }
@@ -397,18 +434,35 @@ public partial class Clientes : ContentPage
                     cliente.latitud = TxtLatitud.Text;
                     cliente.longitud = TxtLongitud.Text;
 
+                    
+                    cliente.Foto = await ConvertirFotoABytes(_fotoCliente);
+
                     if (CONEXIONMAESTRA.VerificarCon())
                     {
                         cliente.nuevo = 0;
                         await App.SQLiteDB.UpdateClienteAsync(cliente);
-                        exito = funcion.InsertarCliente(cliente);
-                        if (exito)
+
+                        try
                         {
-                            await DisplayAlert("Insertado", "Datos insertados", "OK");
-                            limpiar();
+
+                            var response = await _clienteService.SubirClienteAsync(cliente);
+
+                            if (response.IsSuccessStatusCode)
+                            {
+                                await DisplayAlert("Insertado", "Datos insertados correctamente en el servidor", "OK");
+                                limpiar();
+                            }
+                            else
+                            {
+                                await DisplayAlert("Error", $"Error al insertar: {response.StatusCode}", "OK");
+                            }
+
                         }
-                        else
-                            await DisplayAlert("Error", "Error", "OK");
+                        catch (Exception ex)
+                        {
+                            await DisplayAlert("Error", ex.Message, "OK");
+                        }
+
                     }
                     else
                     {
@@ -439,4 +493,106 @@ public partial class Clientes : ContentPage
     {
         Navigation.PushAsync(new MenuPpal(Usuario));
     }
+
+    public byte[] ResizeImage(byte[] imageData, int anchoMaximo)
+    {
+        //using var inputStream = new MemoryStream(imageData);
+        //using var original = SKBitmap.Decode(inputStream);
+
+        //var resized = original.Resize(new SKImageInfo(width, height), SKFilterQuality.High);
+
+        //using var image = SKImage.FromBitmap(resized);
+        //using var output = new MemoryStream();
+        //image.Encode(SKEncodedImageFormat.Jpeg, 90).SaveTo(output);
+
+        //return output.ToArray();
+
+        using var input = new SKBitmap();
+        using var ms = new MemoryStream(imageData);
+        using var codec = SKCodec.Create(ms);
+        var info = codec.Info;
+
+        using var bitmap = SKBitmap.Decode(codec);
+
+        int nuevoAncho = anchoMaximo;
+        int nuevoAlto = (int)(bitmap.Height * (anchoMaximo / (float)bitmap.Width));
+
+        using var resized = bitmap.Resize(new SKImageInfo(nuevoAncho, nuevoAlto), SKFilterQuality.Medium);
+        using var image = SKImage.FromBitmap(resized);
+        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 80); // calidad 80%
+        
+        return data.ToArray();
+    }
+
+    private async void BtnTomarFoto_Clicked(object sender, EventArgs e)
+    {
+        if (!await SolicitarPermisosCamaraAsync())
+        {
+            await DisplayAlert("Permiso denegado", "No se concedió acceso a la cámara", "OK");
+            return;
+        }
+
+        try
+        {
+            if (MediaPicker.Default.IsCaptureSupported)
+            {
+                var photo = await MediaPicker.Default.CapturePhotoAsync();
+                if (photo != null)
+                {
+                    _fotoCliente = photo;
+                    var stream = await photo.OpenReadAsync();
+                    ImgCliente.Source = ImageSource.FromStream(() => stream);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async void BtnSeleccionarFoto_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var photo = await MediaPicker.Default.PickPhotoAsync();
+            if (photo != null)
+            {
+                _fotoCliente = photo;
+                var stream = await photo.OpenReadAsync();
+                ImgCliente.Source = ImageSource.FromStream(() => stream);
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task<byte[]> ConvertirFotoABytes(FileResult photo)
+    {
+        if (photo == null) return null;
+                
+        using var stream = await photo.OpenReadAsync();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        var originalBytes = memoryStream.ToArray();
+                
+        byte[] resizedBytes = ResizeImage(originalBytes, 600);
+
+        return resizedBytes;
+    }
+
+
+    private async Task<bool> SolicitarPermisosCamaraAsync()
+    {
+        var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+        if (status != PermissionStatus.Granted)
+        {
+            status = await Permissions.RequestAsync<Permissions.Camera>();
+        }
+        return status == PermissionStatus.Granted;
+    }
+
+    
 }

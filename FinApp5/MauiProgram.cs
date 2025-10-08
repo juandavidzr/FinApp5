@@ -53,13 +53,17 @@ namespace FinApp5
 
             builder.Services.AddHttpClient("FinAppApi", client =>
             {
-                //client.BaseAddress = new Uri("http://192.168.1.6:5107/"); // URL de tu API
-                client.BaseAddress = new Uri("http://138.128.171.162:8080/"); // URL API de creditosjg
-                //client.BaseAddress = new Uri("http://138.128.171.162:8001/"); // URL API de pruebas
+                //client.BaseAddress = new Uri("http://192.168.1.6:5107/"); // URL API pruebas locales
+                //client.BaseAddress = new Uri("http://138.128.171.162:8080/"); // URL API de creditosjg
+                client.BaseAddress = new Uri("http://138.128.171.162:8001/"); // URL API de pruebas
                 //client.BaseAddress = new Uri("http://138.128.171.162:8002/"); // URL API de crediCristianWill
+                //client.BaseAddress = new Uri("http://138.128.171.162:8003/"); // URL API de creditosMag1
             });
 
             builder.Services.AddScoped<AuthService>();
+            //builder.Services.AddScoped<ClienteService>();
+            builder.Services.AddTransient<ClienteService>();
+            builder.Services.AddTransient<Clientes>();
 
             builder.Services.AddSingleton<INavigationService, NavigationService>();
             builder.Services.AddTransient<VMingresar>();
@@ -74,12 +78,18 @@ namespace FinApp5
 
             #if DEBUG
                 builder.Logging.AddDebug();
-            #endif
+#endif
 
             //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            return builder.Build();
+            var app = builder.Build();
+
+            Services = app.Services;
+
+            return app;
+
+            
         }
     }
 }

@@ -55,10 +55,10 @@
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>CFBundleIdentifier</key>
-	<string></string>
+	<string>com.miempresa.creditosmag</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.2</string>
+	<string>3.3</string>
 	<key>CFBundleVersion</key>
-	<string>3.2</string>
+	<string>3.3</string>
 </dict>
 </plist>

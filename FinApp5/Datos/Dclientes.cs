@@ -17,43 +17,51 @@ namespace FinApp5.Datos
 
         SqlCommand cmd = new SqlCommand();
 
-        public bool InsertarCliente(Mcliente cliente)
-        {
-            try
-            {
-                using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
-                {
-                    con.Open();
+        //public bool InsertarCliente(Mcliente cliente)
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+        //        {
+        //            con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+        //            using (SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", con))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                cmd.CommandTimeout = 120;
+        //                cmd.Parameters.AddWithValue("@strNumIdeCte", cliente.cteNumIdenti ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strNomComCte", cliente.cteNombApel ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strDirResCte", cliente.cteDireccion ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strDirCobCte", cliente.cteDirCobCte ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strNumTelFij", cliente.cteTeleFijo ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strNumTelCel", cliente.cteTeleCelu ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strCodBarDom", cliente.cteCodBarDom ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strCodBarCob", cliente.cteCodBarCob ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strCodigoRut", cliente.cteCodRutReg ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@strNotasCte", cliente.cteNotasGenerales ?? string.Empty);
+        //                cmd.Parameters.AddWithValue("@latitud", cliente.latitud ?? "0");
+        //                cmd.Parameters.AddWithValue("@longitud", cliente.longitud ?? "0");
 
-                        cmd.Parameters.AddWithValue("@strNumIdeCte", cliente.cteNumIdenti ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strNomComCte", cliente.cteNombApel ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strDirResCte", cliente.cteDireccion ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strDirCobCte", cliente.cteDirCobCte ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strNumTelFij", cliente.cteTeleFijo ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strNumTelCel", cliente.cteTeleCelu ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strCodBarDom", cliente.cteCodBarDom ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strCodBarCob", cliente.cteCodBarCob ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strCodigoRut", cliente.cteCodRutReg ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@strNotasCte", cliente.cteNotasGenerales ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@latitud", cliente.latitud ?? "0");
-                        cmd.Parameters.AddWithValue("@longitud", cliente.longitud ?? "0");
+        //                if (cliente.Foto != null)
+        //                    cmd.Parameters.Add("@Foto", SqlDbType.VarBinary).Value = cliente.Foto;
+        //                else
+        //                    cmd.Parameters.Add("@Foto", SqlDbType.VarBinary).Value = DBNull.Value;
 
-                        cmd.ExecuteNonQuery();
-                    }
-                }
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _ = DisplayAlert("Error", "Error: " + ex.Message, "OK");
-                return false;
-            }
-        }
+        //                cmd.ExecuteNonQuery();
+        //            }
+        //        }
+
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //_ = DisplayAlert("Error", "Error: " + ex.Message, "OK");
+        //        Console.WriteLine("Error en InsertarCliente: " + ex.ToString());
+        //        throw new Exception("Error en InsertarCliente: " + ex.Message, ex);
+        //        //return false;
+        //    }
+        //}
 
         //public bool InsertarCliente (Mcliente cliente)
         //{
@@ -125,6 +133,58 @@ namespace FinApp5.Datos
         //    finally { CONEXIONMAESTRA.Cerrar(); }
         //}
 
+        public async Task<bool> InsertarClienteAsync(Mcliente cliente)
+        {
+            try
+            {
+                using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("GrabaDatosPerCte", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 120;
+
+                        cmd.Parameters.AddWithValue("@strNumIdeCte", cliente.cteNumIdenti ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strNomComCte", cliente.cteNombApel ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strDirResCte", cliente.cteDireccion ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strDirCobCte", cliente.cteDirCobCte ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strNumTelFij", cliente.cteTeleFijo ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strNumTelCel", cliente.cteTeleCelu ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strCodBarDom", cliente.cteCodBarDom ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strCodBarCob", cliente.cteCodBarCob ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strCodigoRut", cliente.cteCodRutReg ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@strNotasCte", cliente.cteNotasGenerales ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@latitud", cliente.latitud ?? "0");
+                        cmd.Parameters.AddWithValue("@longitud", cliente.longitud ?? "0");
+
+                        if (cliente.Foto != null)
+                        { 
+                            //cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = cliente.Foto; // -1 = VARBINARY(MAX)
+                            var fotoParam = new SqlParameter("@Foto", SqlDbType.VarBinary, -1);
+                            fotoParam.Value = (object)cliente.Foto ?? DBNull.Value;
+                            
+                            cmd.Parameters.Add(fotoParam);
+                        }
+                        else
+                            cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // No uses DisplayAlert aquí, maneja en la UI
+                Console.WriteLine($"Error InsertarClienteAsync: {ex}");
+                
+                throw;
+            }
+        }
+
         public Mcliente? ConsultarCliente(string txtId)
         {
             try
@@ -142,6 +202,18 @@ namespace FinApp5.Datos
                         {
                             if (rdr.Read())
                             {
+                                byte[]? fotoBytes = null;
+                                try
+                                {
+                                    int fotoIndex = rdr.GetOrdinal("Foto");
+                                    if (!rdr.IsDBNull(fotoIndex))
+                                        fotoBytes = (byte[])rdr["Foto"];
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    // Si la columna no existe, se ignora sin error
+                                    fotoBytes = null;
+                                }
                                 return new Mcliente
                                 {
                                     cteNombApel = rdr["cteNombApel"].ToString(),
@@ -153,7 +225,8 @@ namespace FinApp5.Datos
                                     longitud = rdr["longitud"].ToString(),
                                     cteTeleCelu = rdr["cteTeleCelu"].ToString(),
                                     cteTeleFijo = rdr["cteTeleFijo"].ToString(),
-                                    cteNotasGenerales = rdr["cteNotasGenerales"].ToString()
+                                    cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
+                                    Foto = fotoBytes 
                                 };
                             }
                         }

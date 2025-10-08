@@ -240,7 +240,8 @@ namespace FinApp5.ViewModels
                     cliente.latitud = TxtLatitud;
                     cliente.longitud = TxtLongitud;
 
-                    exito = funcion.InsertarCliente(cliente);
+                    //exito = funcion.InsertarCliente(cliente);
+                    exito = await funcion.InsertarClienteAsync(cliente);
                     if (exito)
                     {
                         await DisplayAlert("Insertado", "Datos insertados", "OK");
