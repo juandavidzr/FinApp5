@@ -4,19 +4,104 @@
              x:Class="FinApp5.MainPage"
              Shell.NavBarHasShadow="False"
              Shell.NavBarIsVisible="False"
-             Title="AUTENTICACION">
+             BackgroundColor="#FFFFFF">
 
-    <VerticalStackLayout Padding="10" Spacing="10" Margin="20">
-        <Label Text="AUTENTICACION" HorizontalTextAlignment="Center" FontSize="Title" FontAttributes="Bold"></Label>
-        <Label Text="" HorizontalOptions="CenterAndExpand" FontSize="Title" />
-        <Label Text="Usuario" FontSize="Large" HorizontalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"/>
-        <Entry x:Name="TxtUsuario" Placeholder="Usuario" FontSize="Large"
-                       Text="{Binding TxtUsuario}" HorizontalTextAlignment="Center" ClearButtonVisibility="WhileEditing"/>
-        <Label FontSize="Large" HorizontalOptions="Center" Text="Contraseña"/>
-        <Entry x:Name="TxtPW" HorizontalTextAlignment="Center" Placeholder="Contraseña" FontSize="Large" Text="{Binding TxtPw}"
-                       ClearButtonVisibility="WhileEditing" IsPassword="True"/>
-        <Button Text="INGRESAR" HorizontalOptions="CenterAndExpand" FontSize="Large" Command="{Binding ingresarCommand}"/>
-        <Label Text="Version 3.0" HorizontalOptions="Center"/>
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25" VerticalOptions="CenterAndExpand">
 
+            <!-- Logo -->
+            <Image Source="logo_new.png"
+                   HeightRequest="230"
+                   WidthRequest="230"
+                   HorizontalOptions="Center"/>
+           
+            <!-- Nombre App -->
+            <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                <Label Text="FINAPP"
+                    FontSize="28"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"/>
+                <Label Text="FINANZAS DIGITALES"
+                    FontSize="14"
+                    TextColor="Black"
+                    HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+
+            <!-- Título -->
+            <Label Text="AUTENTICACIÓN"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   HorizontalOptions="Center"
+                   Margin="0,20,0,10"/>
+
+            <!-- Caja Blanca -->
+            <Frame BackgroundColor="White"
+                   Padding="20"
+                   CornerRadius="15"
+                   HasShadow="True">
+
+                <VerticalStackLayout Spacing="20">
+
+                    <!-- Usuario -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Image Source="usuario.png"
+                               WidthRequest="45"
+                               HeightRequest="45"
+                               VerticalOptions="Center"/>
+                        <Entry Placeholder="Ingresa tu usuario"
+                               Text="{Binding TxtUsuario}"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"
+                               FontSize="16"
+                               Keyboard="Text"
+                               BackgroundColor="Transparent"
+                               HorizontalOptions="FillAndExpand"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Línea separadora -->
+                    <BoxView HeightRequest="1" BackgroundColor="#C6A25B"/>
+
+                    <!-- Contraseña -->
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Image Source="password.png"
+                               WidthRequest="45"
+                               HeightRequest="45"
+                               VerticalOptions="Center"/>
+                        <Entry Placeholder="Ingresa tu contraseña"
+                               IsPassword="True"
+                               Text="{Binding TxtPw}"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"
+                               FontSize="16"
+                               BackgroundColor="Transparent"
+                               HorizontalOptions="FillAndExpand"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Línea separadora -->
+                    <BoxView HeightRequest="1" BackgroundColor="#C6A25B"/>
+
+                    <!-- Botón Entrar -->
+                    <Button Text="ENTRAR"
+                            Command="{Binding ingresarCommand}"
+                            BackgroundColor="#C6A25B"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Versión -->
+            <Label Text="Versión 3.0"
+                   FontSize="12"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,15,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
