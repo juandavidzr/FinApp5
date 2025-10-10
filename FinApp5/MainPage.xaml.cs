@@ -16,15 +16,15 @@ namespace FinApp5
             
             Loaded += (object? s, EventArgs e) => SetFocus();
 
-            TxtUsuario.Text = string.Empty;
-            TxtPW.Text = string.Empty;
+            //TxtUsuario.Text = string.Empty;
+            //TxtPW.Text = string.Empty;
 
             BindingContext = vm; // Usa el que MAUI inyecta
         }
 
         private void SetFocus()
         {
-            TxtUsuario.Focus();
+            //TxtUsuario.Focus();
         }
     }
 }
