@@ -14,7 +14,7 @@
                    HeightRequest="230"
                    WidthRequest="230"
                    HorizontalOptions="Center"/>
-            <!-- Nombre App -->
+           
             <!-- Nombre App -->
             <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                 <Label Text="FINAPP"
