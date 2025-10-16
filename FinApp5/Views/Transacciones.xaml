@@ -126,15 +126,13 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#4CAF50" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                    
 
                     <Grid>
                         <StackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6"
-                                     InputTransparent="True">
+                                     >
                             <Label Text="💰" 
                                    TextColor="White" 
                                    FontSize="28" 
@@ -155,7 +153,7 @@
                                      IsEnabled="True"
                                      Command="{Binding ListarClientesCommand}" 
                                      BackgroundColor="Transparent"
-                                     Opacity="0">
+                                     >
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroupList>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -194,15 +192,13 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#F44336" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                   
 
                     <Grid>
                         <StackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6"
-                                     InputTransparent="True">
+                                     >
                             <Label Text="💵" 
                                    TextColor="White" 
                                    FontSize="28" 
@@ -224,7 +220,7 @@
                                      Command="{Binding ListarCreditosCommand}"
                                      Clicked="ImageButton_Clicked"
                                      BackgroundColor="Transparent"
-                                     Opacity="0">
+                                     >
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroupList>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -263,15 +259,13 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#FF9800" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                   
 
                     <Grid>
                         <StackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6"
-                                     InputTransparent="True">
+                                     >
                             <Label Text="📋" 
                                    TextColor="White" 
                                    FontSize="28" 
@@ -292,7 +286,7 @@
                                      IsEnabled="True"
                                      Command="{Binding EnrrutarCommand}" 
                                      BackgroundColor="Transparent"
-                                     Opacity="0">
+                                     >
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroupList>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -331,15 +325,13 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#757575" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                    
 
                     <Grid>
                         <StackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6"
-                                     InputTransparent="True">
+                                     >
                             <Label Text="📊" 
                                    TextColor="White" 
                                    FontSize="28" 
@@ -360,7 +352,7 @@
                                      IsEnabled="True"
                                      Command="{Binding RegistarGastosCommand}" 
                                      BackgroundColor="Transparent"
-                                     Opacity="0">
+                                     >
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroupList>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -394,7 +386,7 @@
                  HorizontalOptions="Start" 
                  VerticalOptions="Start" 
                  Margin="-10,60,0,0"
-                 InputTransparent="True" />
+                 />
 
         <Ellipse Grid.RowSpan="2" 
                  Fill="#FFFFFF" 
@@ -404,7 +396,7 @@
                  HorizontalOptions="End" 
                  VerticalOptions="Start" 
                  Margin="0,180,-20,0"
-                 InputTransparent="True" />
+                 />
 
     </Grid>
 </ContentPage>
