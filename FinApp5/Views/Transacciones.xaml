@@ -117,6 +117,9 @@
                         VerticalOptions="Center"
                         WidthRequest="160"
                         HeightRequest="140">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ListarClientesCommand}" />
+                    </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#4CAF50" Offset="0.0" />
@@ -130,50 +133,19 @@
                         <Shadow Brush="#4CAF50" Opacity="0.3" Radius="8" Offset="0,4" />
                     </Border.Shadow>
 
-                    <Grid>
-                        <StackLayout VerticalOptions="Center" 
-                                     HorizontalOptions="Center" 
-                                     Spacing="6"
-                                     InputTransparent="True">
-                            <Label Text="💰" 
-                                   TextColor="White" 
-                                   FontSize="28" 
-                                   HorizontalTextAlignment="Center" />
-                            <Label Text="Registrar Crédito" 
-                                   TextColor="White" 
-                                   FontSize="11" 
-                                   FontAttributes="Bold" 
-                                   HorizontalTextAlignment="Center" />
-                        </StackLayout>
-
-                        <ImageButton Source="credito.png"
-                                     Aspect="AspectFit"
-                                     BorderColor="Transparent"
-                                     BorderWidth="0"
-                                     CornerRadius="15"
-                                     Padding="0"
-                                     IsEnabled="True"
-                                     Command="{Binding ListarClientesCommand}" 
-                                     BackgroundColor="Transparent"
-                                     Opacity="0">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroupList>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="1"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Pressed">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="0.95"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateGroupList>
-                            </VisualStateManager.VisualStateGroups>
-                        </ImageButton>
-                    </Grid>
+                    <StackLayout VerticalOptions="Center" 
+                                 HorizontalOptions="Center" 
+                                 Spacing="6">
+                        <Label Text="💰" 
+                               TextColor="White" 
+                               FontSize="28" 
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Registrar Crédito" 
+                               TextColor="White" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
                 </Border>
 
                 <!-- Realizar Recaudo -->
@@ -185,6 +157,10 @@
                         VerticalOptions="Center"
                         WidthRequest="160"
                         HeightRequest="140">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ListarCreditosCommand}" 
+                                              Tapped="ImageButton_Clicked" />
+                    </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#F44336" Offset="0.0" />
@@ -198,51 +174,19 @@
                         <Shadow Brush="#F44336" Opacity="0.3" Radius="8" Offset="0,4" />
                     </Border.Shadow>
 
-                    <Grid>
-                        <StackLayout VerticalOptions="Center" 
-                                     HorizontalOptions="Center" 
-                                     Spacing="6"
-                                     InputTransparent="True">
-                            <Label Text="💵" 
-                                   TextColor="White" 
-                                   FontSize="28" 
-                                   HorizontalTextAlignment="Center" />
-                            <Label Text="Realizar Recaudo" 
-                                   TextColor="White" 
-                                   FontSize="11" 
-                                   FontAttributes="Bold" 
-                                   HorizontalTextAlignment="Center" />
-                        </StackLayout>
-
-                        <ImageButton Source="recaudo.png"
-                                     Aspect="AspectFit"
-                                     BorderColor="Transparent"
-                                     BorderWidth="0"
-                                     CornerRadius="15"
-                                     Padding="0"
-                                     IsEnabled="True"
-                                     Command="{Binding ListarCreditosCommand}"
-                                     Clicked="ImageButton_Clicked"
-                                     BackgroundColor="Transparent"
-                                     Opacity="0">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroupList>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="1"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Pressed">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="0.95"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateGroupList>
-                            </VisualStateManager.VisualStateGroups>
-                        </ImageButton>
-                    </Grid>
+                    <StackLayout VerticalOptions="Center" 
+                                 HorizontalOptions="Center" 
+                                 Spacing="6">
+                        <Label Text="💵" 
+                               TextColor="White" 
+                               FontSize="28" 
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Realizar Recaudo" 
+                               TextColor="White" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
                 </Border>
 
                 <!-- Enrutar Cartera -->
@@ -254,6 +198,9 @@
                         VerticalOptions="Center"
                         WidthRequest="160"
                         HeightRequest="140">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding EnrrutarCommand}" />
+                    </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#FF9800" Offset="0.0" />
@@ -267,50 +214,19 @@
                         <Shadow Brush="#FF9800" Opacity="0.3" Radius="8" Offset="0,4" />
                     </Border.Shadow>
 
-                    <Grid>
-                        <StackLayout VerticalOptions="Center" 
-                                     HorizontalOptions="Center" 
-                                     Spacing="6"
-                                     InputTransparent="True">
-                            <Label Text="📋" 
-                                   TextColor="White" 
-                                   FontSize="28" 
-                                   HorizontalTextAlignment="Center" />
-                            <Label Text="Enrutar Cartera" 
-                                   TextColor="White" 
-                                   FontSize="11" 
-                                   FontAttributes="Bold" 
-                                   HorizontalTextAlignment="Center" />
-                        </StackLayout>
-
-                        <ImageButton Source="enrutar.png"
-                                     Aspect="AspectFit"
-                                     BorderColor="Transparent"
-                                     BorderWidth="0"
-                                     CornerRadius="15"
-                                     Padding="0"
-                                     IsEnabled="True"
-                                     Command="{Binding EnrrutarCommand}" 
-                                     BackgroundColor="Transparent"
-                                     Opacity="0">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroupList>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="1"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Pressed">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="0.95"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateGroupList>
-                            </VisualStateManager.VisualStateGroups>
-                        </ImageButton>
-                    </Grid>
+                    <StackLayout VerticalOptions="Center" 
+                                 HorizontalOptions="Center" 
+                                 Spacing="6">
+                        <Label Text="📋" 
+                               TextColor="White" 
+                               FontSize="28" 
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Enrutar Cartera" 
+                               TextColor="White" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
                 </Border>
 
                 <!-- Registrar Gastos -->
@@ -322,10 +238,13 @@
                         VerticalOptions="Center"
                         WidthRequest="160"
                         HeightRequest="140">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegistarGastosCommand}" />
+                    </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#757575" Offset="0.0" />
-                            <GradientStop Color="#424242" Offset="1.0" />
+                            <GradientStop Color="#3b82f6"  Offset="0.0" />
+                            <GradientStop Color="#2563eb" Offset="1.0" />
                         </LinearGradientBrush>
                     </Border.Background>
                     <Border.StrokeShape>
@@ -335,50 +254,19 @@
                         <Shadow Brush="#757575" Opacity="0.3" Radius="8" Offset="0,4" />
                     </Border.Shadow>
 
-                    <Grid>
-                        <StackLayout VerticalOptions="Center" 
-                                     HorizontalOptions="Center" 
-                                     Spacing="6"
-                                     InputTransparent="True">
-                            <Label Text="📊" 
-                                   TextColor="White" 
-                                   FontSize="28" 
-                                   HorizontalTextAlignment="Center" />
-                            <Label Text="Registrar Gasto(s)" 
-                                   TextColor="White" 
-                                   FontSize="11" 
-                                   FontAttributes="Bold" 
-                                   HorizontalTextAlignment="Center" />
-                        </StackLayout>
-
-                        <ImageButton Source="gastos.png"
-                                     Aspect="AspectFit"
-                                     BorderColor="Transparent"
-                                     BorderWidth="0"
-                                     CornerRadius="15"
-                                     Padding="0"
-                                     IsEnabled="True"
-                                     Command="{Binding RegistarGastosCommand}" 
-                                     BackgroundColor="Transparent"
-                                     Opacity="0">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroupList>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="1"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Pressed">
-                                            <VisualState.Setters>
-                                                <Setter Property="Scale" Value="0.95"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateGroupList>
-                            </VisualStateManager.VisualStateGroups>
-                        </ImageButton>
-                    </Grid>
+                    <StackLayout VerticalOptions="Center" 
+                                 HorizontalOptions="Center" 
+                                 Spacing="6">
+                        <Label Text="📊" 
+                               TextColor="White" 
+                               FontSize="28" 
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Registrar Gasto(s)" 
+                               TextColor="White" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
                 </Border>
 
             </Grid>
