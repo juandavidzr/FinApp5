@@ -62,7 +62,6 @@ public partial class Clientes : ContentPage
         TxtId.Focus();
     }
 
-
     private async void TxtId_Unfocused(object sender, FocusEventArgs e)
     {
         try
@@ -158,7 +157,7 @@ public partial class Clientes : ContentPage
                 }
                 else
                 {
-                    await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 121)", "OK");
+                    await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 161)", "OK");
                     Mcliente cliente1 = await App.SQLiteDB.GetClienteByIdAsync(TxtId.Text);
 
                     if (cliente1 != null)

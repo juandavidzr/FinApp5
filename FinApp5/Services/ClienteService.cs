@@ -98,11 +98,8 @@ namespace FinAppMaui.Services
                     imageIDContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
                     content.Add(imageIDContent, "IDFoto", "IDcliente.jpg");
                 }
-
-                //var response = await _http.PutAsync("api/clientes/actualizar", content);
-                //var response = await _http.PostAsync("api/clientes/actualizar", content);
+                
                 var response = await _http.PutAsync("api/clientes/actualizar", content);
-
 
                 if (!response.IsSuccessStatusCode)
                 {
