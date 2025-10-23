@@ -5,9 +5,14 @@ namespace FinApp5.Views;
 
 public partial class Reportes : ContentPage
 {
-	public Reportes(Musuarios usuario)
-	{
-		InitializeComponent();
+    public Reportes(Musuarios usuario)
+    {
+        InitializeComponent();
         BindingContext = new VMReportes(Navigation, usuario);
+    }
+
+    private async void btnInicio_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("..");
     }
 }
