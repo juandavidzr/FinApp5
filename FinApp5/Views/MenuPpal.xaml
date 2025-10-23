@@ -202,7 +202,7 @@
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <!-- Icono circular gris azulado usando Frame -->
-                    <Frame BackgroundColor="#607D8B"
+                    <Frame BackgroundColor="#3b82f6"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
