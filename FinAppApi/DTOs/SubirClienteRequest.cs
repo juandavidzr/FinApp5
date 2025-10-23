@@ -19,5 +19,6 @@ namespace FinAppApi.DTOs
 
         // Aquí la foto como IFormFile
         public IFormFile? Foto { get; set; }
+        public IFormFile? IDFoto { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System.Net.Http;
+﻿using Azure.Core;
+using FinApp5.Modelo;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using FinApp5.Modelo;
 
 namespace FinAppMaui.Services
 {
@@ -42,8 +43,14 @@ namespace FinAppMaui.Services
                     imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
                     content.Add(imageContent, "foto", "cliente.jpg");
                 }
-
+                if (cliente.IDFoto != null && cliente.IDFoto.Length > 0)
+                {
+                    var imageIDContent = new ByteArrayContent(cliente.IDFoto);
+                    imageIDContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(imageIDContent, "IDFoto", "IDcliente.jpg");
+                }
                 // Agregar la foto si existe
+
 
 
                 // Llamada a la API
@@ -63,5 +70,54 @@ namespace FinAppMaui.Services
                 throw;
             }
         }
+
+        public async Task<HttpResponseMessage> ActualizarClienteAsync(Mcliente cliente)
+        {
+            try
+            {
+                using var content = new MultipartFormDataContent();
+
+                // Agregar los datos del cliente
+                content.Add(new StringContent(cliente.cteNumIdenti ?? ""), "cteNumIdenti");
+                content.Add(new StringContent(cliente.cteCodRutReg ?? ""), "cteCodRutReg");
+                content.Add(new StringContent(cliente.cteNotasGenerales ?? ""), "cteNotasGenerales");
+                content.Add(new StringContent(cliente.latitud ?? "0"), "latitud");
+                content.Add(new StringContent(cliente.longitud ?? "0"), "longitud");
+
+                // Agregar fotos (si existen)
+                if (cliente.Foto != null && cliente.Foto.Length > 0)
+                {
+                    var imageContent = new ByteArrayContent(cliente.Foto);
+                    imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(imageContent, "foto", "cliente.jpg");
+                }
+
+                if (cliente.IDFoto != null && cliente.IDFoto.Length > 0)
+                {
+                    var imageIDContent = new ByteArrayContent(cliente.IDFoto);
+                    imageIDContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(imageIDContent, "IDFoto", "IDcliente.jpg");
+                }
+
+                //var response = await _http.PutAsync("api/clientes/actualizar", content);
+                //var response = await _http.PostAsync("api/clientes/actualizar", content);
+                var response = await _http.PutAsync("api/clientes/actualizar", content);
+
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"❌ Error al actualizar cliente: {error}");
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"⚠️ Excepción en ActualizarClienteAsync: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }

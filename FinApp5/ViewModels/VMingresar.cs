@@ -138,10 +138,10 @@ namespace FinApp5.ViewModels
                             App.SQLiteDB.saveUsuario(usuario);
 
                             var usuarios = await App.SQLiteDB.GetUsuarios();
-                            foreach (var u in usuarios)
-                            {
-                                Console.WriteLine($"Usuario: {u.Usuario}, CodigoCobr: {u.CodigoCobr}, Pw: {u.pw}");
-                            }
+                            //foreach (var u in usuarios)
+                            //{
+                            //    Console.WriteLine($"Usuario: {u.Usuario}, CodigoCobr: {u.CodigoCobr}, Pw: {u.pw}");
+                            //}
 
                             bool puedeContinuar = await App.SQLiteDB.PuedeContinuarAutenticacionAsync(usuario);
                             if (!puedeContinuar)

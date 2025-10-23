@@ -211,9 +211,21 @@ namespace FinApp5.Datos
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
-                                    // Si la columna no existe, se ignora sin error
                                     fotoBytes = null;
                                 }
+
+                                byte[]? fotoIDBytes = null;
+                                try
+                                {
+                                    int fotoIDIndex = rdr.GetOrdinal("IDFoto");
+                                    if (!rdr.IsDBNull(fotoIDIndex))
+                                        fotoIDBytes = (byte[])rdr["IDFoto"];
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    fotoIDBytes = null;
+                                }
+
                                 return new Mcliente
                                 {
                                     cteNombApel = rdr["cteNombApel"].ToString(),
@@ -226,7 +238,9 @@ namespace FinApp5.Datos
                                     cteTeleCelu = rdr["cteTeleCelu"].ToString(),
                                     cteTeleFijo = rdr["cteTeleFijo"].ToString(),
                                     cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
-                                    Foto = fotoBytes 
+                                    Foto = fotoBytes, 
+                                    IDFoto = fotoIDBytes
+                                    
                                 };
                             }
                         }
@@ -300,13 +314,39 @@ namespace FinApp5.Datos
                         cmd.Parameters.AddWithValue("@longitud", cliente.longitud ?? "0");
                         cmd.Parameters.AddWithValue("@notas", cliente.cteNotasGenerales ?? string.Empty);
 
+                        if (cliente.Foto != null && cliente.Foto.Length > 0)
+                        {
+                            var fotoParam = new SqlParameter("@Foto", SqlDbType.VarBinary, -1)
+                            {
+                                Value = cliente.Foto
+                            };
+                            cmd.Parameters.Add(fotoParam);
+                        }
+                        else
+                        {
+                            cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+                        }
+                        
+                        if (cliente.IDFoto != null && cliente.IDFoto.Length > 0)
+                        {
+                            var idFotoParam = new SqlParameter("@IDFoto", SqlDbType.VarBinary, -1)
+                            {
+                                Value = cliente.IDFoto
+                            };
+                            cmd.Parameters.Add(idFotoParam);
+                        }
+                        else
+                        {
+                            cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+                        }
+
                         cmd.ExecuteNonQuery();
                     }
                 }
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }

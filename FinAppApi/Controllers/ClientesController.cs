@@ -1,4 +1,4 @@
-﻿using FinApp5.Modelo;
+﻿//using FinApp5.Modelo;
 using FinApp5.Shared;
 using FinAppApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +35,15 @@ namespace FinAppApi.Controllers
                     fotoBytes = ms.ToArray();
                 }
 
+                byte[]? fotoIDBytes = null;
+
+                if (request.IDFoto != null)
+                {
+                    using var ms = new MemoryStream();
+                    await request.IDFoto.CopyToAsync(ms);
+                    fotoIDBytes = ms.ToArray();
+                }
+
                 using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
                 await con.OpenAsync();
 
@@ -68,6 +77,17 @@ namespace FinAppApi.Controllers
                     cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
                 }
 
+                if (fotoIDBytes != null)
+                {
+                    var fotoIDParam = new SqlParameter("@IDFoto", SqlDbType.VarBinary, -1);
+                    fotoIDParam.Value = fotoIDBytes;
+                    cmd.Parameters.Add(fotoIDParam);
+                }
+                else
+                {
+                    cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+                }
+
                 await cmd.ExecuteNonQueryAsync();
 
                 return Ok(new { mensaje = "Cliente guardado correctamente" });
@@ -77,6 +97,68 @@ namespace FinAppApi.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpPut("actualizar")]
+        public async Task<IActionResult> ActualizarCliente([FromForm] ClienteUpdateRequest request)
+        {
+            try
+            {
+                Console.WriteLine("🟢 Iniciando actualización de cliente...");
+
+                // Guardar las fotos si existen
+                byte[]? fotoBytes = null;
+                byte[]? idFotoBytes = null;
+
+                if (request.Foto != null && request.Foto.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await request.Foto.CopyToAsync(ms);
+                    fotoBytes = ms.ToArray();
+                    Console.WriteLine("📸 Foto recibida correctamente");
+                }
+
+                if (request.IDFoto != null && request.IDFoto.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await request.IDFoto.CopyToAsync(ms);
+                    idFotoBytes = ms.ToArray();
+                    Console.WriteLine("🪪 IDFoto recibida correctamente");
+                }
+
+                // Llamar al procedimiento almacenado
+                //using (SqlConnection con = new SqlConnection(_connectionString))
+                using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
+                {
+                    await con.OpenAsync();
+
+                    using (SqlCommand cmd = new SqlCommand("ActualizarClienteIphone", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@strNumIdeOri", request.cteNumIdenti ?? "");
+                        cmd.Parameters.AddWithValue("@strCodigoRut", request.cteCodRutReg ?? "");
+                        cmd.Parameters.AddWithValue("@latitud", request.latitud ?? "0");
+                        cmd.Parameters.AddWithValue("@longitud", request.longitud ?? "0");
+                        cmd.Parameters.AddWithValue("@notas", request.cteNotasGenerales ?? "");
+
+                        // Parámetros para las fotos
+                        cmd.Parameters.Add("@Foto", SqlDbType.VarBinary).Value = (object?)fotoBytes ?? DBNull.Value;
+                        cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary).Value = (object?)idFotoBytes ?? DBNull.Value;
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                return Ok(new { mensaje = "Cliente actualizado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error en ActualizarCliente: {ex.Message}");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+
         //public async Task<IActionResult> SubirCliente([FromForm] SubirClienteRequest request)
         //{
         //    try

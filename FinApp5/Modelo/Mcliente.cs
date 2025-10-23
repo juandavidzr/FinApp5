@@ -24,5 +24,6 @@ namespace FinApp5.Modelo
         public string? longitud { get; set; }
         public int nuevo { get; set; } //2 si fue actualizado offline, 1 si fue agregado offline, 0 si fue cargado de la web
         public byte[] Foto { get; set; }
+        public byte[] IDFoto { get; set; }
     }
 }

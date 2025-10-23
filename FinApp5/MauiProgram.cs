@@ -53,12 +53,14 @@ namespace FinApp5
 
             builder.Services.AddHttpClient("FinAppApi", client =>
             {
-                //client.BaseAddress = new Uri("http://192.168.1.6:5107/"); // URL API pruebas locales
+                client.BaseAddress = new Uri("http://192.168.1.6:5107/"); // URL API pruebas locales
                 //client.BaseAddress = new Uri("http://138.128.171.162:8080/"); // URL API de creditosjg
                 //client.BaseAddress = new Uri("http://138.128.171.162:8001/"); // URL API de pruebas
-                //client.BaseAddress = new Uri("http://138.128.171.162:8002/"); // URL API de crediCristianWill
+                
                 //client.BaseAddress = new Uri("http://138.128.171.162:8003/"); // URL API de creditosMag1
-                client.BaseAddress = new Uri("http://138.128.171.162:8004/"); // URL API de wmayo
+                //client.BaseAddress = new Uri("http://138.128.171.162:8004/"); // URL API de wmayo
+                //client.BaseAddress = new Uri("http://138.128.171.162:8005/"); // URL API de jhonjj27
+                //client.BaseAddress = new Uri("http://138.128.171.162:8006/"); // URL API de credicristianwil
             });
 
             builder.Services.AddScoped<AuthService>();
