@@ -125,8 +125,6 @@ namespace FinAppApi.Controllers
                     Console.WriteLine("🪪 IDFoto recibida correctamente");
                 }
 
-                // Llamar al procedimiento almacenado
-                //using (SqlConnection con = new SqlConnection(_connectionString))
                 using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
                 {
                     await con.OpenAsync();
@@ -159,60 +157,5 @@ namespace FinAppApi.Controllers
         }
 
 
-        //public async Task<IActionResult> SubirCliente([FromForm] SubirClienteRequest request)
-        //{
-        //    try
-        //    {
-        //        byte[]? fotoBytes = null;
-
-        //        if (foto != null)
-        //        {
-        //            using var ms = new MemoryStream();
-        //            await foto.CopyToAsync(ms);
-        //            fotoBytes = ms.ToArray();
-        //        }
-
-        //        using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
-        //        await con.OpenAsync();
-
-        //        using var cmd = new SqlCommand("GrabaDatosPerCte", con)
-        //        {
-        //            CommandType = CommandType.StoredProcedure,
-        //            CommandTimeout = 120
-        //        };
-
-        //        cmd.Parameters.AddWithValue("@strNumIdeCte", cliente.cteNumIdenti ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strNomComCte", cliente.cteNombApel ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strDirResCte", cliente.cteDireccion ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strDirCobCte", cliente.cteDirCobCte ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strNumTelFij", cliente.cteTeleFijo ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strNumTelCel", cliente.cteTeleCelu ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strCodBarDom", cliente.cteCodBarDom ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strCodBarCob", cliente.cteCodBarCob ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strCodigoRut", cliente.cteCodRutReg ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@strNotasCte", cliente.cteNotasGenerales ?? string.Empty);
-        //        cmd.Parameters.AddWithValue("@latitud", cliente.latitud ?? "0");
-        //        cmd.Parameters.AddWithValue("@longitud", cliente.longitud ?? "0");
-
-        //        if (cliente.Foto != null)
-        //        {
-        //            //cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = cliente.Foto; // -1 = VARBINARY(MAX)
-        //            var fotoParam = new SqlParameter("@Foto", SqlDbType.VarBinary, -1);
-        //            fotoParam.Value = (object)cliente.Foto ?? DBNull.Value;
-
-        //            cmd.Parameters.Add(fotoParam);
-        //        }
-        //        else
-        //            cmd.Parameters.Add("@Foto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
-
-        //        await cmd.ExecuteNonQueryAsync();
-
-        //        return Ok(new { mensaje = "Cliente guardado correctamente" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { error = ex.Message });
-        //    }
-        //}
     }
 }
