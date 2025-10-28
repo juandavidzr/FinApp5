@@ -392,30 +392,18 @@
                                        TextColor="#495057"
                                        HorizontalTextAlignment="Center"/>
 
-                                <Grid HorizontalOptions="Center" WidthRequest="160" HeightRequest="160">
-                                    <!-- Frame de fondo -->
-                                    <Frame BackgroundColor="#f1f3f5"
-                                           BorderColor="Transparent"
-                                           CornerRadius="16"
-                                           Padding="0"
-                                           HasShadow="False">
-                                        <Grid>
-                                            <!-- Imagen del cliente -->
-                                            <Image x:Name="ImgCliente"
-                                                   Aspect="AspectFill"
-                                                   BackgroundColor="Transparent"/>
-
-                                            <!-- Icono de cámara placeholder - se oculta cuando hay imagen -->
-                                            <Label x:Name="LblCameraIcon"
-                                                   Text="📷"
-                                                   FontSize="48"
-                                                   TextColor="#adb5bd"
-                                                   HorizontalTextAlignment="Center"
-                                                   VerticalTextAlignment="Center"
-                                                   IsVisible="True"/>
-                                        </Grid>
-                                    </Frame>
-                                </Grid>
+                                <Frame BackgroundColor="#f1f3f5"
+                                       BorderColor="Transparent"
+                                       CornerRadius="16"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       HorizontalOptions="Center"
+                                       WidthRequest="160"
+                                       HeightRequest="160">
+                                    <Image x:Name="ImgCliente"
+                                           Aspect="AspectFill"
+                                           BackgroundColor="Transparent"/>
+                                </Frame>
 
                                 <!-- Botones de Foto -->
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
