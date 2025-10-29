@@ -2,46 +2,137 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.InformeDia"
-             Title="Informe Dia">
+             Title="Informe Dia"
+             BackgroundColor="#5b64c3">
+
     <ContentPage.Content>
-        
-        <ScrollView>
-            
-            <StackLayout Margin="15">
-                
-                <Label Text="Nombre                     | ID Crédito      |            Valor " />
-                <Label Text="Hora                           | Tipo" />
-                <Label Text="Comentario" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                <Label x:Name="lblMensaje" HorizontalTextAlignment="Center" Text="" TextColor="Red" FontSize="Large"/>
-
-                <ListView x:Name="lstMovimientos" ItemSelected="lstMovimientos_ItemSelected" Margin="5" HasUnevenRows="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="100" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Text="{Binding NombreCteCre}" Grid.Row="0" Grid.Column="0" TextColor="Black"/>
-                                    <Label Text="{Binding NumeroCreAfe}" Grid.Row="0" Grid.Column="1" TextColor="Black" />
-                                    <Label Text="{Binding ValorMovto, StringFormat='{0}'}"   Grid.Row="0" Grid.Column="2" TextColor="Black" HorizontalTextAlignment="Center" />
-                                    <Label Text="{Binding FechaHoraReg, StringFormat='{0:hh:mm:ss tt}'}" Grid.Row="1" Grid.Column="0" TextColor="Black"/>
-                                    <Label Text="{Binding Descripcion}"  Grid.Row="1" Grid.Column="1" TextColor="Black" />
-                                    <Label Text="{Binding strComentAbo}"  Grid.Row="2" Grid.Column="0" TextColor="Black" />
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+            <!-- Avatar Section -->
+            <StackLayout Grid.Row="0" Padding="0,30,0,15" HorizontalOptions="Center">
+                <Frame WidthRequest="96" HeightRequest="96" CornerRadius="48" 
+                       BackgroundColor="White" Padding="0" HasShadow="True">
+                    <Label Text="FA" FontSize="32" FontAttributes="Bold" 
+                           TextColor="#5b64c3" HorizontalTextAlignment="Center" 
+                           VerticalTextAlignment="Center"/>
+                </Frame>
             </StackLayout>
-        </ScrollView>
+
+            <!-- Title -->
+            <Label Grid.Row="1" Text="Informe del Día" 
+                   TextColor="White" FontSize="24" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" Margin="0,0,0,20"/>
+
+            <!-- Mensaje -->
+            <Label Grid.Row="2" x:Name="lblMensaje" 
+                   HorizontalTextAlignment="Center" Text="" 
+                   TextColor="White" FontSize="16" 
+                   Margin="20,0,20,10"/>
+
+            <!-- Container blanco -->
+            <Frame Grid.Row="3" CornerRadius="30" Padding="0" 
+                   BackgroundColor="White" HasShadow="True"
+                   Margin="0">
+
+                <ScrollView>
+                    <StackLayout>
+                        <!-- Header de columnas -->
+                        <Grid BackgroundColor="#f0f3ff" Padding="20,20,20,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackLayout Grid.Column="0">
+                                <Label Text="NOMBRE" FontSize="10" TextColor="#6b7280" FontAttributes="Bold"/>
+                                <Label Text="HORA" FontSize="10" TextColor="#6b7280" FontAttributes="Bold"/>
+                                <Label Text="COMENTARIO" FontSize="10" TextColor="#6b7280" FontAttributes="Bold"/>
+                            </StackLayout>
+
+                            <StackLayout Grid.Column="1">
+                                <Label Text="ID CRÉDITO" FontSize="10" TextColor="#6b7280" FontAttributes="Bold"/>
+                                <Label Text="TIPO" FontSize="10" TextColor="#6b7280" FontAttributes="Bold"/>
+                            </StackLayout>
+
+                            <Label Grid.Column="2" Text="VALOR" FontSize="10" 
+                                   TextColor="#6b7280" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Lista -->
+                        <ListView x:Name="lstMovimientos" 
+                                  ItemSelected="lstMovimientos_ItemSelected" 
+                                  Margin="5" 
+                                  HasUnevenRows="True"
+                                  SeparatorColor="#f3f4f6"
+                                  BackgroundColor="White">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid Padding="20,15" BackgroundColor="White">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150" />
+                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="100" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Label Text="{Binding NombreCteCre}" 
+                                                   Grid.Row="0" Grid.Column="0" 
+                                                   TextColor="#1f2937" FontSize="14" FontAttributes="Bold"/>
+
+                                            <Label Text="{Binding NumeroCreAfe}" 
+                                                   Grid.Row="0" Grid.Column="1" 
+                                                   TextColor="#1f2937" FontSize="14" FontAttributes="Bold"/>
+
+                                            <Label Text="{Binding ValorMovto, StringFormat='${0:N0}'}" 
+                                                   Grid.Row="0" Grid.Column="2" 
+                                                   FontSize="18" FontAttributes="Bold"
+                                                   HorizontalTextAlignment="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" 
+                                                               Binding="{Binding Descripcion}" 
+                                                               Value="Desembolso Credito">
+                                                        <Setter Property="TextColor" Value="#dc2626"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" 
+                                                               Binding="{Binding Descripcion}" 
+                                                               Value="Abono Credito">
+                                                        <Setter Property="TextColor" Value="#16a34a"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+
+                                            <Label Text="{Binding FechaHoraReg, StringFormat='{0:hh:mm:ss tt}'}" 
+                                                   Grid.Row="1" Grid.Column="0" 
+                                                   TextColor="#6b7280" FontSize="12"/>
+
+                                            <Label Text="{Binding Descripcion}" 
+                                                   Grid.Row="1" Grid.Column="1" 
+                                                   TextColor="#6b7280" FontSize="12"/>
+
+                                            <Label Text="{Binding strComentAbo}" 
+                                                   Grid.Row="2" Grid.Column="0" 
+                                                   TextColor="#9ca3af" FontSize="11"/>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackLayout>
+                </ScrollView>
+            </Frame>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
