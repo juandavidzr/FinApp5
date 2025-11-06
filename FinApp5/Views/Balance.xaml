@@ -2,99 +2,307 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.Balance"
-             Title="BALANCE - DATOS DE HOY">
+             Title="BALANCE">
     <ContentPage.Content>
+        <Grid>
+            <!-- Fondo con gradiente de morado a blanco -->
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#6B63C6" Offset="0.0" />
+                        <GradientStop Color="#9B94D8" Offset="0.25" />
+                        <GradientStop Color="#C4C0E8" Offset="0.5" />
+                        <GradientStop Color="#E8E6F5" Offset="0.75" />
+                        <GradientStop Color="#FFFFFF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
 
-        <ScrollView>
-            <StackLayout Margin="10" >
+            <!-- Contenido principal -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <Grid VerticalOptions="Start" >
-                    <Grid.RowDefinitions >
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <!-- Avatar Section -->
+                <StackLayout Grid.Row="0" Padding="0,40,0,20" HorizontalOptions="Center">
+                    <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" 
+                           BackgroundColor="White" Padding="0" HasShadow="True"
+                           BorderColor="#ffffff" Margin="0,0,0,15">
+                        <Label Text="FA" FontSize="36" FontAttributes="Bold" 
+                               TextColor="#5b64c3" HorizontalTextAlignment="Center" 
+                               VerticalTextAlignment="Center"/>
+                    </Frame>
+                </StackLayout>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <!-- Title -->
+                <Label Grid.Row="1" Text="Balance - Datos de Hoy" 
+                       TextColor="White" FontSize="28" FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" Margin="0,0,0,30"/>
 
-                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Fecha actual:" VerticalOptions="Start"/>
-                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" x:Name="txtFecha" Text="{Binding TxtFecha}" VerticalOptions="FillAndExpand" IsEnabled="False" />
+                <!-- Container blanco -->
+                <Frame Grid.Row="2" CornerRadius="35" Padding="0" 
+                       BackgroundColor="White" HasShadow="True"
+                       Margin="0,0,0,0">
 
-                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Debido cobrar ruta:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDebidoRuta" Text="{Binding TxtDebidoRuta}" VerticalOptions="End" IsEnabled="False" />
+                    <ScrollView>
+                        <StackLayout Spacing="0">
 
-                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Debido cobrar dia:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDebidoDia" Text="{Binding TxtDebidoDia}" VerticalOptions="End" IsEnabled="False" />
+                            <!-- Header con fecha y total -->
+                            <Grid BackgroundColor="#eef2ff" Padding="25,25,25,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Recaudos:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtRecaudo" Text="{Binding TxtRecaudo}" VerticalOptions="End" IsEnabled="False" />
+                                <StackLayout Grid.Column="0">
+                                    <Label Text="FECHA ACTUAL" FontSize="10" TextColor="#64748b" 
+                                           FontAttributes="Bold" Margin="0,0,0,4"/>
+                                    <Label x:Name="txtFecha" Text="{Binding TxtFecha}" 
+                                           FontSize="20" FontAttributes="Bold" TextColor="#5b64c3"/>
+                                </StackLayout>
 
-                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Microseguros:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="4" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtMicroseguro" Text="{Binding TxtMicroseguro}" VerticalOptions="End" IsEnabled="False" />
+                                <StackLayout Grid.Column="1" HorizontalOptions="End">
+                                    <Label Text="TOTAL ACTUAL" FontSize="10" TextColor="#64748b" 
+                                           FontAttributes="Bold" Margin="0,0,0,4"
+                                           HorizontalTextAlignment="End"/>
+                                    <Label x:Name="txtTotal" 
+                                           Text="{Binding TxtTotal, StringFormat='${0:N0}'}"
+                                           FontSize="20" FontAttributes="Bold" TextColor="#dc2626"
+                                           HorizontalTextAlignment="End"/>
+                                </StackLayout>
+                            </Grid>
 
-                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Desembolsos:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="5" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtDesembolsos" Text="{Binding TxtDesembolsos}" VerticalOptions="End" IsEnabled="False" />
+                            <!-- Sección: Cobros -->
+                            <StackLayout Padding="20,15,20,10">
+                                <Label Text="💰 COBROS" FontSize="11" TextColor="#64748b" 
+                                       FontAttributes="Bold" Margin="0,0,0,10"/>
 
-                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Gastos:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="6" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtGastos" Text="{Binding TxtGastos}" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Debido cobrar ruta -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Debido cobrar ruta:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtDebidoRuta" 
+                                               Text="{Binding TxtDebidoRuta, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#3b82f6"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Entradas de efectivo:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="7" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtEntradas" Text="{Binding TxtEntradas }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Debido cobrar día -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Debido cobrar día:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtDebidoDia" 
+                                               Text="{Binding TxtDebidoDia, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#3b82f6"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </StackLayout>
 
-                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Salidas de efectivo:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="8" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtSalidas" Text="{Binding TxtSalidas}" VerticalOptions="End" IsEnabled="False" />
+                            <!-- Sección: Movimientos -->
+                            <StackLayout Padding="20,10,20,10">
+                                <Label Text="📊 MOVIMIENTOS" FontSize="11" TextColor="#64748b" 
+                                       FontAttributes="Bold" Margin="0,0,0,10"/>
 
-                    <Label FontSize="20" Grid.Row="9" Grid.Column="0" Text="Sueldos:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="9" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtSueldos" Text="{Binding TxtSueldos}" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Recaudos -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Recaudos:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtRecaudo" 
+                                               Text="{Binding TxtRecaudo, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="10" Grid.Column="0" Text="Resultado (ing-egr):" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="10" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtResultado" Text="{Binding TxtResultado }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Microseguros -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Microseguros:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtMicroseguro" 
+                                               Text="{Binding TxtMicroseguro, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="11" Grid.Column="0" Text="Creditos en ruta:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="11" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtCreditos" Text="{Binding TxtCreditos }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Desembolsos -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Desembolsos:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtDesembolsos" 
+                                               Text="{Binding TxtDesembolsos, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#dc2626"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="12" Grid.Column="0" Text="Creditos visitados:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="12" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtVisitados" Text="{Binding TxtVisitados}" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Gastos -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Gastos:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtGastos" 
+                                               Text="{Binding TxtGastos, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="13" Grid.Column="0" Text="Creditos sin visitar:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="13" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtSinVisitar" Text="{Binding TxtSinVisitar }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Entradas -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Entradas de efectivo:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtEntradas" 
+                                               Text="{Binding TxtEntradas, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="14" Grid.Column="0" Text="Clientes nuevos:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="14" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtPrimeraVez" Text="{Binding TxtPrimeraVez }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Salidas -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Salidas de efectivo:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtSalidas" 
+                                               Text="{Binding TxtSalidas, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
 
-                    <Label FontSize="20" Grid.Row="15" Grid.Column="0" Text="Creditos cancelados:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="15" Grid.Column="1" HorizontalTextAlignment="Start" x:Name="txtCancelados" Text="{Binding TxtCancelados }" VerticalOptions="End" IsEnabled="False" />
+                                <!-- Sueldos -->
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" 
+                                       BackgroundColor="White" BorderColor="#e2e8f0" HasShadow="False">
+                                    <Grid Padding="16,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Sueldos:" 
+                                               TextColor="#1e293b" FontSize="14" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtSueldos" 
+                                               Text="{Binding TxtSueldos, StringFormat='${0:N0}'}"
+                                               FontSize="16" FontAttributes="Bold" TextColor="#1e293b"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </StackLayout>
 
-                    <Label FontSize="20" Grid.Row="16" Grid.Column="0" Text="Caja Anterior:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="16" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtCajaAnterior" Text="{Binding TxtCajaAnterior}" VerticalOptions="End" IsEnabled="False" />
+                            <!-- Sección: Resultado -->
+                            <StackLayout Padding="20,10,20,10">
+                                <Label Text="📈 RESULTADO" FontSize="11" TextColor="#64748b" 
+                                       FontAttributes="Bold" Margin="0,0,0,10"/>
 
-                    <Label FontSize="20" Grid.Row="17" Grid.Column="0" Text="Total Actual:" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="17" Grid.Column="1" HorizontalTextAlignment="End" x:Name="txtTotal" Text="{Binding TxtTotal }" VerticalOptions="End" IsEnabled="False" />
-                </Grid>
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" HasShadow="False"
+                                       BackgroundColor="#fff7ed" BorderColor="#fed7aa">
+                                    <Grid Padding="18,16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Resultado (ing-egr):" 
+                                               TextColor="#1e293b" FontSize="15" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtResultado" 
+                                               Text="{Binding TxtResultado, StringFormat='${0:N0}'}"
+                                               FontSize="18" FontAttributes="Bold" TextColor="#dc2626"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </StackLayout>
 
-            </StackLayout>
-        </ScrollView>
+                            <!-- Sección: Balance Final -->
+                            <StackLayout Padding="20,10,20,20">
+                                <Label Text="💵 BALANCE FINAL" FontSize="11" TextColor="#64748b" 
+                                       FontAttributes="Bold" Margin="0,0,0,10"/>
+
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" HasShadow="False"
+                                       BackgroundColor="#faf5ff" BorderColor="#e9d5ff">
+                                    <Grid Padding="20,18">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Caja Anterior:" 
+                                               TextColor="#1e293b" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtCajaAnterior" 
+                                               Text="{Binding TxtCajaAnterior, StringFormat='${0:N0}'}"
+                                               FontSize="22" FontAttributes="Bold" TextColor="#dc2626"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+
+                                <Frame Padding="0" Margin="0,0,0,8" CornerRadius="0" BorderColor="#e9d5ff" HasShadow="False"
+                                       BackgroundColor="#faf5ff">
+                                    <Grid Padding="22,20">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="Total Actual:" 
+                                               TextColor="#1e293b" FontSize="18" FontAttributes="Bold" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" x:Name="txtTotal2" 
+                                               Text="{Binding TxtTotal, StringFormat='${0:N0}'}"
+                                               FontSize="24" FontAttributes="Bold" TextColor="#dc2626"
+                                               HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </StackLayout>
+                        </StackLayout>
+                    </ScrollView>
+                </Frame>
+            </Grid>
+        </Grid>
     </ContentPage.Content>
-
 </ContentPage>
