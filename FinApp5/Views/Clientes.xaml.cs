@@ -28,6 +28,7 @@ public partial class Clientes : ContentPage
     Mcliente cliente = new Mcliente();
 
     private FileResult _fotoCliente;
+    private FileResult _fotoIDCliente;
     public Clientes(Musuarios usuario, ClienteService clienteService)
     {
         InitializeComponent();
@@ -60,7 +61,6 @@ public partial class Clientes : ContentPage
     {
         TxtId.Focus();
     }
-
 
     private async void TxtId_Unfocused(object sender, FocusEventArgs e)
     {
@@ -103,7 +103,17 @@ public partial class Clientes : ContentPage
                         }
                         else
                         {
-                            ImgCliente.Source = null; // o una imagen predeterminada
+                            ImgCliente.Source = null; 
+                        }
+
+                        if (cliente.IDFoto != null && cliente.IDFoto.Length > 0)
+                        {
+                            MemoryStream ms = new MemoryStream(cliente.IDFoto);
+                            ImgId.Source = ImageSource.FromStream(() => ms);
+                        }
+                        else
+                        {
+                            ImgId.Source = null; 
                         }
                         ModoEdit = true;
                     }
@@ -147,7 +157,7 @@ public partial class Clientes : ContentPage
                 }
                 else
                 {
-                    await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 121)", "OK");
+                    await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (Linea 161)", "OK");
                     Mcliente cliente1 = await App.SQLiteDB.GetClienteByIdAsync(TxtId.Text);
 
                     if (cliente1 != null)
@@ -363,6 +373,8 @@ public partial class Clientes : ContentPage
             TxtTelefono2.IsEnabled = true;
             TxtNotas.Text = string.Empty;
             ImgCliente.Source = null;
+            ImgId.Source = null;
+            ModoEdit = false;
         }
         catch (Exception ex)
         {
@@ -392,13 +404,20 @@ public partial class Clientes : ContentPage
                 cliente.cteNotasGenerales = TxtNotas.Text;
                 cliente.latitud = TxtLatitud.Text;
                 cliente.longitud = TxtLongitud.Text;
+                if (_fotoCliente != null)
+                    cliente.Foto = await ConvertirFotoABytes(_fotoCliente);
+
+                if (_fotoIDCliente != null)
+                    cliente.IDFoto = await ConvertirFotoABytes(_fotoIDCliente);
+
 
 
                 if (CONEXIONMAESTRA.VerificarCon())
                 {
-                    exito = funcion.ActualizarCliente(cliente);
-                    ModoEdit = false;
-                    if (exito)
+                    //exito = funcion.ActualizarCliente(cliente);
+                    var response = await _clienteService.ActualizarClienteAsync(cliente);
+                    
+                    if (response.IsSuccessStatusCode)
                     {
                          await DisplayAlert("Actualizar", "Datos actualizados", "OK");
                         TxtId.Text = string.Empty;
@@ -414,6 +433,7 @@ public partial class Clientes : ContentPage
                     await App.SQLiteDB.UpdateClienteAsync(cliente);
                     await DisplayAlert("Registro", "Actualizacion exitosa localmente", "OK");
                 }
+                ModoEdit = false;
             }
             else
             {
@@ -436,6 +456,7 @@ public partial class Clientes : ContentPage
 
                     
                     cliente.Foto = await ConvertirFotoABytes(_fotoCliente);
+                    cliente.IDFoto = await ConvertirFotoABytes(_fotoIDCliente);
 
                     if (CONEXIONMAESTRA.VerificarCon())
                     {
@@ -594,5 +615,48 @@ public partial class Clientes : ContentPage
         return status == PermissionStatus.Granted;
     }
 
-    
+    private async void BtnTomarFotoID_Clicked(object sender, EventArgs e)
+    {
+        if (!await SolicitarPermisosCamaraAsync())
+        {
+            await DisplayAlert("Permiso denegado", "No se concedió acceso a la cámara", "OK");
+            return;
+        }
+
+        try
+        {
+            if (MediaPicker.Default.IsCaptureSupported)
+            {
+                var photo = await MediaPicker.Default.CapturePhotoAsync();
+                if (photo != null)
+                {
+                    _fotoIDCliente = photo;
+                    var stream = await photo.OpenReadAsync();
+                    ImgId.Source = ImageSource.FromStream(() => stream);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async void BtnSeleccionarFotoID_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var photo = await MediaPicker.Default.PickPhotoAsync();
+            if (photo != null)
+            {
+                _fotoIDCliente = photo;
+                var stream = await photo.OpenReadAsync();
+                ImgId.Source = ImageSource.FromStream(() => stream);
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+        }
+    }
 }

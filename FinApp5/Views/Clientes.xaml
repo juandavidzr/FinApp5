@@ -77,10 +77,20 @@
                    HeightRequest="200"
                    Aspect="AspectFill"
                    BackgroundColor="LightGray"/>
-
             <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5">
                 <Button Text="Tomar Foto" Clicked="BtnTomarFoto_Clicked" />
                 <Button Text="Seleccionar Foto" Clicked="BtnSeleccionarFoto_Clicked" />
+            </StackLayout>
+
+            <Label Text="Foto del ID del Cliente" />
+            <Image x:Name="ImgId"
+                WidthRequest="200"
+                HeightRequest="200"
+                Aspect="AspectFill"
+                BackgroundColor="LightGray"/>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5">
+                <Button Text="Tomar Foto ID" Clicked="BtnTomarFotoID_Clicked" />
+                <Button Text="Seleccionar Foto ID" Clicked="BtnSeleccionarFotoID_Clicked" />
             </StackLayout>
 
             <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >

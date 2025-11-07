@@ -210,9 +210,7 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#FF9800" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                   
 
                     <StackLayout VerticalOptions="Center" 
                                  HorizontalOptions="Center" 
@@ -250,9 +248,7 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="15" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#757575" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                    
 
                     <StackLayout VerticalOptions="Center" 
                                  HorizontalOptions="Center" 
@@ -282,7 +278,7 @@
                  HorizontalOptions="Start" 
                  VerticalOptions="Start" 
                  Margin="-10,60,0,0"
-                 InputTransparent="True" />
+                 />
 
         <Ellipse Grid.RowSpan="2" 
                  Fill="#FFFFFF" 
@@ -292,7 +288,7 @@
                  HorizontalOptions="End" 
                  VerticalOptions="Start" 
                  Margin="0,180,-20,0"
-                 InputTransparent="True" />
+                 />
 
     </Grid>
 </ContentPage>
