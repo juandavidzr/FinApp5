@@ -2,8 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.Creditos"
-             Title="Creditos"
-             Shell.NavBarIsVisible="False">
+             Title="Creditos">
 
     <ScrollView Scrolled="OnScrollViewScrolled" SizeChanged="OnScrollViewSizeChanged">
         <Grid>
@@ -27,21 +26,6 @@
 
                 <!-- Header Section -->
                 <VerticalStackLayout Padding="20,30,20,30" Spacing="15">
-
-                    <!-- Back Button -->
-                    <Button x:Name="btnVolver"
-                            Text="← Volver"
-                            Clicked="btnVolver_Clicked"
-                            BackgroundColor="White"
-                            TextColor="#5B53B8"
-                            BorderColor="#5B53B8"
-                            BorderWidth="2"
-                            CornerRadius="25"
-                            HeightRequest="50"
-                            FontSize="14"
-                            FontAttributes="Bold"
-                            HorizontalOptions="Start"
-                            WidthRequest="150"/>
 
                     <Label Text="Gestión de Créditos"
                            FontSize="28"
