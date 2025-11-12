@@ -1,6 +1,5 @@
 ﻿using FinApp5.Conexiones;
 using FinApp5.Modelo;
-using FinApp5.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -15,14 +14,14 @@ public partial class ListarClientes : ContentPage
     public ListarClientes(Musuarios usuario)
     {
         Usuario = usuario;
-        _ =ListarClientesAsync(Usuario);
+        _ = ListarClientesAsync(Usuario);
     }
     public async Task ListarClientesAsync(Musuarios usuario)
     {
         InitializeComponent();
         try
         {
-            
+
             if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
             {
                 //_ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
@@ -44,7 +43,7 @@ public partial class ListarClientes : ContentPage
             Console.WriteLine($"Excepción: {ex.Message}");
             throw;
         }
-       
+
 
         //BindingContext = new VMTransacciones(Navigation, usuario);
     }

@@ -4,148 +4,391 @@
              x:Class="FinApp5.Views.Creditos"
              Title="Creditos">
 
-    <ContentPage.Content>
+    <ScrollView Scrolled="OnScrollViewScrolled" SizeChanged="OnScrollViewSizeChanged">
+        <Grid>
+            <!-- Fondo con gradiente de morado a blanco -->
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#6B63C6" Offset="0.0" />
+                        <GradientStop Color="#9B94D8" Offset="0.25" />
+                        <GradientStop Color="#C4C0E8" Offset="0.5" />
+                        <GradientStop Color="#E8E6F5" Offset="0.75" />
+                        <GradientStop Color="#FFFFFF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
 
-        <ScrollView Margin="1,0,1,1" Scrolled="OnScrollViewScrolled" SizeChanged="OnScrollViewSizeChanged">
-            <StackLayout Margin="10">
-                <StackLayout.GestureRecognizers>
+            <VerticalStackLayout Spacing="0" Padding="0">
+                <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnTapGestureRecognizerTapped"/>
-                </StackLayout.GestureRecognizers>
-                <Label Text="Información de el cliente" HorizontalTextAlignment="Center" FontSize="20"></Label>
+                </VerticalStackLayout.GestureRecognizers>
 
-                <Grid VerticalOptions="Start">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
+                <!-- Header Section -->
+                <VerticalStackLayout Padding="20,30,20,30" Spacing="15">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                    <Label Text="Gestión de Créditos"
+                           FontSize="28"
+                           FontAttributes="Bold"
+                           TextColor="#2D2760"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="Complete la información del crédito"
+                           FontSize="14"
+                           TextColor="#2D2760"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Id Cliente:" HorizontalTextAlignment="End"  VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtidCliente" Text="" HorizontalTextAlignment="Start" VerticalOptions="Start" IsEnabled="False" />
+                <!-- Content -->
+                <VerticalStackLayout Padding="20" Spacing="20">
 
-                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Nombre:" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" x:Name="txtNombreCli" Text="" HorizontalTextAlignment="Start" VerticalOptions="Start" IsEnabled="False" />
+                    <!-- Información del Cliente Card -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="20"
+                           Padding="25"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="18">
+                            <Label Text="👤 Información del Cliente"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="#495057"
+                                   Margin="0,0,0,10"/>
 
-                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Creditos Vigentes:" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" x:Name="txtCreditos" Text="" HorizontalTextAlignment="Start" VerticalOptions="Start" IsEnabled="False" />
+                            <!-- ID Cliente -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="ID Cliente"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="txtidCliente"
+                                       FontSize="16"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       IsEnabled="False"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Deuda total: $" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" x:Name="txtDeuda" Text="0" HorizontalTextAlignment="Start" VerticalOptions="End" IsEnabled="False" />
+                            <!-- Nombre -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Nombre"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="txtNombreCli"
+                                       FontSize="16"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       IsEnabled="False"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Fecha Ultimo Credito:" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="4" Grid.Column="1" x:Name="txtFechaUltimo" Text="" HorizontalTextAlignment="Start" VerticalOptions="Start" IsEnabled="False" />
+                            <!-- Grid para Créditos y Deuda -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="Créditos Vigentes"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"/>
+                                    <Entry x:Name="txtCreditos"
+                                           FontSize="16"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           IsEnabled="False"/>
+                                    <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Valor ultimo credito: $" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="5" Grid.Column="1" x:Name="txtValorUltimo" Text="0" HorizontalTextAlignment="Start" VerticalOptions="End" IsEnabled="False" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                    <Label Text="Deuda Total"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"/>
+                                    <Entry x:Name="txtDeuda"
+                                           Text="0"
+                                           FontSize="16"
+                                           TextColor="#f03e3e"
+                                           BackgroundColor="Transparent"
+                                           IsEnabled="False"/>
+                                    <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
+                            </Grid>
 
-                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Fecha ultimo abono:" HorizontalTextAlignment="End" VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="6" Grid.Column="1" x:Name="txtUltimoPago" Text="" HorizontalTextAlignment="Start" VerticalOptions="Start" IsEnabled="False" />
+                            <!-- Fecha Último Crédito -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Fecha Último Crédito"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="txtFechaUltimo"
+                                       FontSize="16"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       IsEnabled="False"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
 
-                </Grid>
+                            <!-- Grid para Valor y Fecha Pago -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="Valor Último Crédito"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"/>
+                                    <Entry x:Name="txtValorUltimo"
+                                           Text="0"
+                                           FontSize="16"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           IsEnabled="False"/>
+                                    <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
 
-                <Label Text="Información del credito" HorizontalTextAlignment="Center" FontSize="20" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                    <Label Text="Fecha Último Abono"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="#495057"/>
+                                    <Entry x:Name="txtUltimoPago"
+                                           FontSize="16"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           IsEnabled="False"/>
+                                    <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
 
-                <Grid VerticalOptions="Start" >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        
-                    </Grid.RowDefinitions>
+                    <!-- Información del Crédito Card -->
+                    <Frame CornerRadius="20"
+                           Padding="25"
+                           HasShadow="True">
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#7950f2" Offset="0.0" />
+                                <GradientStop Color="#5f3dc4" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                        <VerticalStackLayout Spacing="18">
+                            <Label Text="💰 Información del Crédito"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   Margin="0,0,0,10"/>
 
-                    <Label  FontSize="20" Grid.Row="0" Grid.Column="0" Text="Desembolso: $"  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End" VerticalTextAlignment="Center"/>
-                    <Entry x:Name="txtDesembolso" FontSize="20" Grid.Row="0" Grid.Column="1" Text="0" VerticalOptions="Start" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Keyboard="Numeric"/>
+                            <!-- Desembolso -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Desembolso"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="16,14"
+                                       HasShadow="False">
+                                    <Entry x:Name="txtDesembolso"
+                                           Text="0"
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           Keyboard="Numeric"
+                                           Placeholder="Ingrese el monto"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Interes (%):"  VerticalOptions="StartAndExpand" VerticalTextAlignment="Center" HorizontalTextAlignment="End"/>
-                    <Entry x:Name="txtInteres" FontSize="20" Grid.Row="1" Grid.Column="1" Text="20" VerticalOptions="Start" Keyboard="Numeric"/>
+                            <!-- Grid para Interés y Tiempo -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="Interés (%)"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           Opacity="0.95"/>
+                                    <Frame BackgroundColor="#FFFFFFEF"
+                                           BorderColor="Transparent"
+                                           CornerRadius="12"
+                                           Padding="16,14"
+                                           HasShadow="False">
+                                        <Entry x:Name="txtInteres"
+                                               Text="20"
+                                               FontSize="16"
+                                               TextColor="#212529"
+                                               BackgroundColor="Transparent"
+                                               Keyboard="Numeric"/>
+                                    </Frame>
+                                </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Tiempo en dias:"  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Entry x:Name="txtTiempo" FontSize="20" Grid.Row="2" Grid.Column="1" Text="30" VerticalOptions="Start" Keyboard="Numeric"/>
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                    <Label Text="Tiempo (días)"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           Opacity="0.95"/>
+                                    <Frame BackgroundColor="#FFFFFFEF"
+                                           BorderColor="Transparent"
+                                           CornerRadius="12"
+                                           Padding="16,14"
+                                           HasShadow="False">
+                                        <Entry x:Name="txtTiempo"
+                                               Text="30"
+                                               FontSize="16"
+                                               TextColor="#212529"
+                                               BackgroundColor="Transparent"
+                                               Keyboard="Numeric"/>
+                                    </Frame>
+                                </VerticalStackLayout>
+                            </Grid>
 
-                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Plazo: "  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Picker x:Name="cmbPlazo" 
-                            ItemsSource="{Binding plazoList}"
-                            ItemDisplayBinding="{Binding nombrePlazo}"
-                            SelectedItem="{Binding idPlazo}"
-                            SelectedIndexChanged="cmbPlazo_SelectedIndexChanged"
-                            FontSize="20" Grid.Row="3" Grid.Column="1" 
-                            VerticalOptions="Start"
-                            Title="--Seleccione el plazo--">
-                    </Picker>
+                            <!-- Plazo -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Plazo"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="10,8"
+                                       HasShadow="False">
+                                    <Picker x:Name="cmbPlazo"
+                                            ItemsSource="{Binding plazoList}"
+                                            ItemDisplayBinding="{Binding nombrePlazo}"
+                                            SelectedItem="{Binding idPlazo}"
+                                            SelectedIndexChanged="cmbPlazo_SelectedIndexChanged"
+                                            FontSize="16"
+                                            TextColor="#495057"
+                                            BackgroundColor="Transparent"
+                                            Title="Seleccione el plazo"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Dia de pago: "  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Picker x:Name="cmbDias"
-                            ItemsSource="{Binding diasList}"
-                            ItemDisplayBinding="{Binding nombreDia}"
-                            SelectedItem="{Binding idDia}"
-                            SelectedIndexChanged="cmbDias_SelectedIndexChanged"
-                            FontSize="20" Grid.Row="4" Grid.Column="1" 
-                            Title="--Seleccione el dia de pago--">
-                    </Picker>
+                            <!-- Día de Pago -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Día de Pago"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="10,8"
+                                       HasShadow="False">
+                                    <Picker x:Name="cmbDias"
+                                            ItemsSource="{Binding diasList}"
+                                            ItemDisplayBinding="{Binding nombreDia}"
+                                            SelectedItem="{Binding idDia}"
+                                            SelectedIndexChanged="cmbDias_SelectedIndexChanged"
+                                            FontSize="16"
+                                            TextColor="#495057"
+                                            BackgroundColor="Transparent"
+                                            Title="Seleccione el día de pago"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Guia de pago: "  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Entry x:Name="txtGuiaPago" FontSize="20" Grid.Row="5" Grid.Column="1" Text="" VerticalOptions="Start" />
+                            <!-- Guía de Pago -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Guía de Pago"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="16,14"
+                                       HasShadow="False">
+                                    <Entry x:Name="txtGuiaPago"
+                                           FontSize="16"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           Placeholder="Información adicional"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="6" Grid.Column="0" Text="Posicion: "  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Picker x:Name="cmbPosicion"
-                            FontSize="20"
-                            ItemsSource="{Binding rutaList}"
-                            ItemDisplayBinding="{Binding nombreCliente}"
-                            SelectedItem="{Binding posicion}"
-                            SelectedIndexChanged="cmbPosicion_SelectedIndexChanged"
-                            Grid.Row="6" Grid.Column="1"  
-                            Title="-- Seleccione una posicion --">
-                        <!--<Picker.Items>
-                            <x:String>De primero</x:String>
-                            <x:String>De ultimo</x:String>
-                            <x:String>Posicion Actual</x:String>
-                        </Picker.Items>-->
-                    </Picker>
+                            <!-- Posición -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Posición"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="10,8"
+                                       HasShadow="False">
+                                    <Picker x:Name="cmbPosicion"
+                                            ItemsSource="{Binding rutaList}"
+                                            ItemDisplayBinding="{Binding nombreCliente}"
+                                            SelectedItem="{Binding posicion}"
+                                            SelectedIndexChanged="cmbPosicion_SelectedIndexChanged"
+                                            FontSize="16"
+                                            TextColor="#495057"
+                                            BackgroundColor="Transparent"
+                                            Title="Seleccione una posición"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="7" Grid.Column="0" Text="Notas: "  VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <Entry x:Name="txtNotas" FontSize="20" Grid.Row="7" Grid.Column="1" Text="" VerticalOptions="Start" />
+                            <!-- Notas -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Notas"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="16,14"
+                                       HasShadow="False">
+                                    <Entry x:Name="txtNotas"
+                                           FontSize="16"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           Placeholder="Observaciones"/>
+                                </Frame>
+                            </VerticalStackLayout>
 
-                    <Label FontSize="20" Grid.Row="8" Grid.Column="0" Text="Fecha credito:" VerticalOptions="StartAndExpand" HorizontalTextAlignment="End"/>
-                    <DatePicker FontSize="20" Grid.Row="8" Grid.Column="1" x:Name="txtFechaNuevoCre" VerticalOptions="Start" IsEnabled="False"/>
+                            <!-- Fecha Crédito -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Fecha del Crédito"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="12"
+                                       Padding="16,14"
+                                       HasShadow="False">
+                                    <DatePicker x:Name="txtFechaNuevoCre"
+                                                FontSize="16"
+                                                TextColor="#212529"
+                                                BackgroundColor="Transparent"
+                                                IsEnabled="False"/>
+                                </Frame>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
 
-                </Grid>
+                    <!-- Botón Grabar -->
+                    <Button x:Name="btnGrabar"
+                            Text="💾 Grabar Crédito"
+                            Clicked="btnGrabar_Clicked"
+                            BackgroundColor="#5f3dc4"
+                            TextColor="White"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            CornerRadius="16"
+                            HeightRequest="60"
+                            Margin="0,10,0,30"/>
 
-                <Grid VerticalOptions="Start">
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                </Grid>
-                <Button x:Name="btnGrabar" Grid.Row="0" Grid.Column="1" Text="Grabar" Clicked="btnGrabar_Clicked"></Button>
-                
-            </StackLayout>
-        </ScrollView>
-    </ContentPage.Content>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
 </ContentPage>

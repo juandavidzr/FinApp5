@@ -6,81 +6,461 @@
              Title="Clientes"
              xmlns:local="clr-namespace:FinApp5.ViewModels"
              Shell.NavBarHasShadow="False"
-            Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False">
+
     <ContentPage.BindingContext>
         <local:BaseViewModel/>
     </ContentPage.BindingContext>
-    
-    <ScrollView Margin="20">
-        
-        <VerticalStackLayout VerticalOptions="StartAndExpand" 
-                             HorizontalOptions="FillAndExpand">
-            <Button x:Name="btnInicio" Text="Ir a menu principal" Clicked="btnInicio_Clicked" Margin="5"></Button>
-            <Label Text="Numero de identificación" />
-            <Entry Text="{Binding TxtId}" x:Name="TxtId" Unfocused="TxtId_Unfocused" >
-                <!--<Entry.Behaviors>
-                    <toolkit:EventToCommandBehavior EventName="Unfocused" Command="{Binding ConsultarClienteCommand}"/>
-                </Entry.Behaviors>-->
-            </Entry>
-            <Label Text="Nombre Completo" />
-            <Entry x:Name="TxtNombre" Text="{Binding TxtNombre}" Focused="Nombre_Focused"/>
-            <Label Text="Dirección de domicilio"/>
-            <Entry x:Name="TxtDirDomicilio" Text="{Binding TxtDirDomicilio}" />
-            <Label Text="Barrio de domicilio"/>
 
-            <Picker x:Name="cmbBarrioDom" 
-                Title="Seleccione el barrio de Domicilio" 
-                ItemsSource="{Binding Barrios}"
-                ItemDisplayBinding="{Binding NombreBarrio}"
-                SelectedItem="{Binding IdBarrio}"
-                FontAutoScalingEnabled="False"
-                SelectedIndexChanged="cmbBarrioDom_SelectedIndexChanged">
-            </Picker>
+    <ScrollView>
+        <Grid>
+            <!-- Fondo con gradiente de morado a blanco -->
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#6B63C6" Offset="0.0" />
+                        <GradientStop Color="#9B94D8" Offset="0.25" />
+                        <GradientStop Color="#C4C0E8" Offset="0.5" />
+                        <GradientStop Color="#E8E6F5" Offset="0.75" />
+                        <GradientStop Color="#FFFFFF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
 
-            <Label x:Name="TxtBarrioDom" />
-            
+            <VerticalStackLayout Spacing="0" Padding="0">
 
-            <Label Text="Direccion de cobro"/>
-            <Entry x:Name="TxtDirCobro" Text="{Binding TxtDirCobro}"/>
-            <Label Text="Barrio de Cobro"/>
+                <!-- Header Section -->
+                <VerticalStackLayout Padding="20,30,20,40" Spacing="20">
 
-            <Picker x:Name="cmbBarrioCobro" 
-                    Title="Seleccione el barrio de cobro" 
-                    ItemsSource="{Binding Barrios}"
-                    ItemDisplayBinding="{Binding NombreBarrio}"
-                    SelectedItem="{Binding IdBarrio}"
-                    FontAutoScalingEnabled="False"
-                    SelectedIndexChanged="cmbBarrioCobro_SelectedIndexChanged">
-            </Picker>
-            <Label x:Name="TxtBarrioCobro" />
+                    <!-- Back Button -->
+                    <Button x:Name="btnInicio"
+                            Text="← Menú Principal"
+                            Clicked="btnInicio_Clicked"
+                            BackgroundColor="White"
+                            TextColor="#5B53B8"
+                            BorderColor="#5B53B8"
+                            BorderWidth="2"
+                            CornerRadius="25"
+                            HeightRequest="50"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Start"
+                            WidthRequest="200"/>
 
-            <Label Text="Latitud"/>
-            <Entry x:Name="TxtLatitud" Text="{Binding TxtLatitud}" IsReadOnly="True"/>
-            <Label Text="Longitud"/>
-            <Entry x:Name="TxtLongitud" Text="{Binding TxtLongitud}" IsReadOnly="True" />
-            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >
-                <Button Text="Cargar ubicacion" WidthRequest="150" Margin="1,1,10,1" Command="{Binding BtnUbicacionCommand}"/>
-                <Button Text="Navegar" WidthRequest="150" Command="{Binding BtnNavegarCommand}"/>
-            </StackLayout>
-            <Label Text="Telefono 1" />
-            <Entry x:Name="TxtTelefono1" Text="{Binding TxtTelefono1}"/>
-            <Button Text="WhatsApp" Command="{Binding BtnWhatsAppCommand}" />
-            <Label Text="Telefono 2" />
-            <Entry x:Name="TxtTelefono2" Text="{Binding TxtTelefono2}"/>
-            <Label Text="Notas Generales" />
-            <Entry x:Name="TxtNotas" Text="{Binding TxtNotas}" />
+                    <!-- Title Section -->
+                    <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                        <Label Text="Registro de Cliente"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="#2D2760"
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Complete la información del cliente"
+                               FontSize="14"
+                               TextColor="#2D2760"
+                               HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
 
-            <Label Text="Foto del Cliente" />
+                <!-- Content -->
+                <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Image x:Name="ImgCliente"
-                   WidthRequest="200"
-                   HeightRequest="200"
-                   Aspect="AspectFill"
-                   BackgroundColor="LightGray"/>
-            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5">
-                <Button Text="Tomar Foto" Clicked="BtnTomarFoto_Clicked" />
-                <Button Text="Seleccionar Foto" Clicked="BtnSeleccionarFoto_Clicked" />
-            </StackLayout>
+                    <!-- Información Personal Card -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="20"
+                           Padding="25,25"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="18">
+                            <Label Text="📋 Información Personal"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="#495057"/>
+
+                            <!-- Número de Identificación -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Número de Identificación"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="TxtId"
+                                       Text="{Binding TxtId}"
+                                       Unfocused="TxtId_Unfocused"
+                                       Placeholder="Ingrese el número de identificación"
+                                       FontSize="15"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       PlaceholderColor="#adb5bd"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+
+                            <!-- Nombre Completo -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Nombre Completo"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="TxtNombre"
+                                       Text="{Binding TxtNombre}"
+                                       Focused="Nombre_Focused"
+                                       Placeholder="Ingrese el nombre completo"
+                                       FontSize="15"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       PlaceholderColor="#adb5bd"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+
+                            <!-- Dirección de Domicilio -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Dirección de Domicilio"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="TxtDirDomicilio"
+                                       Text="{Binding TxtDirDomicilio}"
+                                       Placeholder="Ingrese la dirección"
+                                       FontSize="15"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       PlaceholderColor="#adb5bd"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+
+                            <!-- Barrio de Domicilio -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Barrio de Domicilio"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Picker x:Name="cmbBarrioDom"
+                                        Title="Seleccione el barrio de Domicilio"
+                                        ItemsSource="{Binding Barrios}"
+                                        ItemDisplayBinding="{Binding NombreBarrio}"
+                                        SelectedItem="{Binding IdBarrio}"
+                                        FontAutoScalingEnabled="False"
+                                        SelectedIndexChanged="cmbBarrioDom_SelectedIndexChanged"
+                                        FontSize="15"
+                                        TextColor="#495057"
+                                        BackgroundColor="Transparent"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+                            <Label x:Name="TxtBarrioDom" IsVisible="False"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Ubicación de Cobro Card -->
+                    <Frame CornerRadius="16"
+                           Padding="20"
+                           HasShadow="True">
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#ff922b" Offset="0.0" />
+                                <GradientStop Color="#fd7e14" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="📍 Ubicación de Cobro"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
+
+                            <!-- Dirección de Cobro -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Dirección de Cobro"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="10"
+                                       Padding="16,14"
+                                       HasShadow="False">
+                                    <Entry x:Name="TxtDirCobro"
+                                           Text="{Binding TxtDirCobro}"
+                                           Placeholder="Ingrese la dirección de cobro"
+                                           FontSize="15"
+                                           TextColor="#212529"
+                                           BackgroundColor="Transparent"
+                                           PlaceholderColor="#6c757d"/>
+                                </Frame>
+                            </VerticalStackLayout>
+
+                            <!-- Barrio de Cobro -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Barrio de Cobro"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+                                <Frame BackgroundColor="#FFFFFFEF"
+                                       BorderColor="Transparent"
+                                       CornerRadius="10"
+                                       Padding="10,8"
+                                       HasShadow="False">
+                                    <Picker x:Name="cmbBarrioCobro"
+                                            Title="Seleccione el barrio de cobro"
+                                            ItemsSource="{Binding Barrios}"
+                                            ItemDisplayBinding="{Binding NombreBarrio}"
+                                            SelectedItem="{Binding IdBarrio}"
+                                            FontAutoScalingEnabled="False"
+                                            SelectedIndexChanged="cmbBarrioCobro_SelectedIndexChanged"
+                                            FontSize="15"
+                                            TextColor="#495057"
+                                            BackgroundColor="Transparent"/>
+                                </Frame>
+                            </VerticalStackLayout>
+                            <Label x:Name="TxtBarrioCobro" IsVisible="False"/>
+
+                            <!-- Coordenadas -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="Latitud"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           Opacity="0.95"/>
+                                    <Frame BackgroundColor="#FFFFFFEF"
+                                           BorderColor="Transparent"
+                                           CornerRadius="10"
+                                           Padding="16,14"
+                                           HasShadow="False">
+                                        <Entry x:Name="TxtLatitud"
+                                               Text="{Binding TxtLatitud}"
+                                               IsReadOnly="True"
+                                               Placeholder="0.000000"
+                                               FontSize="15"
+                                               TextColor="#212529"
+                                               BackgroundColor="Transparent"/>
+                                    </Frame>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                    <Label Text="Longitud"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="White"
+                                           Opacity="0.95"/>
+                                    <Frame BackgroundColor="#FFFFFFEF"
+                                           BorderColor="Transparent"
+                                           CornerRadius="10"
+                                           Padding="16,14"
+                                           HasShadow="False">
+                                        <Entry x:Name="TxtLongitud"
+                                               Text="{Binding TxtLongitud}"
+                                               IsReadOnly="True"
+                                               Placeholder="0.000000"
+                                               FontSize="15"
+                                               TextColor="#212529"
+                                               BackgroundColor="Transparent"/>
+                                    </Frame>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Botones de Ubicación -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,5,0,0">
+                                <Button Grid.Column="0"
+                                        Text="📍 Cargar ubicación"
+                                        Command="{Binding BtnUbicacionCommand}"
+                                        BackgroundColor="White"
+                                        TextColor="#fd7e14"
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        CornerRadius="12"
+                                        HeightRequest="50"/>
+
+                                <Button Grid.Column="1"
+                                        Text="🧭 Navegar"
+                                        Command="{Binding BtnNavegarCommand}"
+                                        BackgroundColor="White"
+                                        TextColor="#fd7e14"
+                                        FontSize="14"
+                                        FontAttributes="Bold"
+                                        CornerRadius="12"
+                                        HeightRequest="50"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- WhatsApp Card -->
+                    <Frame CornerRadius="16"
+                           Padding="20"
+                           HasShadow="True">
+                        <Frame.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#51cf66" Offset="0.0" />
+                                <GradientStop Color="#37b24d" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="💬 WhatsApp"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="White"/>
+
+                            <!-- Teléfono 1 -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Teléfono 1"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       Opacity="0.95"/>
+
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <Frame Grid.Column="0"
+                                           BackgroundColor="#FFFFFFEF"
+                                           BorderColor="Transparent"
+                                           CornerRadius="10"
+                                           Padding="16,14"
+                                           HasShadow="False">
+                                        <Entry x:Name="TxtTelefono1"
+                                               Text="{Binding TxtTelefono1}"
+                                               Placeholder="Ingrese el teléfono"
+                                               Keyboard="Telephone"
+                                               FontSize="15"
+                                               TextColor="#212529"
+                                               BackgroundColor="Transparent"
+                                               PlaceholderColor="#6c757d"/>
+                                    </Frame>
+
+                                    <Button Grid.Column="1"
+                                            Text="WhatsApp"
+                                            Command="{Binding BtnWhatsAppCommand}"
+                                            BackgroundColor="White"
+                                            TextColor="#37b24d"
+                                            FontSize="14"
+                                            FontAttributes="Bold"
+                                            CornerRadius="12"
+                                            WidthRequest="130"
+                                            HeightRequest="50"
+                                            VerticalOptions="End"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Información Adicional Card -->
+                    <Frame BackgroundColor="White"
+                           CornerRadius="20"
+                           Padding="25,25"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="18">
+                            <Label Text="📝 Información Adicional"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="#495057"/>
+
+                            <!-- Teléfono 2 -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Teléfono 2"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="TxtTelefono2"
+                                       Text="{Binding TxtTelefono2}"
+                                       Placeholder="Teléfono adicional (opcional)"
+                                       Keyboard="Telephone"
+                                       FontSize="15"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       PlaceholderColor="#adb5bd"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+
+                            <!-- Notas Generales -->
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Notas Generales"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"/>
+                                <Entry x:Name="TxtNotas"
+                                       Text="{Binding TxtNotas}"
+                                       Placeholder="Información adicional..."
+                                       FontSize="15"
+                                       TextColor="#212529"
+                                       BackgroundColor="Transparent"
+                                       PlaceholderColor="#adb5bd"/>
+                                <BoxView HeightRequest="2" Color="#e9ecef" HorizontalOptions="Fill"/>
+                            </VerticalStackLayout>
+
+                            <!-- Foto del Cliente -->
+                            <VerticalStackLayout Spacing="12" Margin="0,10,0,0">
+                                <Label Text="Foto del Cliente"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="#495057"
+                                       HorizontalTextAlignment="Center"/>
+
+                                <Frame BackgroundColor="#f1f3f5"
+                                       BorderColor="Transparent"
+                                       CornerRadius="16"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       HorizontalOptions="Center"
+                                       WidthRequest="160"
+                                       HeightRequest="160">
+                                    <Image x:Name="ImgCliente"
+                                           Aspect="AspectFill"
+                                           BackgroundColor="Transparent"/>
+                                </Frame>
+
+                                <!-- Botones de Foto -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <Button Grid.Column="0"
+                                            Text="📸 Tomar Foto"
+                                            Clicked="BtnTomarFoto_Clicked"
+                                            BackgroundColor="White"
+                                            BorderColor="#5f3dc4"
+                                            BorderWidth="2"
+                                            TextColor="#5f3dc4"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            CornerRadius="12"
+                                            HeightRequest="50"/>
+
+                                    <Button Grid.Column="1"
+                                            Text="🖼️ Seleccionar"
+                                            Clicked="BtnSeleccionarFoto_Clicked"
+                                            BackgroundColor="White"
+                                            BorderColor="#5f3dc4"
+                                            BorderWidth="2"
+                                            TextColor="#5f3dc4"
+                                            FontSize="13"
+                                            FontAttributes="Bold"
+                                            CornerRadius="12"
+                                            HeightRequest="50"/>
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Botones de Acción -->
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,20,0,0">
+                                <Button Grid.Column="0"
+                                        x:Name="BtnLimpiar"
+                                        Text="Limpiar"
+                                        Clicked="BtnLimpiar_Clicked"
+                                        BackgroundColor="White"
+                                        BorderColor="#5f3dc4"
+                                        BorderWidth="2"
+                                        TextColor="#5f3dc4"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        CornerRadius="16"
+                                        HeightRequest="55"/>
+
+                                <Button Grid.Column="1"
+                                        x:Name="BtnGuardar"
+                                        Text="Grabar"
+                                        Clicked="Button_Clicked_Guardar"
+                                        BackgroundColor="#5f3dc4"
+                                        TextColor="White"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        CornerRadius="16"
+                                        HeightRequest="55"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
 
             <Label Text="Foto del ID del Cliente" />
             <Image x:Name="ImgId"
