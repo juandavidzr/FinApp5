@@ -11,5 +11,7 @@ namespace FinAppApi.DTOs
         public string? longitud { get; set; }
         public IFormFile? Foto { get; set; }
         public IFormFile? IDFoto { get; set; }
+        public IFormFile? lugarFoto { get; set; }
+
     }
 }

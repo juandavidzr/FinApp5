@@ -226,6 +226,18 @@ namespace FinApp5.Datos
                                     fotoIDBytes = null;
                                 }
 
+                                byte[]? fotoLugarBytes = null;
+                                try
+                                {
+                                    int fotoLugarIndex = rdr.GetOrdinal("lugarFoto");
+                                    if (!rdr.IsDBNull(fotoLugarIndex))
+                                        fotoLugarBytes = (byte[])rdr["lugarFoto"];
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    fotoLugarBytes = null;
+                                }
+
                                 return new Mcliente
                                 {
                                     cteNombApel = rdr["cteNombApel"].ToString(),
@@ -239,8 +251,8 @@ namespace FinApp5.Datos
                                     cteTeleFijo = rdr["cteTeleFijo"].ToString(),
                                     cteNotasGenerales = rdr["cteNotasGenerales"].ToString(),
                                     Foto = fotoBytes, 
-                                    IDFoto = fotoIDBytes
-                                    
+                                    IDFoto = fotoIDBytes,
+                                    FotoLugar = fotoLugarBytes
                                 };
                             }
                         }
@@ -338,6 +350,19 @@ namespace FinApp5.Datos
                         else
                         {
                             cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+                        }
+
+                        if (cliente.FotoLugar != null && cliente.FotoLugar.Length > 0)
+                        {
+                            var lugarFotoParam = new SqlParameter("@lugarFoto", SqlDbType.VarBinary, -1)
+                            {
+                                Value = cliente.FotoLugar
+                            };
+                            cmd.Parameters.Add(lugarFotoParam);
+                        }
+                        else
+                        {
+                            cmd.Parameters.Add("@lugarFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
                         }
 
                         cmd.ExecuteNonQuery();

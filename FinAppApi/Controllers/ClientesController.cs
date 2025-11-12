@@ -27,7 +27,6 @@ namespace FinAppApi.Controllers
             try
             {
                 byte[]? fotoBytes = null;
-
                 if (request.Foto != null)
                 {
                     using var ms = new MemoryStream();
@@ -36,12 +35,19 @@ namespace FinAppApi.Controllers
                 }
 
                 byte[]? fotoIDBytes = null;
-
                 if (request.IDFoto != null)
                 {
                     using var ms = new MemoryStream();
                     await request.IDFoto.CopyToAsync(ms);
                     fotoIDBytes = ms.ToArray();
+                }
+
+                byte[]? fotoLugarBytes = null;
+                if (request.LugarFoto != null)
+                {
+                    using var ms = new MemoryStream();
+                    await request.LugarFoto.CopyToAsync(ms);
+                    fotoLugarBytes = ms.ToArray();
                 }
 
                 using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
@@ -88,6 +94,17 @@ namespace FinAppApi.Controllers
                     cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
                 }
 
+                if (fotoLugarBytes != null)
+                {
+                    var fotoLugarParam = new SqlParameter("@LugarFoto", SqlDbType.VarBinary, -1);
+                    fotoLugarParam.Value = fotoIDBytes;
+                    cmd.Parameters.Add(fotoLugarParam);
+                }
+                else
+                {
+                    cmd.Parameters.Add("@LugarFoto", SqlDbType.VarBinary, -1).Value = DBNull.Value;
+                }
+
                 await cmd.ExecuteNonQueryAsync();
 
                 return Ok(new { mensaje = "Cliente guardado correctamente" });
@@ -103,18 +120,18 @@ namespace FinAppApi.Controllers
         {
             try
             {
-                Console.WriteLine("🟢 Iniciando actualización de cliente...");
+                Console.WriteLine("Iniciando actualización de cliente...");
 
-                // Guardar las fotos si existen
                 byte[]? fotoBytes = null;
                 byte[]? idFotoBytes = null;
+                byte[]? lugarFotoBytes = null;
 
                 if (request.Foto != null && request.Foto.Length > 0)
                 {
                     using var ms = new MemoryStream();
                     await request.Foto.CopyToAsync(ms);
                     fotoBytes = ms.ToArray();
-                    Console.WriteLine("📸 Foto recibida correctamente");
+                    Console.WriteLine("Foto recibida correctamente");
                 }
 
                 if (request.IDFoto != null && request.IDFoto.Length > 0)
@@ -122,7 +139,15 @@ namespace FinAppApi.Controllers
                     using var ms = new MemoryStream();
                     await request.IDFoto.CopyToAsync(ms);
                     idFotoBytes = ms.ToArray();
-                    Console.WriteLine("🪪 IDFoto recibida correctamente");
+                    Console.WriteLine("IDFoto recibida correctamente");
+                }
+
+                if (request.lugarFoto != null && request.lugarFoto.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await request.lugarFoto.CopyToAsync(ms);
+                    lugarFotoBytes = ms.ToArray();
+                    Console.WriteLine("lugarFoto recibida correctamente");
                 }
 
                 using var con = new SqlConnection(_config.GetConnectionString("SqlServer"));
@@ -142,6 +167,7 @@ namespace FinAppApi.Controllers
                         // Parámetros para las fotos
                         cmd.Parameters.Add("@Foto", SqlDbType.VarBinary).Value = (object?)fotoBytes ?? DBNull.Value;
                         cmd.Parameters.Add("@IDFoto", SqlDbType.VarBinary).Value = (object?)idFotoBytes ?? DBNull.Value;
+                        cmd.Parameters.Add("@lugarFoto", SqlDbType.VarBinary).Value = (object?)lugarFotoBytes ?? DBNull.Value;
 
                         await cmd.ExecuteNonQueryAsync();
                     }

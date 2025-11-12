@@ -212,6 +212,7 @@ namespace FinApp5.ViewModels
                     cliente.cteNotasGenerales = TxtNotas;
                     cliente.latitud = TxtLatitud;
                     cliente.longitud = TxtLongitud;
+                    
 
                     exito = funcion.ActualizarCliente(cliente);
                     ModoEdit = false;

@@ -479,5 +479,21 @@
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </Grid>
+            <Label Text="Foto lugar de cobro" />
+            <Image x:Name="ImgLugar"
+                WidthRequest="200"
+                HeightRequest="200"
+                Aspect="AspectFill"
+                BackgroundColor="LightGray"/>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5">
+                <Button Text="Tomar foto del lugar" Clicked="BtnTomarFotoLugar_Clicked" />
+                <Button Text="Seleccionar Foto del lugar" Clicked="BtnSeleccionarFotoLugar_Clicked" />
+            </StackLayout>
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" Padding="5" >
+                <Button x:Name="BtnLimpiar" Text="Limpiar" WidthRequest="150" Margin="1,1,10,1" Clicked="BtnLimpiar_Clicked"/>
+                <Button x:Name="BtnGuardar" Text="Grabar" WidthRequest="150" Clicked="Button_Clicked_Guardar" />
+            </StackLayout>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
