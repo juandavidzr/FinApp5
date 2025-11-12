@@ -30,7 +30,7 @@ public class AuthController : ControllerBase
                 cmd.Parameters.AddWithValue("@user", request.Usuario);
                 cmd.Parameters.AddWithValue("@pass", request.Password);
 
-                Console.WriteLine($"Usuario: {request.Usuario}, Password: {request.Password}");
+                //Console.WriteLine($"Usuario: {request.Usuario}, Password: {request.Password}");
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {

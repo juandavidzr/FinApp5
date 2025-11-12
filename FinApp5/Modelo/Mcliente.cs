@@ -25,5 +25,6 @@ namespace FinApp5.Modelo
         public int nuevo { get; set; } //2 si fue actualizado offline, 1 si fue agregado offline, 0 si fue cargado de la web
         public byte[] Foto { get; set; }
         public byte[] IDFoto { get; set; }
+        public byte[] FotoLugar { get; set; }
     }
 }

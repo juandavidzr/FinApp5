@@ -49,7 +49,12 @@ namespace FinAppMaui.Services
                     imageIDContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
                     content.Add(imageIDContent, "IDFoto", "IDcliente.jpg");
                 }
-                // Agregar la foto si existe
+                if (cliente.FotoLugar != null && cliente.FotoLugar.Length > 0)
+                {
+                    var imageLugarContent = new ByteArrayContent(cliente.FotoLugar);
+                    imageLugarContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(imageLugarContent, "LugarFoto", "imglugarCliente.jpg");
+                }
 
 
 
@@ -98,7 +103,14 @@ namespace FinAppMaui.Services
                     imageIDContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
                     content.Add(imageIDContent, "IDFoto", "IDcliente.jpg");
                 }
-                
+
+                if (cliente.FotoLugar != null && cliente.FotoLugar.Length > 0)
+                {
+                    var imageLugarContent = new ByteArrayContent(cliente.FotoLugar);
+                    imageLugarContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+                    content.Add(imageLugarContent, "lugarFoto", "Lugarcliente.jpg");
+                }
+
                 var response = await _http.PutAsync("api/clientes/actualizar", content);
 
                 if (!response.IsSuccessStatusCode)

@@ -29,6 +29,7 @@ public partial class Clientes : ContentPage
 
     private FileResult _fotoCliente;
     private FileResult _fotoIDCliente;
+    private FileResult _fotoLugar;
     public Clientes(Musuarios usuario, ClienteService clienteService)
     {
         InitializeComponent();
@@ -114,6 +115,16 @@ public partial class Clientes : ContentPage
                         else
                         {
                             ImgId.Source = null; 
+                        }
+
+                        if (cliente.FotoLugar != null && cliente.FotoLugar.Length > 0)
+                        {
+                            MemoryStream ms = new MemoryStream(cliente.FotoLugar);
+                            ImgLugar.Source = ImageSource.FromStream(() => ms);
+                        }
+                        else
+                        {
+                            ImgLugar.Source = null;
                         }
                         ModoEdit = true;
                     }
@@ -374,6 +385,7 @@ public partial class Clientes : ContentPage
             TxtNotas.Text = string.Empty;
             ImgCliente.Source = null;
             ImgId.Source = null;
+            ImgLugar.Source = null;
             ModoEdit = false;
         }
         catch (Exception ex)
@@ -410,7 +422,8 @@ public partial class Clientes : ContentPage
                 if (_fotoIDCliente != null)
                     cliente.IDFoto = await ConvertirFotoABytes(_fotoIDCliente);
 
-
+                if (_fotoLugar != null)
+                    cliente.FotoLugar = await ConvertirFotoABytes(_fotoLugar);
 
                 if (CONEXIONMAESTRA.VerificarCon())
                 {
@@ -453,10 +466,10 @@ public partial class Clientes : ContentPage
                     cliente.cteNotasGenerales = TxtNotas.Text;
                     cliente.latitud = TxtLatitud.Text;
                     cliente.longitud = TxtLongitud.Text;
-
                     
                     cliente.Foto = await ConvertirFotoABytes(_fotoCliente);
                     cliente.IDFoto = await ConvertirFotoABytes(_fotoIDCliente);
+                    cliente.FotoLugar = await ConvertirFotoABytes(_fotoLugar);
 
                     if (CONEXIONMAESTRA.VerificarCon())
                     {
@@ -652,6 +665,51 @@ public partial class Clientes : ContentPage
                 _fotoIDCliente = photo;
                 var stream = await photo.OpenReadAsync();
                 ImgId.Source = ImageSource.FromStream(() => stream);
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async void BtnTomarFotoLugar_Clicked(object sender, EventArgs e)
+    {
+        if (!await SolicitarPermisosCamaraAsync())
+        {
+            await DisplayAlert("Permiso denegado", "No se concedió acceso a la cámara", "OK");
+            return;
+        }
+
+        try
+        {
+            if (MediaPicker.Default.IsCaptureSupported)
+            {
+                var photo = await MediaPicker.Default.CapturePhotoAsync();
+                if (photo != null)
+                {
+                    _fotoLugar = photo;
+                    var stream = await photo.OpenReadAsync();
+                    ImgLugar.Source = ImageSource.FromStream(() => stream);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async void BtnSeleccionarFotoLugar_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var photo = await MediaPicker.Default.PickPhotoAsync();
+            if (photo != null)
+            {
+                _fotoLugar = photo;
+                var stream = await photo.OpenReadAsync();
+                ImgLugar.Source = ImageSource.FromStream(() => stream);
             }
         }
         catch (Exception ex)
