@@ -455,7 +455,7 @@ public partial class Creditos : ContentPage
                         cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd"));
                         cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito);
                         cmd.Parameters.AddWithValue("@intTieDiaCre", "0");
-                        cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex] + "-" + txtGuiaPago.Text.Trim());
+                        cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex] + "-" + txtGuiaPago.Text);
                         cmd.Parameters.AddWithValue("@dblValMicSeg", "0");
                         cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre);
                         cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd"));
@@ -464,7 +464,7 @@ public partial class Creditos : ContentPage
                         cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre);
                         cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim());
                         cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
-                        cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim());
+                        cmd.Parameters.AddWithValue("@NotaCredit", string.IsNullOrWhiteSpace(txtNotas.Text) ? "" : txtNotas.Text.Trim());
 
                         cmd.ExecuteNonQuery();
                     }
@@ -524,7 +524,8 @@ public partial class Creditos : ContentPage
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", ex.Message, "OK");
+            //DisplayAlert("Error", ex.Message, "OK");
+            DisplayAlert("Error", ex.ToString(), "OK");
         }
     }
 
