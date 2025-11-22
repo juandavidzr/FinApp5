@@ -26,7 +26,6 @@
 
                 <!-- Header Section -->
                 <VerticalStackLayout Padding="20,30,20,30" Spacing="15">
-
                     <Label Text="Gestión de Créditos"
                            FontSize="28"
                            FontAttributes="Bold"
@@ -254,10 +253,6 @@
                                        Padding="10,8"
                                        HasShadow="False">
                                     <Picker x:Name="cmbPlazo"
-                                            ItemsSource="{Binding plazoList}"
-                                            ItemDisplayBinding="{Binding nombrePlazo}"
-                                            SelectedItem="{Binding idPlazo}"
-                                            SelectedIndexChanged="cmbPlazo_SelectedIndexChanged"
                                             FontSize="16"
                                             TextColor="#495057"
                                             BackgroundColor="Transparent"
@@ -278,10 +273,6 @@
                                        Padding="10,8"
                                        HasShadow="False">
                                     <Picker x:Name="cmbDias"
-                                            ItemsSource="{Binding diasList}"
-                                            ItemDisplayBinding="{Binding nombreDia}"
-                                            SelectedItem="{Binding idDia}"
-                                            SelectedIndexChanged="cmbDias_SelectedIndexChanged"
                                             FontSize="16"
                                             TextColor="#495057"
                                             BackgroundColor="Transparent"
@@ -322,10 +313,6 @@
                                        Padding="10,8"
                                        HasShadow="False">
                                     <Picker x:Name="cmbPosicion"
-                                            ItemsSource="{Binding rutaList}"
-                                            ItemDisplayBinding="{Binding nombreCliente}"
-                                            SelectedItem="{Binding posicion}"
-                                            SelectedIndexChanged="cmbPosicion_SelectedIndexChanged"
                                             FontSize="16"
                                             TextColor="#495057"
                                             BackgroundColor="Transparent"
@@ -368,8 +355,7 @@
                                     <DatePicker x:Name="txtFechaNuevoCre"
                                                 FontSize="16"
                                                 TextColor="#212529"
-                                                BackgroundColor="Transparent"
-                                                IsEnabled="False"/>
+                                                BackgroundColor="Transparent"/>
                                 </Frame>
                             </VerticalStackLayout>
                         </VerticalStackLayout>
