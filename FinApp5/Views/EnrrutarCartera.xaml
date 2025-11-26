@@ -1,74 +1,137 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.EnrrutarCartera"
-             Title="Enrrutar Cartera">
+             Title="Enrutar Cartera">
 
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+    <Grid>
+        <!-- Fondo con gradiente -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#6B63C6" Offset="0.0" />
+                    <GradientStop Color="#9B94D8" Offset="0.25" />
+                    <GradientStop Color="#C4C0E8" Offset="0.5" />
+                    <GradientStop Color="#E8E6F5" Offset="0.75" />
+                    <GradientStop Color="#FFFFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <!-- Contenido principal -->
+        <Grid Padding="15" ColumnSpacing="15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
             <!-- Lista izquierda -->
-            <ColumnDefinition Width="Auto" />
-            <!-- Botón -->
-            <ColumnDefinition Width="*" />
+            <Frame Grid.Column="0"
+                   CornerRadius="12"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Padding="0"
+                   Opacity="0.95">
+                <ListView x:Name="lstCreditos"
+                          BackgroundColor="Transparent"
+                          SeparatorColor="#E5E7EB"
+                          ItemSelected="lstCreditos_ItemSelected"
+                          HasUnevenRows="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="15,12"
+                                      ColumnSpacing="15"
+                                      BackgroundColor="Transparent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Nombre del cliente -->
+                                    <Label Text="{Binding nombreCliente}" 
+                                           Grid.Column="0"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="WordWrap"
+                                           TextColor="#1F2937"
+                                           VerticalOptions="Center"/>
+
+                                    <!-- Número de préstamo -->
+                                    <Label Text="{Binding NumPrestamo}" 
+                                           Grid.Column="1"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2937"
+                                           HorizontalTextAlignment="End"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Frame>
+
+            <!-- Botón central -->
+            <Button Text=">>"
+                    Grid.Column="1"
+                    WidthRequest="56"
+                    HeightRequest="56"
+                    CornerRadius="8"
+                    BackgroundColor="#6B63C6"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    VerticalOptions="Center"
+                    Clicked="Button_Clicked"
+                    Shadow="{Shadow Brush=#6B63C6, Opacity=0.4, Radius=8, Offset='0,4'}" />
+
             <!-- Lista derecha -->
-        </Grid.ColumnDefinitions>
+            <Frame Grid.Column="2"
+                   CornerRadius="12"
+                   BackgroundColor="White"
+                   HasShadow="True"
+                   Padding="0"
+                   Opacity="0.95">
+                <ListView x:Name="lstCreditos1"
+                          BackgroundColor="Transparent"
+                          SeparatorColor="#E5E7EB"
+                          ItemSelected="lstCreditos1_ItemSelected"
+                          HasUnevenRows="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="15,12"
+                                      ColumnSpacing="15"
+                                      BackgroundColor="Transparent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-        <!-- Lista izquierda -->
-        <ListView x:Name="lstCreditos"
-                  Grid.Column="0"
-                  ItemSelected="lstCreditos_ItemSelected">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Label Text="{Binding nombreCliente}" 
-                                   Grid.Column="0"
-                                   LineBreakMode="WordWrap"
-                                   TextColor="Black"/>
-                            <Label Text="{Binding NumPrestamo}" 
-                                   Grid.Column="1"
-                                   TextColor="Black"
-                                   HorizontalTextAlignment="Center"/>
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                    <!-- Nombre del cliente -->
+                                    <Label Text="{Binding nombreCliente}"
+                                           Grid.Column="0"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="WordWrap"
+                                           TextColor="#1F2937"
+                                           VerticalOptions="Center"/>
 
-        <!-- Botón -->
-        <Button Text=">>"
-                Grid.Column="1"
-                VerticalOptions="Center"
-                Clicked="Button_Clicked" />
-
-        <!-- Lista derecha -->
-        <ListView x:Name="lstCreditos1"
-                  Grid.Column="2"
-                  ItemSelected="lstCreditos1_ItemSelected">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Label Text="{Binding nombreCliente}"
-                                   Grid.Column="0"
-                                   LineBreakMode="WordWrap"
-                                   TextColor="Black"/>
-                            <Label Text="{Binding NumPrestamo}"
-                                   Grid.Column="1"
-                                   TextColor="Black"
-                                   HorizontalTextAlignment="Center"/>
-                        </Grid>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                    <!-- Número de préstamo -->
+                                    <Label Text="{Binding NumPrestamo}"
+                                           Grid.Column="1"
+                                           FontSize="14"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2937"
+                                           HorizontalTextAlignment="End"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Frame>
+        </Grid>
     </Grid>
 </ContentPage>
