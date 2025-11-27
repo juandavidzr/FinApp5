@@ -312,7 +312,7 @@ public partial class Creditos : ContentPage
 
     public List<Mruta> GetRuta()
     {
-        var ruta = new List<Mruta>() 
+        var ruta = new List<Mruta>()
         {
              new Mruta { nombreCliente = DePrimero, posicion = -1 },
              new Mruta { nombreCliente = PosiciónActual, posicion = -2 },
@@ -807,17 +807,17 @@ public partial class Creditos : ContentPage
     }
     private void HideKeyboard()
     {
-    #if ANDROID
-    var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
-    if (activity?.CurrentFocus != null)
-    {
-        var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)activity.GetSystemService(Android.Content.Context.InputMethodService);
-        inputMethodManager?.HideSoftInputFromWindow(activity.CurrentFocus.WindowToken, Android.Views.InputMethods.HideSoftInputFlags.None);
-        activity.CurrentFocus.ClearFocus(); // Asegurar que la vista pierde el foco
-    }
-    #elif IOS
+#if ANDROID
+        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+        if (activity?.CurrentFocus != null)
+        {
+            var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)activity.GetSystemService(Android.Content.Context.InputMethodService);
+            inputMethodManager?.HideSoftInputFromWindow(activity.CurrentFocus.WindowToken, Android.Views.InputMethods.HideSoftInputFlags.None);
+            activity.CurrentFocus.ClearFocus(); // Asegurar que la vista pierde el foco
+        }
+#elif IOS
         //UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
-    #endif
+#endif
     }
     private void OnScrollViewSizeChanged(object sender, EventArgs e)
     {
