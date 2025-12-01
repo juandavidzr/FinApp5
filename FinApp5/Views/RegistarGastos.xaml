@@ -2,22 +2,157 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FinApp5.Views.RegistarGastos"
-             Title="Registar Gastos">
+             Title="Registrar Gastos">
 
-    <VerticalStackLayout Margin="20" Spacing="15">
-        <Label Text="Seleccione un concepto de gasto" />
-        <Picker x:Name="cmbConceptos" Title="Seleccione una opción" 
-                ItemsSource="{Binding conceptosList}"
-                ItemDisplayBinding="{Binding claDescripcion}"
-                SelectedItem="{Binding claCodigo}"
-                
-                >
-        </Picker>
-        <Label Text="Digite el valor del gasto"  />
-        <Entry x:Name="txtValor" Placeholder="Valor" ></Entry>
-        <Label Text="Justificación del gasto" />
-        <Entry x:Name="txtJustificacion" Placeholder="Justificación" ></Entry>
-        <Button Text="Limpiar" Clicked="BtnLimpiar_Clicked"/>
-        <Button Text="Grabar" Clicked="Button_Clicked" />
-    </VerticalStackLayout>
+    <Grid>
+        <!-- Fondo con gradiente -->
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#6B63C6" Offset="0.0" />
+                    <GradientStop Color="#9B94D8" Offset="0.25" />
+                    <GradientStop Color="#C4C0E8" Offset="0.5" />
+                    <GradientStop Color="#E8E6F5" Offset="0.75" />
+                    <GradientStop Color="#FFFFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <!-- Contenido principal -->
+        <ScrollView>
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Card del formulario -->
+                <Frame CornerRadius="15"
+                       BackgroundColor="White"
+                       HasShadow="True"
+                       Padding="20"
+                       Opacity="0.95">
+                    <VerticalStackLayout Spacing="20">
+
+                        <!-- Título principal -->
+                        <Label Text="Registrar Gasto"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="#6B63C6"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,10"/>
+
+                        <!-- Concepto de gasto -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Concepto de gasto"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#4B5563"/>
+
+                            <Frame Padding="0"
+                                   CornerRadius="10"
+                                   BorderColor="#E5E7EB"
+                                   HasShadow="False">
+                                <Picker x:Name="cmbConceptos" 
+                                        Title="Seleccione una opción"
+                                        ItemsSource="{Binding conceptosList}"
+                                        ItemDisplayBinding="{Binding claDescripcion}"
+                                        SelectedItem="{Binding claCodigo}"
+                                        TextColor="#1F2937"
+                                        FontSize="14"
+                                        Margin="10,0"/>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Valor del gasto -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Valor del gasto"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#4B5563"/>
+
+                            <Frame Padding="0"
+                                   CornerRadius="10"
+                                   BorderColor="#E5E7EB"
+                                   HasShadow="False">
+                                <Entry x:Name="txtValor" 
+                                       Placeholder="$ 0.00"
+                                       Keyboard="Numeric"
+                                       TextColor="#1F2937"
+                                       FontSize="14"
+                                       Margin="10,0"/>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Justificación -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Justificación del gasto"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#4B5563"/>
+
+                            <Frame Padding="0"
+                                   CornerRadius="10"
+                                   BorderColor="#E5E7EB"
+                                   HasShadow="False"
+                                   HeightRequest="100">
+                                <Editor x:Name="txtJustificacion" 
+                                        Placeholder="Escriba la justificación del gasto..."
+                                        TextColor="#1F2937"
+                                        FontSize="14"
+                                        AutoSize="TextChanges"
+                                        Margin="10,5"/>
+                            </Frame>
+                        </VerticalStackLayout>
+
+                        <!-- Botones -->
+                        <Grid ColumnSpacing="10" Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Botón Limpiar -->
+                            <Button Text="Limpiar"
+                                    Grid.Column="0"
+                                    Clicked="BtnLimpiar_Clicked"
+                                    BackgroundColor="#F3F4F6"
+                                    TextColor="#6B7280"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="50"/>
+
+                            <!-- Botón Grabar -->
+                            <Button Text="Grabar"
+                                    Grid.Column="1"
+                                    Clicked="Button_Clicked"
+                                    BackgroundColor="#6B63C6"
+                                    TextColor="White"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="50"
+                                    Shadow="{Shadow Brush=#6B63C6, Opacity=0.4, Radius=8, Offset='0,4'}"/>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Información adicional (opcional) -->
+                <Frame CornerRadius="10"
+                       BackgroundColor="#6B63C6"
+                       HasShadow="True"
+                       Padding="15"
+                       Opacity="0.9">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="ℹ️"
+                               FontSize="20"
+                               VerticalOptions="Center"/>
+                        <Label Text="Complete todos los campos para registrar el gasto correctamente."
+                               TextColor="White"
+                               FontSize="12"
+                               VerticalOptions="Center"
+                               LineBreakMode="WordWrap"
+                               MaximumWidthRequest="300"/>
+                    </HorizontalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>
