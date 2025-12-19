@@ -1,5 +1,4 @@
-﻿
-using FinApp5.Conexiones;
+﻿using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using SQLite;
@@ -1944,10 +1943,8 @@ namespace FinApp5.Data
 
                         row = await cmd.ExecuteNonQueryAsync();
 
-                        if (row > 0)
-                        {
-                             App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
-                        }
+                        //if (row > 0)
+                           App.SQLiteDB.marcarAbonoSincronizado(mmovimiento.idMovimiento);
                     }
                 }
             }

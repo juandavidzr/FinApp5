@@ -29,7 +29,7 @@
     <EnableI18n>true</EnableI18n>
     
 		<!-- Display name -->
-		<ApplicationTitle>FinAppWmayo</ApplicationTitle>
+		<ApplicationTitle>FinApp</ApplicationTitle>
 
     <!--cambiar al generar el ipa-->
 		<!-- App Identifier -->

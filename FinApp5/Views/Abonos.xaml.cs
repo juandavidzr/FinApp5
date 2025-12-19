@@ -17,6 +17,7 @@ public partial class Abonos : ContentPage
     public Abonos(Prestamos Prestamo, Musuarios usuario)
     {
         InitializeComponent();
+
         Usuario = usuario;
         formasPagos = GetFormasPago();
         cmbFormaPago.ItemsSource = formasPagos;
@@ -632,5 +633,14 @@ public partial class Abonos : ContentPage
     private async void btnVolver_Clicked(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new ListaCreditos(Usuario));
+    }
+
+    private async void BtnCopiarId_Clicked(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(txtId.Text))
+        {
+            await Clipboard.Default.SetTextAsync(txtId.Text);
+            await DisplayAlert("Copiado", "El Id fue copiado al portapapeles", "OK");
+        }
     }
 }

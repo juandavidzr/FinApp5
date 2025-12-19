@@ -26,6 +26,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         
                     </Grid.RowDefinitions>
 
@@ -33,19 +34,20 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
+                   
                     <Label FontSize="20" Grid.Row="0" Grid.Column="0" Text="Id: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtId" VerticalOptions="Start" IsEnabled="False"/>
+                    <Entry FontSize="20" Grid.Row="0" Grid.Column="1" x:Name="txtId" VerticalOptions="Start" IsReadOnly="True"/>
+                    <Button FontSize="18" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Copiar ID"  Clicked="BtnCopiarId_Clicked" />
 
-                    <Label FontSize="20" Grid.Row="1" Grid.Column="0" Text="Nombre: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="1" Grid.Column="1" x:Name="txtNombre" VerticalOptions="Start" IsEnabled="False"/>
+                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Nombre: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" x:Name="txtNombre" VerticalOptions="Start" IsEnabled="False"/>
 
-                    <Label FontSize="20" Grid.Row="2" Grid.Column="0" Text="Dirección: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="2" Grid.Column="1" x:Name="txtDireccion" VerticalOptions="Start" IsEnabled="False"/>
-                    <Button FontSize="20" Grid.Row="3" Grid.Column="1" Text="Navegar" VerticalOptions="StartAndExpand" Clicked="Navegar_Clicked"/>
+                    <Label FontSize="20" Grid.Row="3" Grid.Column="0" Text="Dirección: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="3" Grid.Column="1" x:Name="txtDireccion" VerticalOptions="Start" IsEnabled="False"/>
+                    <Button FontSize="20" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Navegar" VerticalOptions="StartAndExpand" Clicked="Navegar_Clicked"/>
 
-                    <Label FontSize="20" Grid.Row="4" Grid.Column="0" Text="Telefono: " VerticalOptions="StartAndExpand"/>
-                    <Entry FontSize="20" Grid.Row="4" Grid.Column="1" x:Name="txtTelefono" VerticalOptions="Start" IsEnabled="False"/>
+                    <Label FontSize="20" Grid.Row="5" Grid.Column="0" Text="Telefono: " VerticalOptions="StartAndExpand"/>
+                    <Entry FontSize="20" Grid.Row="5" Grid.Column="1" x:Name="txtTelefono" VerticalOptions="Start" IsEnabled="False"/>
         
                 </Grid>
                 
