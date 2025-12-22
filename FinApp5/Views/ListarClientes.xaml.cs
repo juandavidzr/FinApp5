@@ -272,4 +272,9 @@ public partial class ListarClientes : ContentPage
             throw;
         }
     }
+
+    private void SearchBar_SearchButtonPressed(object sender, EventArgs e)
+    {
+        searchBar.Unfocus(); //  cierra el teclado en iOS
+    }
 }
