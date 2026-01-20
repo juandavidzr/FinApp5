@@ -54,10 +54,7 @@ namespace FinApp5
             builder.Services.AddHttpClient("FinAppApi", client =>
             {
                 //client.BaseAddress = new Uri("http://192.168.1.6:5107/"); // URL API pruebas locales
-                
                 //client.BaseAddress = new Uri("http://138.128.171.162:8080/"); // URL API de creditosjgvcc
-                //client.BaseAddress = new Uri("http://138.128.171.162:8001/"); // URL API de pruebas
-                
                 client.BaseAddress = new Uri("http://138.128.171.162:8001/"); // URL API de pruebas
                 //client.BaseAddress = new Uri("http://138.128.171.162:8003/"); // URL API de creditosMag1
                 //client.BaseAddress = new Uri("http://138.128.171.162:8004/"); // URL API de wmayo
