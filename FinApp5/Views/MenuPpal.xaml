@@ -82,17 +82,21 @@
             </Border>
 
             <!-- Tarjeta Maestros - ESTRUCTURA MÁS SIMPLE -->
-            <Frame CornerRadius="20"
+            <Frame x:Name="frameMaestros"
+                   CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
-                   Margin="20,0">
+                   Margin="20,0"
+                   Scale="1">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}" />
+                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}"
+                                        Tapped="OnCardTapped" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <!-- Icono circular dorado usando Frame -->
-                    <Frame BackgroundColor="#FFB300"
+                    <Frame x:Name="iconMaestros"
+                           BackgroundColor="#FFB300"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -120,17 +124,21 @@
             </Frame>
 
             <!-- Tarjeta Transacciones - ESTRUCTURA MÁS SIMPLE -->
-            <Frame CornerRadius="20"
+            <Frame x:Name="frameTransacciones"
+                   CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
-                   Margin="20,0">
+                   Margin="20,0"
+                   Scale="1">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}" />
+                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}"
+                                        Tapped="OnCardTapped" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <!-- Icono circular verde usando Frame -->
-                    <Frame BackgroundColor="#4CAF50"
+                    <Frame x:Name="iconTransacciones"
+                           BackgroundColor="#4CAF50"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -156,17 +164,21 @@
             </Frame>
 
             <!-- Tarjeta Reportes - ESTRUCTURA MÁS SIMPLE -->
-            <Frame CornerRadius="20"
+            <Frame x:Name="frameReportes"
+                   CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
-                   Margin="20,0">
+                   Margin="20,0"
+                   Scale="1">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}" />
+                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}"
+                                        Tapped="OnCardTapped" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <!-- Icono circular naranja usando Frame -->
-                    <Frame BackgroundColor="#FF5722"
+                    <Frame x:Name="iconReportes"
+                           BackgroundColor="#FF5722"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -192,17 +204,20 @@
             </Frame>
 
             <!-- Botón Cerrar Sesión - ESTRUCTURA MÁS SIMPLE -->
-            <Frame CornerRadius="20"
+            <Frame x:Name="frameCerrarSesion"
+                   CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
-                   Margin="20,0,20,20">
+                   Margin="20,0,20,20"
+                   Scale="1">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="btnInicio_Clicked" />
+                    <TapGestureRecognizer Tapped="btnInicio_Clicked_Animated" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <!-- Icono circular gris azulado usando Frame -->
-                    <Frame BackgroundColor="#3b82f6"
+                    <Frame x:Name="iconCerrarSesion"
+                           BackgroundColor="#3b82f6"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
