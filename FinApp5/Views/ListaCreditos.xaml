@@ -82,7 +82,7 @@
             <Frame Grid.Row="3" Padding="0" CornerRadius="20" 
                    BackgroundColor="White" BorderColor="#cbd5e1" 
                    HasShadow="False" Margin="15,0,15,10" HeightRequest="40">
-                <SearchBar Placeholder="Buscar" 
+                <SearchBar Placeholder="Buscar por nombre" 
                            Keyboard="Chat"
                            TextChanged="SearchBar_TextChanged"
                            FontSize="14"
@@ -110,8 +110,8 @@
                            BackgroundColor="#eef2ff" BorderColor="Transparent" 
                            HasShadow="False" Margin="0">
                         <StackLayout Padding="12,8,12,8" Spacing="4">
-                            <Label Text="ORDENAR POR:" FontSize="9" 
-                                   TextColor="#64748b" FontAttributes="Bold"/>
+                            <Label Text="Ordenar por:" FontSize="11" 
+                                   TextColor="#1e293b" FontAttributes="None"/>
                             <Picker x:Name="cmbOrden"
                                     ItemsSource="{Binding OrdenList}"
                                     ItemDisplayBinding="{Binding orden}"
@@ -134,32 +134,32 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Columna Izquierda -->
-                        <StackLayout Grid.Column="0" Spacing="0">
-                            <Label Text="ID"
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
+                        <StackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="ID CLIENTE"
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
                                    HorizontalTextAlignment="Start"/>
-                            <Label Text="NOMBRE" 
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
-                                   HorizontalTextAlignment="Start" Margin="0,2,0,0"/>
-                            <Label Text="ID CRÉDITO"
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
+                            <Label Text="ID CREDITO" 
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
                                    HorizontalTextAlignment="Start"/>
                             <Label Text="SALDO"
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Start"/>
+                            <Label Text="DIA DE COBRO - PISTA DE COBRO"
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
                                    HorizontalTextAlignment="Start"/>
                         </StackLayout>
 
                         <!-- Columna Derecha -->
-                        <StackLayout Grid.Column="1" Spacing="0">
-                            <Label Text="FECHA" 
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
+                        <StackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="NOMBRE CLIENTE" 
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
                                    HorizontalTextAlignment="End"/>
-                            <Label Text="DÍA DE PAGO" 
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
+                            <Label Text="FECHA PRESTAMO" 
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
                                    HorizontalTextAlignment="End"/>
-                            <Label Text="ÚLTIMO PAGO" 
-                                   FontSize="9" TextColor="#64748b" FontAttributes="Bold"
-                                   HorizontalTextAlignment="End" Margin="0,2,0,0"/>
+                            <Label Text="ULTIMO PAGO" 
+                                   FontSize="10" TextColor="#1e293b" FontAttributes="Bold"
+                                   HorizontalTextAlignment="End"/>
                         </StackLayout>
                     </Grid>
 
@@ -184,8 +184,10 @@
                                             CommandParameter="{Binding .}" />
                                     </Frame.GestureRecognizers>
 
-                                    <Grid Padding="15,10" RowSpacing="6">
+                                    <Grid Padding="15,10" RowSpacing="4">
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
@@ -194,41 +196,43 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- IZQUIERDA ARRIBA: ID Cliente / Nombre -->
-                                        <StackLayout Grid.Row="0" Grid.Column="0" Spacing="1">
-                                            <Label Text="{Binding idCliente}" 
-                                                   TextColor="#3b82f6" FontSize="13" FontAttributes="Bold"/>
-                                            <Label Text="{Binding nombreCliente}" 
-                                                   TextColor="#0f172a" FontSize="12" FontAttributes="Bold"
-                                                   LineBreakMode="TailTruncation"/>
-                                        </StackLayout>
-
-                                        <!-- DERECHA ARRIBA: Fecha / Día de Cobro -->
-                                        <StackLayout Grid.Row="0" Grid.Column="1" Spacing="1">
-                                            <Label Text="{Binding fechaPrestamo}" 
-                                                   TextColor="#0f172a" FontSize="11"
-                                                   HorizontalTextAlignment="End"/>
-                                            <Label Text="{Binding desDiaPago}" 
-                                                   TextColor="#0f172a" FontSize="11"
-                                                   HorizontalTextAlignment="End"
-                                                   LineBreakMode="TailTruncation"
-                                                   MaxLines="1"/>
-                                        </StackLayout>
-
-                                        <!-- IZQUIERDA ABAJO: ID Crédito / Saldo -->
-                                        <StackLayout Grid.Row="1" Grid.Column="0" Spacing="1">
-                                            <Label Text="{Binding NumPrestamo}" 
-                                                   TextColor="#0f172a" FontSize="11"/>
-                                            <Label Text="{Binding cantidadPrestada, StringFormat='${0:N0}'}" 
-                                                   TextColor="#dc2626" FontSize="13" FontAttributes="Bold"/>
-                                        </StackLayout>
-
-                                        <!-- DERECHA ABAJO: Último Pago -->
-                                        <Label Grid.Row="1" Grid.Column="1"
-                                               Text="{Binding valUltPag, StringFormat='${0:N0}'}" 
-                                               TextColor="#16a34a" FontSize="13" FontAttributes="Bold"
+                                        <!-- Fila 1: ID Cliente / Nombre Cliente -->
+                                        <Label Grid.Row="0" Grid.Column="0"
+                                               Text="{Binding idCliente}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="Start"/>
+                                        <Label Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding nombreCliente}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
                                                HorizontalTextAlignment="End"
-                                               VerticalTextAlignment="End"/>
+                                               LineBreakMode="TailTruncation"/>
+
+                                        <!-- Fila 2: ID Crédito / Fecha Préstamo -->
+                                        <Label Grid.Row="1" Grid.Column="0"
+                                               Text="{Binding NumPrestamo}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="Start"/>
+                                        <Label Grid.Row="1" Grid.Column="1"
+                                               Text="{Binding fechaPrestamo}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="End"/>
+
+                                        <!-- Fila 3: Saldo / Último Pago -->
+                                        <Label Grid.Row="2" Grid.Column="0"
+                                               Text="{Binding cantidadPrestada, StringFormat='${0:N0}'}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="Start"/>
+                                        <Label Grid.Row="2" Grid.Column="1"
+                                               Text="{Binding valUltPag, StringFormat='${0:N0}'}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="End"/>
+
+                                        <!-- Fila 4: Día de Cobro / (vacío) -->
+                                        <Label Grid.Row="3" Grid.Column="0"
+                                               Text="{Binding desDiaPago}" 
+                                               TextColor="#0f172a" FontSize="13" FontAttributes="None"
+                                               HorizontalTextAlignment="Start"
+                                               LineBreakMode="TailTruncation"/>
                                     </Grid>
                                 </Frame>
                             </DataTemplate>
