@@ -12,114 +12,48 @@ public partial class ListarClientes : ContentPage
     public ObservableCollection<Mcliente> clientsCollection = new ObservableCollection<Mcliente>();
     private List<Mcliente> ListaFinCtes = new List<Mcliente>();
     private readonly Musuarios Usuario = new();
+
+    // NUEVO: CancellationToken para cancelar búsquedas
+    private CancellationTokenSource _searchCts;
+    private bool _isNavigating = false;
+
     public ListarClientes(Musuarios usuario)
     {
+        // CRÍTICO: InitializeComponent PRIMERO
+        InitializeComponent();
+
         Usuario = usuario;
-        _ =ListarClientesAsync(Usuario);
+
+        // Cargar datos después de inicializar la UI
+        _ = ListarClientesAsync(Usuario);
     }
+
     public async Task ListarClientesAsync(Musuarios usuario)
     {
-        InitializeComponent();
+        // REMOVIDO: InitializeComponent() ya se llamó en el constructor
         try
         {
-            
             if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
             {
-                //_ = App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
                 await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
+
                 if (Usuario?.Usuario != null)
                 {
-                    //_ = App.SQLiteDB.SincronizarCreditos(Usuario); //inserta los nuevos creditos en el servidor
-                    //_ = App.SQLiteDB.SincronizarAbonos(usuario);
                     await App.SQLiteDB.SincronizarCreditos(usuario);
                     await App.SQLiteDB.SincronizarAbonos(usuario);
                 }
                 else
                     Console.WriteLine("Error: Usuario.Usuario es null.");
             }
+
             await LlenarDatosAsync(usuario);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Excepción: {ex.Message}");
-            throw;
+            await DisplayAlert("Error", $"Error al cargar clientes: {ex.Message}", "OK");
         }
-       
-
-        //BindingContext = new VMTransacciones(Navigation, usuario);
     }
-
-    //private async void llenarDatos(Musuarios usuario)
-    //{
-    //    SqlCommand cmd = new SqlCommand();
-    //    try
-    //    {
-    //        var ruta = usuario.CodigoCobr;
-    //        var intOpcionFil = 1;
-    //        var criterio = "";
-
-    //        clientsCollection.Clear();
-
-    //        if (CONEXIONMAESTRA.VerificarCon())
-    //        {
-    //            CONEXIONMAESTRA.Abrir();
-    //            cmd = new SqlCommand("FiltrarListadoDeClientesParaCreditoDeRuta", CONEXIONMAESTRA.conectar);
-    //            cmd.CommandType = CommandType.StoredProcedure;
-    //            cmd.Parameters.AddWithValue("@strCodRutaTra", ruta);
-    //            cmd.Parameters.AddWithValue("@intOpcionFil", intOpcionFil);
-    //            cmd.Parameters.AddWithValue("@strCriterio", criterio);
-    //            if (cmd.Connection.State == ConnectionState.Closed)
-    //                cmd.Connection.Open();
-    //            SqlDataReader rdr = cmd.ExecuteReader();
-
-    //            while (rdr.Read())
-    //            {
-    //                clientsCollection.Add(new Mcliente()
-    //                {
-    //                    cteNumIdenti = rdr["cteNumIdenti"].ToString(),
-    //                    cteNombApel = rdr["cteNombApel"].ToString(),
-    //                    cteTeleCelu = rdr["cteTeleCelu"].ToString(),
-    //                    cteTeleFijo = rdr["cteTeleFijo"].ToString(),
-    //                    cteDirCobCte = rdr["cteDirCobCte"].ToString(),
-    //                });
-    //            }
-    //            cvClientes.ItemsSource = clientsCollection;
-
-    //            if (cmd.Connection.State == ConnectionState.Open)
-    //                cmd.Connection.Close();
-    //        }
-    //        else
-    //        {
-    //            await DisplayAlert("Sin Internet", "Esta trabajando sin Internet (75)", "OK");
-    //            var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
-    //            if (clienteList != null)
-    //            {
-    //                cvClientes.ItemsSource = clienteList;
-    //                clientsCollection.Clear();
-    //                foreach (var cliente in clienteList)
-    //                {
-    //                    clientsCollection.Add(cliente);
-    //                }
-    //                if (clientsCollection != null)
-    //                {
-    //                    cvClientes.ItemsSource = clientsCollection;
-    //                }
-    //            }
-    //        }
-    //        cvClientes.SelectedItem = null;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        if (cmd.Connection.State == ConnectionState.Open)
-    //            cmd.Connection.Close();
-    //        throw;
-    //    }
-    //    //finally
-    //    //{
-    //    //    if (cmd.Connection.State == ConnectionState.Open)
-    //    //        cmd.Connection.Close();
-    //    //}
-    //}
 
     private async Task LlenarDatosAsync(Musuarios usuario)
     {
@@ -161,11 +95,15 @@ public partial class ListarClientes : ContentPage
                     }
                 }
 
-                cvClientes.ItemsSource = clientsCollection;
+                // PROTECCIÓN: Verificar que el control aún exista
+                if (cvClientes != null && cvClientes.Handler != null)
+                {
+                    cvClientes.ItemsSource = clientsCollection;
+                }
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Está trabajando sin Internet (75)", "OK");
+                await DisplayAlert("Sin Internet", "Está trabajando sin Internet", "OK");
 
                 var clienteList = await App.SQLiteDB.GetClientesAsync(Usuario.CodigoCobr);
                 if (clienteList != null)
@@ -176,11 +114,18 @@ public partial class ListarClientes : ContentPage
                         clientsCollection.Add(cliente);
                     }
 
-                    cvClientes.ItemsSource = clientsCollection;
+                    // PROTECCIÓN: Verificar que el control aún exista
+                    if (cvClientes != null && cvClientes.Handler != null)
+                    {
+                        cvClientes.ItemsSource = clientsCollection;
+                    }
                 }
             }
 
-            cvClientes.SelectedItem = null;
+            if (cvClientes != null)
+            {
+                cvClientes.SelectedItem = null;
+            }
         }
         catch (Exception ex)
         {
@@ -189,66 +134,136 @@ public partial class ListarClientes : ContentPage
         }
     }
 
-
-    private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+    // CORREGIDO: SearchBar con debounce y sin crear listas nuevas
+    private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
+        // Cancelar búsqueda anterior
+        _searchCts?.Cancel();
+        _searchCts = new CancellationTokenSource();
+        var token = _searchCts.Token;
+
         try
         {
+            // Debounce: esperar 300ms antes de buscar
+            await Task.Delay(300, token);
+
+            if (token.IsCancellationRequested)
+                return;
+
+            // PROTECCIÓN: Verificar que los controles existan
+            if (cvClientes == null || cvClientes.Handler == null)
+                return;
+
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
             {
-                cvClientes.ItemsSource = clientsCollection.ToList();
+                // Mostrar todos los clientes
+                cvClientes.ItemsSource = clientsCollection;
             }
             else
             {
-                //lstClientes.ItemsSource = clientsCollection.Where(i => i.cteNombApel.ToLower().Contains(e.NewTextValue.ToLower()));
-                cvClientes.ItemsSource = clientsCollection
-                                            .Where(i => (i.cteNombApel?.ToLower() ?? "").Contains(e.NewTextValue.ToLower()))
-                                            .ToList();
+                // Filtrar - NO crear nueva lista, usar la colección existente
+                var filtrados = clientsCollection
+                    .Where(i => (i.cteNombApel?.ToLower() ?? "").Contains(e.NewTextValue.ToLower()))
+                    .ToList();
 
+                if (!token.IsCancellationRequested && cvClientes.Handler != null)
+                {
+                    cvClientes.ItemsSource = filtrados;
+                }
             }
         }
-        catch (Exception)
+        catch (OperationCanceledException)
         {
-
-            throw;
-        }
-    }
-    private void lstClientes_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-    {
-        try
-        {
-            Mcliente cliente = new Mcliente();
-            var cli = (Mcliente)e.SelectedItem;
-            cliente.cteNumIdenti = cli.cteNumIdenti;
-            cliente.cteNombApel = cli.cteNombApel;
-
-            Navigation.PushAsync(new Creditos(cliente, Usuario));
+            // Búsqueda cancelada, ignorar
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", "Error" + ex.Message, "OK");
-            throw;
+            Console.WriteLine($"Error en búsqueda: {ex.Message}");
         }
     }
 
-    private void btnTransacciones_Clicked(object sender, EventArgs e)
+    // NOTA: Este método parece estar duplicado con cvClientes_SelectionChanged
+    // Considera eliminarlo si usas ListView con SelectionChanged
+    private async void lstClientes_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
+        if (_isNavigating || e.SelectedItem == null)
+            return;
 
-        Navigation.PushAsync(new Transacciones(Usuario));
+        try
+        {
+            _isNavigating = true;
+
+            var cli = (Mcliente)e.SelectedItem;
+
+            Mcliente cliente = new Mcliente
+            {
+                cteNumIdenti = cli.cteNumIdenti,
+                cteNombApel = cli.cteNombApel
+            };
+
+            await Navigation.PushAsync(new Creditos(cliente, Usuario));
+
+            // Limpiar selección
+            if (cvClientes != null)
+            {
+                cvClientes.SelectedItem = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", "Error: " + ex.Message, "OK");
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
 
-    private void btnInicio_Clicked(object sender, EventArgs e)
+    private async void btnTransacciones_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushAsync(new MenuPpal(Usuario));
+        if (_isNavigating)
+            return;
+
+        try
+        {
+            _isNavigating = true;
+            await Navigation.PushAsync(new Transacciones(Usuario));
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
 
-    private void cvClientes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void btnInicio_Clicked(object sender, EventArgs e)
     {
+        if (_isNavigating)
+            return;
+
+        try
+        {
+            _isNavigating = true;
+            await Navigation.PushAsync(new MenuPpal(Usuario));
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
+    }
+
+    // Este parece ser el método correcto si usas ListView
+    private async void cvClientes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isNavigating)
+            return;
+
         try
         {
             // Asegurarse de que haya al menos un elemento seleccionado
             if (e.CurrentSelection != null && e.CurrentSelection.Count > 0)
             {
+                _isNavigating = true;
+
                 var cli = (Mcliente)e.CurrentSelection.FirstOrDefault();
                 if (cli == null)
                     return;
@@ -261,16 +276,30 @@ public partial class ListarClientes : ContentPage
                 };
 
                 // Navegar a la página de créditos
-                Navigation.PushAsync(new Creditos(cliente, Usuario));
+                await Navigation.PushAsync(new Creditos(cliente, Usuario));
 
-                // Opcional: limpiar la selección para que no quede resaltado
-                ((CollectionView)sender).SelectedItem = null;
+                // Limpiar la selección
+                if (cvClientes != null && cvClientes.Handler != null)
+                {
+                    cvClientes.SelectedItem = null;
+                }
             }
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", "Error " + ex.Message, "OK");
-            throw;
+            await DisplayAlert("Error", "Error: " + ex.Message, "OK");
         }
+        finally
+        {
+            _isNavigating = false;
+        }
+    }
+
+    // NUEVO: Limpiar recursos al salir de la página
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _searchCts?.Cancel();
+        _searchCts?.Dispose();
     }
 }

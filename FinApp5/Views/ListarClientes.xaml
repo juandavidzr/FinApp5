@@ -31,15 +31,22 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Avatar Section -->
+            <!-- Avatar Section - CAMBIADO: Border en lugar de Frame -->
             <StackLayout Grid.Row="0" Padding="0,40,0,15" HorizontalOptions="Center">
-                <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" 
-                       BackgroundColor="White" Padding="0" HasShadow="True"
-                       BorderColor="#ffffff" Margin="0,0,0,10">
+                <Border WidthRequest="100" HeightRequest="100" 
+                        StrokeShape="RoundRectangle 50"
+                        BackgroundColor="White" 
+                        Padding="0"
+                        Stroke="#ffffff"
+                        StrokeThickness="2"
+                        Margin="0,0,0,10">
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Opacity="0.15" Radius="10" Offset="0,2"/>
+                    </Border.Shadow>
                     <Label Text="FA" FontSize="36" FontAttributes="Bold" 
                            TextColor="#5b64c3" HorizontalTextAlignment="Center" 
                            VerticalTextAlignment="Center"/>
-                </Frame>
+                </Border>
             </StackLayout>
 
             <!-- Title -->
@@ -71,10 +78,14 @@
                         HeightRequest="50"/>
             </StackLayout>
 
-            <!-- SearchBar -->
-            <Frame Grid.Row="3" Padding="0" CornerRadius="25" 
-                   BackgroundColor="White" BorderColor="#cbd5e1" 
-                   HasShadow="False" Margin="20,0,20,15">
+            <!-- SearchBar - CAMBIADO: Border en lugar de Frame -->
+            <Border Grid.Row="3" 
+                    Padding="0" 
+                    StrokeShape="RoundRectangle 25"
+                    BackgroundColor="White" 
+                    Stroke="#cbd5e1" 
+                    StrokeThickness="1"
+                    Margin="20,0,20,15">
                 <SearchBar Placeholder="Buscar por nombre" 
                            Keyboard="Chat"
                            TextChanged="SearchBar_TextChanged"
@@ -84,12 +95,18 @@
                            TextColor="#1e293b"
                            PlaceholderColor="#94a3b8"
                            CancelButtonColor="#64748b"/>
-            </Frame>
+            </Border>
 
-            <!-- Container blanco para lista -->
-            <Frame Grid.Row="4" CornerRadius="35" Padding="0" 
-                   BackgroundColor="White" HasShadow="True"
-                   Margin="0,0,0,0">
+            <!-- Container blanco para lista - CAMBIADO: Border en lugar de Frame -->
+            <Border Grid.Row="4" 
+                    StrokeShape="RoundRectangle 35,35,0,0"
+                    Padding="0" 
+                    BackgroundColor="White"
+                    StrokeThickness="0"
+                    Margin="0,0,0,0">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Opacity="0.1" Radius="15" Offset="0,-2"/>
+                </Border.Shadow>
 
                 <Grid RowSpacing="0">
                     <Grid.RowDefinitions>
@@ -140,11 +157,13 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
-                                    <Frame Padding="0" Margin="15,6,15,6" 
-                                           CornerRadius="12" 
-                                           BackgroundColor="White"
-                                           BorderColor="#e2e8f0"
-                                           HasShadow="False">
+                                    <!-- CAMBIO CRÍTICO: Border en lugar de Frame -->
+                                    <Border Padding="0" 
+                                            Margin="15,6,15,6" 
+                                            StrokeShape="RoundRectangle 12"
+                                            BackgroundColor="White"
+                                            Stroke="#e2e8f0"
+                                            StrokeThickness="1">
                                         <Grid Padding="16,14" RowSpacing="6">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
@@ -193,13 +212,13 @@
                                                        LineBreakMode="WordWrap"/>
                                             </Grid>
                                         </Grid>
-                                    </Frame>
+                                    </Border>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
                 </Grid>
-            </Frame>
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>

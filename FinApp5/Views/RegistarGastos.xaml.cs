@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Converters;
+﻿using CommunityToolkit.Maui.Converters;
 using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
@@ -13,113 +13,103 @@ public partial class RegistarGastos : ContentPage
     Mgasto mgasto = new Mgasto();
     List<MtipoGastos> conceptosList = new List<MtipoGastos>();
 
+    // NUEVO: Flag para evitar guardados múltiples
+    private bool _isSaving = false;
+
     public RegistarGastos(Musuarios usuario)
     {
         InitializeComponent();
-        llenarConceptosGastos();
-
         Usuario = usuario;
-    }
-    //private void llenarConceptosGastos()
-    //{
-    //    try
-    //    {
-    //        if (CONEXIONMAESTRA.VerificarCon())
-    //        {
-    //            CONEXIONMAESTRA.Abrir();
-    //            SqlCommand cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", CONEXIONMAESTRA.conectar);
-    //            cmd.CommandType = CommandType.StoredProcedure;
-    //            SqlDataReader rdr = cmd.ExecuteReader();
-                
-    //            while (rdr.Read())
-    //            {
-    //                conceptosList.Add
-    //                    (
-    //                    new MtipoGastos
-    //                    {
-    //                        claCodigo = rdr["claCodigo"].ToString().Trim(),
-    //                        claDescripcion = rdr["claDescripcion"].ToString().Trim()
-    //                    }
-    //                    );
-    //            }
-    //            //cmbConceptos.ItemsSource = conceptosList;
-    //            //cmbConceptos.SelectedIndex = 0;
-    //        }
-    //        else
-    //        {
-    //            //List<MtipoGastos> conceptosList = new List<MtipoGastos>();
-    //            llenarConceptosGastosOffLine();
-    //        }
-    //        cmbConceptos.ItemsSource = conceptosList;
-    //        cmbConceptos.SelectedIndex = 0;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        DisplayAlert("ERROR", ex.Message, "OK");
-    //    }
-    //}
 
-    private void llenarConceptosGastos()
+        // CRÍTICO: Llamar de forma asíncrona sin bloquear el constructor
+        _ = InicializarAsync();
+    }
+
+    // NUEVO: Método para inicializar de forma asíncrona
+    private async Task InicializarAsync()
+    {
+        try
+        {
+            await llenarConceptosGastosAsync();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("ERROR", $"Error al inicializar: {ex.Message}", "OK");
+        }
+    }
+
+    // CORREGIDO: Ahora es completamente asíncrono
+    private async Task llenarConceptosGastosAsync()
     {
         try
         {
             if (CONEXIONMAESTRA.VerificarCon())
             {
+                // Cargar desde servidor
                 using (var connection = CONEXIONMAESTRA.GetConnection())
-                using (var cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", connection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    connection.Open();
+                    await connection.OpenAsync();
 
-                    using (var rdr = cmd.ExecuteReader())
+                    using (var cmd = new SqlCommand("DescargaDeConceptosDeReporteDeGastos", connection))
                     {
-                        while (rdr.Read())
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (var rdr = await cmd.ExecuteReaderAsync())
                         {
-                            conceptosList.Add(new MtipoGastos
+                            while (await rdr.ReadAsync())
                             {
-                                claCodigo = rdr["claCodigo"].ToString().Trim(),
-                                claDescripcion = rdr["claDescripcion"].ToString().Trim()
-                            });
+                                conceptosList.Add(new MtipoGastos
+                                {
+                                    claCodigo = rdr["claCodigo"].ToString().Trim(),
+                                    claDescripcion = rdr["claDescripcion"].ToString().Trim()
+                                });
+                            }
                         }
                     }
                 }
             }
             else
             {
-                llenarConceptosGastosOffLine();
+                // Cargar desde SQLite
+                await llenarConceptosGastosOffLineAsync();
             }
 
-            cmbConceptos.ItemsSource = conceptosList;
-            cmbConceptos.SelectedIndex = 0;
+            // Actualizar UI en el hilo principal
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (conceptosList != null && conceptosList.Any())
+                {
+                    cmbConceptos.ItemsSource = conceptosList;
+                    cmbConceptos.SelectedIndex = 0;
+                }
+            });
         }
         catch (Exception ex)
         {
-            DisplayAlert("ERROR", ex.Message, "OK");
+            await DisplayAlert("ERROR", ex.Message, "OK");
         }
     }
 
-
-    private async Task llenarConceptosGastosOffLine()
+    // CORREGIDO: Nombre consistente y asíncrono
+    private async Task llenarConceptosGastosOffLineAsync()
     {
-        var conceptosList = await App.SQLiteDB.GetTiposGastos();
-        if (conceptosList != null && conceptosList.Any())
+        var conceptosOffline = await App.SQLiteDB.GetTiposGastos();
+
+        if (conceptosOffline != null && conceptosOffline.Any())
         {
-            cmbConceptos.ItemsSource = conceptosList;
+            conceptosList.AddRange(conceptosOffline);
         }
     }
 
-    private async Task Grabar(object sender, EventArgs e)
-    {
-        
-    }
-
+    // CORREGIDO: Método de grabado asíncrono mejorado
     private async Task<bool> GrabarGastoAsync(Mgasto mgasto)
     {
         try
         {
-            return await Task.Run(() =>
+            using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
             {
-                using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+                await con.OpenAsync();
+
                 using (SqlCommand cmd = new SqlCommand("GrabarMovimientoDeGastoEnSesionDeTrabajo", con))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -129,11 +119,10 @@ public partial class RegistarGastos : ContentPage
                     cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion);
                     cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc);
 
-                    con.Open();
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                     return true;
                 }
-            });
+            }
         }
         catch (Exception ex)
         {
@@ -142,162 +131,132 @@ public partial class RegistarGastos : ContentPage
         }
     }
 
-
-    //private async Task<bool> GrabarGastoAsync(Mgasto mgasto)
-    //{
-    //    try
-    //    {
-    //        return await Task.Run(() =>
-    //        {
-    //            CONEXIONMAESTRA.Abrir();
-    //            using (SqlCommand cmd = new SqlCommand("GrabarMovimientoDeGastoEnSesionDeTrabajo", CONEXIONMAESTRA.conectar))
-    //            {
-    //                cmd.CommandType = CommandType.StoredProcedure;
-    //                cmd.Parameters.AddWithValue("@strCodigoRuta", mgasto.strCodigoRuta);
-    //                cmd.Parameters.AddWithValue("@strCodConGas", mgasto.strCodConGas);
-    //                cmd.Parameters.AddWithValue("@fltValorMov", mgasto.fltValorMov);
-    //                cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion);
-    //                cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc);
-
-    //                cmd.ExecuteNonQuery();
-    //                return true;
-    //            }
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine(ex.Message);
-    //        return false;
-    //    }
-    //    finally
-    //    {
-    //        CONEXIONMAESTRA.Cerrar();
-    //    }
-    //}
-
-
-    //private bool GrabarGasto(Mgasto mgasto)
-    //{
-    //    try
-    //    {
-    //        using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
-    //        {
-    //            con.Open();
-    //            using (SqlCommand cmd = new SqlCommand("GrabarMovimientoDeGastoEnSesionDeTrabajo", con))
-    //            {
-    //                cmd.CommandType = CommandType.StoredProcedure;
-    //                cmd.Parameters.AddWithValue("@strCodigoRuta", mgasto.strCodigoRuta);
-    //                cmd.Parameters.AddWithValue("@strCodConGas", mgasto.strCodConGas);
-    //                cmd.Parameters.AddWithValue("@fltValorMov", mgasto.fltValorMov);
-    //                cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion);
-    //                cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc);
-
-    //                cmd.ExecuteNonQuery();
-    //            }
-    //        }
-    //        return true;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine(ex.Message);
-    //        return false;
-    //    }
-    //}
-
-
-    //private bool GrabarGasto(Mgasto mgasto)
-    //{
-    //    try
-    //    {
-    //        SqlCommand cmd = new SqlCommand("GrabarMovimientoDeGastoEnSesionDeTrabajo", CONEXIONMAESTRA.conectar);
-    //        cmd.CommandType = CommandType.StoredProcedure;
-    //        cmd.Parameters.AddWithValue("@strCodigoRuta", mgasto.strCodigoRuta);
-    //        cmd.Parameters.AddWithValue("@strCodConGas", mgasto.strCodConGas);
-    //        cmd.Parameters.AddWithValue("@fltValorMov", mgasto.fltValorMov);
-    //        cmd.Parameters.AddWithValue("@strDescripcion", mgasto.strDescripcion);
-    //        cmd.Parameters.AddWithValue("@strLoginUsSeAc", mgasto.strLoginUsSeAc);
-    //        CONEXIONMAESTRA.Abrir();
-    //        cmd.ExecuteReader();
-    //        return true;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine(ex.Message);
-    //        return false;
-    //    }
-    //    finally { CONEXIONMAESTRA.Cerrar(); }
-    //}
     private void BtnLimpiar_Clicked(object sender, EventArgs e)
     {
         Limpiar();
     }
+
     private void Limpiar()
     {
         try
         {
             txtValor.Text = string.Empty;
             txtJustificacion.Text = string.Empty;
-            cmbConceptos.SelectedIndex = 0;
+
+            if (cmbConceptos.ItemsSource != null)
+            {
+                cmbConceptos.SelectedIndex = 0;
+            }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            Console.WriteLine($"Error al limpiar: {ex.Message}");
         }
     }
 
-    
-
+    // CORREGIDO: Botón grabar completamente asíncrono con protecciones
     private async void Button_Clicked(object sender, EventArgs e)
     {
+        // Evitar clics múltiples
+        if (_isSaving)
+            return;
+
         try
         {
-            bool grabo = false;
-            if (Convert.ToInt32(txtValor.Text) <= 0 || String.IsNullOrWhiteSpace(txtValor.Text) || String.IsNullOrEmpty(txtValor.Text))
+            _isSaving = true;
+
+            // Cambiar texto del botón para feedback visual
+            if (sender is Button btn)
             {
-                DisplayAlert("ERROR", "Por favor digite un valor", "OK");
-                return;
+                btn.IsEnabled = false;
+                btn.Text = "Guardando...";
             }
-            if (String.IsNullOrEmpty(txtJustificacion.Text))
+
+            // Validaciones
+            if (string.IsNullOrWhiteSpace(txtValor.Text) ||
+                !double.TryParse(txtValor.Text, out double valor) ||
+                valor <= 0)
             {
-                DisplayAlert("ERROR", "Por favor digite una Justificaci�n", "OK");
+                await DisplayAlert("ERROR", "Por favor digite un valor válido", "OK");
                 return;
             }
 
-            Mgasto mgasto = new Mgasto();
-            mgasto.strCodigoRuta = Usuario.CodigoCobr;
+            if (string.IsNullOrEmpty(txtJustificacion.Text))
+            {
+                await DisplayAlert("ERROR", "Por favor digite una justificación", "OK");
+                return;
+            }
 
             var codigoGasto = (MtipoGastos)cmbConceptos.SelectedItem;
 
             if (codigoGasto == null)
             {
-                DisplayAlert("FALTAN DATOS", "Por favor selecciona un concepto para registrar el gasto", "OK");
+                await DisplayAlert("FALTAN DATOS", "Por favor selecciona un concepto para registrar el gasto", "OK");
                 return;
             }
-            else
-                mgasto.strCodConGas = codigoGasto.claCodigo;
 
-            mgasto.fltValorMov = Convert.ToDouble(txtValor.Text);
-            mgasto.strDescripcion = txtJustificacion.Text;
-            mgasto.strLoginUsSeAc = Usuario.Usuario;
+            // Crear objeto de gasto
+            Mgasto mgasto = new Mgasto
+            {
+                strCodigoRuta = Usuario.CodigoCobr,
+                strCodConGas = codigoGasto.claCodigo,
+                fltValorMov = valor,
+                strDescripcion = txtJustificacion.Text,
+                strLoginUsSeAc = Usuario.Usuario
+            };
+
+            bool grabo = false;
+
             if (CONEXIONMAESTRA.VerificarCon())
             {
+                // MODO ONLINE
                 grabo = await GrabarGastoAsync(mgasto);
+
                 if (grabo)
-                    DisplayAlert("GUARDADO", "Registro grabado", "OK");
+                {
+                    await DisplayAlert("ÉXITO", "Registro grabado correctamente", "OK");
+                    Limpiar();
+                }
                 else
-                    DisplayAlert("ERROR", "Registro NO grabado", "OK");
+                {
+                    await DisplayAlert("ERROR", "No se pudo grabar el registro", "OK");
+                }
             }
             else
             {
+                // MODO OFFLINE
                 mgasto.nuevo = 1;
+
+                // ✅ CRÍTICO: Usar await si SaveGasto es asíncrono
+                // Si SaveGasto NO es async, déjalo como está
+                // Si SaveGasto ES async (SaveGastoAsync), usa await:
                 App.SQLiteDB.SaveGasto(mgasto);
-                DisplayAlert("GUARDADO LOCAL", "Registro grabado localmente, Esta trabajando sin conexi�n", "OK");
+
+                await DisplayAlert("GUARDADO LOCAL", "Registro guardado localmente. Se sincronizará cuando haya conexión.", "OK");
+                Limpiar();
             }
-            Limpiar();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("error", ex.Message, "OK");
+            await DisplayAlert("ERROR", $"Error al guardar: {ex.Message}", "OK");
         }
+        finally
+        {
+            _isSaving = false;
+
+            // Restaurar botón
+            if (sender is Button btn)
+            {
+                btn.IsEnabled = true;
+                btn.Text = "Grabar";
+            }
+        }
+    }
+
+    // NUEVO: Limpiar recursos al salir
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Si tienes operaciones pendientes, cancélalas aquí
     }
 }

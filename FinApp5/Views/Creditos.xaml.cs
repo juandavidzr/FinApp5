@@ -1,4 +1,4 @@
-using FinApp5.Conexiones;
+﻿using FinApp5.Conexiones;
 using FinApp5.Modelo;
 using Microsoft.Data.SqlClient;
 using Microsoft.Maui.Controls.PlatformConfiguration;
@@ -16,10 +16,14 @@ public partial class Creditos : ContentPage
     Musuarios Usuario = new Musuarios();
     Mcliente Cliente = new Mcliente();
     private const string DePrimero = "De Primero";
-    private const string Posici�nActual = "Posici�n Actual";
+    private const string PosiciónActual = "Posición Actual";
     private const string DeUltimo = "De Ultimo";
     double _lastScrollY = 0;
     double _maxScrollY = 0;
+
+    // NUEVO: Flag para evitar guardados múltiples
+    private bool _isSaving = false;
+
     public Creditos(Mcliente cliente, Musuarios usuario)
     {
         InitializeComponent();
@@ -27,88 +31,35 @@ public partial class Creditos : ContentPage
         Cliente = cliente;
         txtidCliente.Text = cliente.cteNumIdenti;
         txtNombreCli.Text = cliente.cteNombApel;
-        ConsultarCliente(cliente.cteNumIdenti, usuario.CodigoCobr, Cliente);
-        PlazoList = GetPlazos();
-        cmbPlazo.ItemsSource = PlazoList;
-        diasList = GetDias();
-        cmbDias.ItemsSource = diasList;
 
-
-        llenarRuta();
-
-        cmbPosicion.SelectedIndex = 0;
-        cmbPlazo.SelectedIndex = 0;
-        cmbDias.SelectedIndex = 0;
+        // Cargar datos de forma asíncrona
+        _ = InicializarDatosAsync();
     }
 
-    //private async Task ConsultarCliente(string? cteNumIdenti, string? CodigoCobr, Mcliente cliente)
-    //{
-    //    try
-    //    {
-    //        double dblSalAcuCte = 0;
-    //        int intCanCreVigCte = 0;
-    //        double dblMonto = 0;
-    //        double dblSaldo = 0;
-    //        DateTime dteFechaAux = DateTime.Now;
-    //        DateTime dteFecUltCre = DateTime.Now;
-    //        string strFormatoNum = string.Empty;
-    //        if (CONEXIONMAESTRA.VerificarCon())
-    //        {
-    //            CONEXIONMAESTRA.Abrir();
-    //            SqlCommand cmd = new SqlCommand("FiltrarInformacionPersonalDeCliente", CONEXIONMAESTRA.conectar);
-    //            cmd.CommandType = CommandType.StoredProcedure;
-    //            cmd.Parameters.AddWithValue("@strCedulaCteOC", cteNumIdenti);
-    //            cmd.Parameters.AddWithValue("@strCodigoRuta", CodigoCobr);
-    //            SqlDataReader rdr = cmd.ExecuteReader();
-    //            if (rdr.HasRows)
-    //            {
-    //                while (rdr.Read())
-    //                {
-    //                    dblMonto = Convert.ToDouble(rdr["pmoCantidadPre"].ToString().Trim());
-    //                    dteFecUltCre = Convert.ToDateTime(rdr["pmoFechaUltCreOto"].ToString().Trim());
-    //                    dteFechaAux = Convert.ToDateTime(rdr["pmoFecUltPag"].ToString().Trim());
-    //                    if ((Convert.ToInt16(rdr["pmoVigente"].ToString().Trim()) == 1) &&
-    //                        ((Convert.ToInt16(rdr["pmoActivo"].ToString().Trim()) == 1)))
-    //                    {
-    //                        dblSaldo = Convert.ToDouble(rdr["pmoSaldoActualCte"].ToString().Trim());
-    //                        dblSalAcuCte += dblSaldo;
-    //                        intCanCreVigCte++;
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                //DisplayAlert("No hay datos", "No hay datos", "OK");
-    //            }
-    //        }
-    //        else
-    //        {
-    //            await DisplayAlert("Sin Internet", "Esta trabajando sin internet (83)", "OK");
-    //            App.SQLiteDB.FiltrarInformacionPersonalDeCliente(cliente.cteNumIdenti, CodigoCobr, out dblSalAcuCte,
-    //                out intCanCreVigCte, out dblMonto, out dteFecUltCre, out dteFechaAux);
-    //        }
+    // NUEVO: Método para inicializar todos los datos asíncronamente
+    private async Task InicializarDatosAsync()
+    {
+        try
+        {
+            await ConsultarCliente(Cliente.cteNumIdenti, Usuario.CodigoCobr, Cliente);
 
-    //        txtCreditos.Text = intCanCreVigCte.ToString().Trim();
-    //        if (dblSalAcuCte >= 1000)
-    //            strFormatoNum = "{0:0,0}";
-    //        else
-    //            strFormatoNum = "{0,0}";
+            PlazoList = GetPlazos();
+            cmbPlazo.ItemsSource = PlazoList;
 
-    //        this.txtDeuda.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblSalAcuCte));
-    //        this.txtFechaUltimo.Text = dteFecUltCre.ToString("yyyy-MM-dd");
-    //        if (dblMonto >= 1000)
-    //            strFormatoNum = "{0:0,0}";
-    //        else
-    //            strFormatoNum = "{0,0}";
-    //        this.txtValorUltimo.Text = String.Format(CultureInfo.InvariantCulture, strFormatoNum.Trim(), Math.Truncate(dblMonto));
-    //        this.txtUltimoPago.Text = dteFechaAux.ToString("yyyy-MM-dd");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        DisplayAlert("error", ex.Message, "OK");
-    //    }
-    //    finally { CONEXIONMAESTRA.Cerrar(); }
-    //}
+            diasList = GetDias();
+            cmbDias.ItemsSource = diasList;
+
+            llenarRuta();
+
+            cmbPosicion.SelectedIndex = 0;
+            cmbPlazo.SelectedIndex = 0;
+            cmbDias.SelectedIndex = 0;
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al inicializar: {ex.Message}", "OK");
+        }
+    }
 
     private async Task ConsultarCliente(string? cteNumIdenti, string? CodigoCobr, Mcliente cliente)
     {
@@ -159,7 +110,7 @@ public partial class Creditos : ContentPage
             }
             else
             {
-                await DisplayAlert("Sin Internet", "Est� trabajando sin internet (83)", "OK");
+                await DisplayAlert("Sin Internet", "Está trabajando sin internet", "OK");
                 App.SQLiteDB.FiltrarInformacionPersonalDeCliente(
                     cliente.cteNumIdenti,
                     CodigoCobr,
@@ -186,56 +137,6 @@ public partial class Creditos : ContentPage
         }
     }
 
-
-    //private async void llenarRuta()
-    //{
-    //    try
-    //    {
-
-    //        var codigoRuta = Usuario.CodigoCobr;
-    //        if (CONEXIONMAESTRA.VerificarCon())
-    //        {
-    //            CONEXIONMAESTRA.Abrir();
-    //            SqlCommand cmd = new SqlCommand("ObtenerRutaActualDeCobrador", CONEXIONMAESTRA.conectar);
-    //            cmd.CommandType = CommandType.StoredProcedure;
-    //            cmd.Parameters.AddWithValue("@strCodigoRuta", codigoRuta);
-
-    //            SqlDataReader rdr = cmd.ExecuteReader();
-    //            int intIndice = 1;
-    //            List<Mruta> rutaList = new List<Mruta>();
-    //            rutaList = GetRuta();
-    //            while (rdr.Read())
-    //            {
-    //                rutaList.Add(new Mruta
-    //                {
-    //                    nombreCliente = rdr["cteNombApel"].ToString().Trim() + " - " +
-    //                                    rdr["pmoPosRutCre"].ToString().Trim(),
-    //                    posicion = intIndice
-    //                });
-    //                intIndice++;
-    //            }
-    //            cmbPosicion.ItemsSource = rutaList;
-    //            CONEXIONMAESTRA.Cerrar();
-    //        }
-    //        else
-    //        {
-    //            List<Mruta> rutaList = new List<Mruta>();
-    //            rutaList = App.SQLiteDB.getRutaAsync().Result;
-
-    //            if (rutaList != null)
-    //            {
-    //                rutaList.AddRange(GetRuta());
-    //            }
-    //             cmbPosicion.ItemsSource = rutaList;
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Console.WriteLine(ex.Message);
-    //    }
-    //    finally { }
-    //}
-
     private async void llenarRuta()
     {
         try
@@ -257,8 +158,6 @@ public partial class Creditos : ContentPage
                         using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
                         {
                             int intIndice = 1;
-
-                            // primero carga la ruta base
                             rutaList = GetRuta();
 
                             while (await rdr.ReadAsync())
@@ -280,7 +179,6 @@ public partial class Creditos : ContentPage
             }
             else
             {
-                // modo offline
                 rutaList = await App.SQLiteDB.getRutaAsync();
 
                 if (rutaList != null)
@@ -296,7 +194,6 @@ public partial class Creditos : ContentPage
             Console.WriteLine("Error en llenarRuta: " + ex.Message);
         }
     }
-
 
     public class Plazo
     {
@@ -315,7 +212,7 @@ public partial class Creditos : ContentPage
         var ruta = new List<Mruta>()
         {
              new Mruta { nombreCliente = DePrimero, posicion = -1 },
-             new Mruta { nombreCliente = Posici�nActual, posicion = -2 },
+             new Mruta { nombreCliente = PosiciónActual, posicion = -2 },
              new Mruta { nombreCliente = DeUltimo, posicion = -3 }
         };
         return ruta;
@@ -325,12 +222,12 @@ public partial class Creditos : ContentPage
     public List<Plazo> GetPlazos()
     {
         var plazos = new List<Plazo>()
-            {
-                new Plazo(){idPlazo = "01", nombrePlazo="Diario"},
-                new Plazo(){idPlazo = "02", nombrePlazo="Semanal"},
-                new Plazo(){idPlazo = "03", nombrePlazo="Quincenal"},
-                new Plazo(){idPlazo = "04", nombrePlazo="Mensual"}
-            };
+        {
+            new Plazo(){idPlazo = "01", nombrePlazo="Diario"},
+            new Plazo(){idPlazo = "02", nombrePlazo="Semanal"},
+            new Plazo(){idPlazo = "03", nombrePlazo="Quincenal"},
+            new Plazo(){idPlazo = "04", nombrePlazo="Mensual"}
+        };
 
         return plazos;
     }
@@ -339,49 +236,54 @@ public partial class Creditos : ContentPage
     public List<Dias> GetDias()
     {
         var dias = new List<Dias>
-            {
-                new Dias(){idDia = 1, nombreDia = "Todos"},
-                new Dias(){idDia = 2, nombreDia = "Lunes"},
-                new Dias(){idDia = 3, nombreDia = "Martes"},
-                new Dias(){idDia = 4, nombreDia = "Miercoles"},
-                new Dias(){idDia = 5, nombreDia = "Jueves"},
-                new Dias(){idDia = 6, nombreDia = "Viernes"},
-                new Dias(){idDia = 7, nombreDia = "Sabado"},
-                new Dias(){idDia = 8, nombreDia = "Domingo"}
-            };
+        {
+            new Dias(){idDia = 1, nombreDia = "Todos"},
+            new Dias(){idDia = 2, nombreDia = "Lunes"},
+            new Dias(){idDia = 3, nombreDia = "Martes"},
+            new Dias(){idDia = 4, nombreDia = "Miercoles"},
+            new Dias(){idDia = 5, nombreDia = "Jueves"},
+            new Dias(){idDia = 6, nombreDia = "Viernes"},
+            new Dias(){idDia = 7, nombreDia = "Sabado"},
+            new Dias(){idDia = 8, nombreDia = "Domingo"}
+        };
         return dias;
     }
 
     private void cmbPlazo_SelectedIndexChanged(object sender, EventArgs e)
     {
-
     }
 
     private void cmbDias_SelectedIndexChanged(object sender, EventArgs e)
     {
-
     }
 
-    private void btnGrabar_Clicked(object sender, EventArgs e)
+    // CORREGIDO: Método asíncrono con indicador de carga
+    private async void btnGrabar_Clicked(object sender, EventArgs e)
     {
+        // Evitar clics múltiples
+        if (_isSaving)
+            return;
+
         try
         {
-            if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
-            {
-                App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
-            }
+            _isSaving = true;
+            btnGrabar.IsEnabled = false;
+            btnGrabar.Text = "Guardando...";
 
-            var codigoRuta = Usuario.CodigoCobr;
-
+            // Validar datos primero
             if (!validarDatos())
             {
-                DisplayAlert("Validar datos", "Por favor verifique que toda la informaci�n ingresada est� completa y sea correcta", "OK");
-                btnGrabar.IsEnabled = true;
+                await DisplayAlert("Validar datos", "Por favor verifique que toda la información ingresada esté completa y sea correcta", "OK");
                 return;
             }
 
-            btnGrabar.IsEnabled = false;
+            // Sincronizar clientes si hay internet
+            if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
+            {
+                await App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr);
+            }
 
+            var codigoRuta = Usuario.CodigoCobr;
             int intNumeroCuotas = 0;
             int intSaldoActualCre = 0;
             int intNumCuoPag = 0;
@@ -394,7 +296,8 @@ public partial class Creditos : ContentPage
             string strCodPlaCre = string.Empty;
             string strPosicion = string.Empty;
 
-            intSaldoActualCre = (Convert.ToInt32(txtDesembolso.Text) * Convert.ToInt32(txtInteres.Text) / 100) + Convert.ToInt32(txtDesembolso.Text);
+            intSaldoActualCre = (Convert.ToInt32(txtDesembolso.Text) * Convert.ToInt32(txtInteres.Text) / 100) +
+                                Convert.ToInt32(txtDesembolso.Text);
 
             switch (cmbPlazo.SelectedIndex)
             {
@@ -430,309 +333,176 @@ public partial class Creditos : ContentPage
 
             if (accessType == NetworkAccess.Internet)
             {
-                var dblNetoEnCre = Convert.ToInt64(txtDesembolso.Text.Trim());
-                var dblPorIntCre = Convert.ToInt64(txtInteres.Text.Trim());
-                double dblTotPagCre = (((dblNetoEnCre * dblPorIntCre) / 100) + dblNetoEnCre);
+                // MODO ONLINE - Guardar en servidor
+                await GuardarCreditoEnServidorAsync(
+                    codigoRuta,
+                    intNumeroCuotas,
+                    intSaldoActualCre,
+                    intNumCuoPag,
+                    dblValCuoPag,
+                    intNumCuoPen,
+                    dteFechaVenCre,
+                    intPosCredito,
+                    strCodPlaCre
+                );
 
-                using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
-                {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand("GrabaCredito", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@strCodigRut", Usuario.CodigoCobr);
-                        cmd.Parameters.AddWithValue("@strNumIdeCte", txtidCliente.Text.Trim());
-                        cmd.Parameters.AddWithValue("@dblNetoEnCre", dblNetoEnCre);
-                        cmd.Parameters.AddWithValue("@dblPorIntCre", dblPorIntCre);
-                        cmd.Parameters.AddWithValue("@strCodPlaPac", strCodPlaCre);
-                        cmd.Parameters.AddWithValue("@intNumCuoCre", intNumeroCuotas);
-                        cmd.Parameters.AddWithValue("@intNumCreVig", "0");
-                        cmd.Parameters.AddWithValue("@dblSaldoAcCr", intSaldoActualCre);
-                        cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag);
-                        cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen);
-                        cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd"));
-                        cmd.Parameters.AddWithValue("@dblValUltPag", "0");
-                        cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd"));
-                        cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito);
-                        cmd.Parameters.AddWithValue("@intTieDiaCre", "0");
-                        cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex] + "-" + txtGuiaPago.Text.Trim());
-                        cmd.Parameters.AddWithValue("@dblValMicSeg", "0");
-                        cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre);
-                        cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd"));
-                        cmd.Parameters.AddWithValue("@dblValCuoPag", dblValCuoPag);
-                        cmd.Parameters.AddWithValue("@intNumDiaPPC", "0");
-                        cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre);
-                        cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim());
-                        cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
-                        cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim());
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-                DisplayAlert("Credito creado", "Credito creado", "OK");
+                await DisplayAlert("Éxito", "Crédito creado correctamente", "OK");
             }
             else
             {
-                var rowid = LastRowID();
+                // MODO OFFLINE - Guardar localmente
+                await GuardarCreditoLocalmenteAsync(
+                    codigoRuta,
+                    intNumeroCuotas,
+                    intSaldoActualCre,
+                    intNumCuoPag,
+                    dblValCuoPag,
+                    intNumCuoPen,
+                    dteFechaVenCre,
+                    dblValorCuoPen,
+                    intPosCredito,
+                    dteFechaUltCreOto,
+                    strCodPlaCre
+                );
 
-                Prestamos prestamo = new Prestamos
-                {
-                    rowid = rowid,
-                    NumPrestamo = rowid,
-                    idCliente = txtidCliente.Text,
-                    nombreCliente = txtNombreCli.Text,
-                    fechaPrestamo = DateTime.Today.ToString("yyyy-MM-dd"),
-                    codigoRuta = codigoRuta,
-                    cantidadPrestada = Convert.ToDouble(txtDesembolso.Text),
-                    interes = Convert.ToDouble(txtInteres.Text),
-                    codigoPlan = strCodPlaCre,
-                    numeroCuotas = intNumeroCuotas,
-                    observaciones = txtNotas.Text,
-                    vigente = 1,
-                    activo = 1,
-                    saldoActualCre = intSaldoActualCre,
-                    numCuoPag = intNumCuoPag,
-                    numCuoPen = intNumCuoPen,
-                    fecUltPag = DateTime.Today.ToString("yyyy-MM-dd"),
-                    valUltPag = 0,
-                    fecVenCre = dteFechaVenCre.ToString("yyyy-MM-dd"),
-                    numCuoAtra = 0,
-                    valorAtrazo = 0,
-                    valorCuoPen = dblValorCuoPen,
-                    posRutCre = intPosCredito,
-                    tiempoDias = Convert.ToInt32(txtTiempo.Text),
-                    desDiaPago = cmbDias.Items[cmbDias.SelectedIndex],
-                    valorMicroSeg = 0,
-                    salTotPenCte = intSaldoActualCre,
-                    fechaUltCreOto = dteFechaUltCreOto.ToString("yyyy-MM-dd"),
-                    valCuotaPag = dblValCuoPag,
-                    diaProPagCre = DateTime.Today.Day,
-                    marAboCreDia = 0,
-                    totalPagCre = Convert.ToDouble(txtDesembolso.Text) * (1 + Convert.ToDouble(txtInteres.Text) / 100),
-                    verificado = 0,
-                    IndicaRetaque = 0,
-                    DiaSemana = cmbDias.Items[cmbDias.SelectedIndex],
-                    nuevo = 1
-                };
-
-                App.SQLiteDB.SavePrestamoAsync(prestamo);
-                DisplayAlert("Credito creado", "Credito creado localmente", "OK");
+                await DisplayAlert("Éxito", "Crédito guardado localmente. Se sincronizará cuando haya conexión.", "OK");
             }
 
-            Navigation.PushAsync(new ListarClientes(Usuario));
+            // Navegar de vuelta
+            await Navigation.PushAsync(new ListarClientes(Usuario));
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", ex.Message, "OK");
+            await DisplayAlert("Error", $"Error al guardar: {ex.Message}", "OK");
+        }
+        finally
+        {
+            _isSaving = false;
+            btnGrabar.IsEnabled = true;
+            btnGrabar.Text = "Grabar";
         }
     }
 
+    // NUEVO: Método para guardar en servidor de forma asíncrona
+    private async Task GuardarCreditoEnServidorAsync(
+        string codigoRuta,
+        int intNumeroCuotas,
+        int intSaldoActualCre,
+        int intNumCuoPag,
+        double dblValCuoPag,
+        int intNumCuoPen,
+        DateTime dteFechaVenCre,
+        int intPosCredito,
+        string strCodPlaCre)
+    {
+        var dblNetoEnCre = Convert.ToInt64(txtDesembolso.Text.Trim());
+        var dblPorIntCre = Convert.ToInt64(txtInteres.Text.Trim());
+        double dblTotPagCre = (((dblNetoEnCre * dblPorIntCre) / 100) + dblNetoEnCre);
 
-    //private async Task btnGrabar_Clicked(object sender, EventArgs e)
-    //private void btnGrabar_Clicked(object sender, EventArgs e)
-    //{
-    //    try
-    //    {
-    //        if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
-    //            App.SQLiteDB.SincronizarClientes(Usuario.CodigoCobr); //inserta los nuevos clientes en el servidor 
+        using (SqlConnection con = CONEXIONMAESTRA.GetConnection())
+        {
+            await con.OpenAsync();
 
-    //        var codigoRuta = Usuario.CodigoCobr;
+            using (SqlCommand cmd = new SqlCommand("GrabaCredito", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@strCodigRut", Usuario.CodigoCobr);
+                cmd.Parameters.AddWithValue("@strNumIdeCte", txtidCliente.Text.Trim());
+                cmd.Parameters.AddWithValue("@dblNetoEnCre", dblNetoEnCre);
+                cmd.Parameters.AddWithValue("@dblPorIntCre", dblPorIntCre);
+                cmd.Parameters.AddWithValue("@strCodPlaPac", strCodPlaCre);
+                cmd.Parameters.AddWithValue("@intNumCuoCre", intNumeroCuotas);
+                cmd.Parameters.AddWithValue("@intNumCreVig", "0");
+                cmd.Parameters.AddWithValue("@dblSaldoAcCr", intSaldoActualCre);
+                cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag);
+                cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen);
+                cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd"));
+                cmd.Parameters.AddWithValue("@dblValUltPag", "0");
+                cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd"));
+                cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito);
+                cmd.Parameters.AddWithValue("@intTieDiaCre", "0");
+                cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex] + "-" + txtGuiaPago.Text.Trim());
+                cmd.Parameters.AddWithValue("@dblValMicSeg", "0");
+                cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre);
+                cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd"));
+                cmd.Parameters.AddWithValue("@dblValCuoPag", dblValCuoPag);
+                cmd.Parameters.AddWithValue("@intNumDiaPPC", "0");
+                cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre);
+                cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim());
+                cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);
+                cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim());
 
-    //        if (validarDatos())
-    //        {
-    //            btnGrabar.IsEnabled = false;
-    //            var intNumeroCuotas = 0;
-    //            var intSaldoActualCre = 0;
-    //            var intNumCuoPag = 0;
-    //            var dblValCuoPag = 0;
-    //            var intNumCuoPen = 0;
-    //            DateTime dteFechaVenCre = DateTime.MinValue;
-    //            var dblValorCuoPen = 0;
-    //            var intPosCredito = 0;
-    //            DateTime dteFechaUltCreOto = DateTime.Today;
-    //            string strCodPlaCre = string.Empty;
-    //            int found = 0;
-    //            var strPosicion = string.Empty;
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+    }
 
-    //            intSaldoActualCre = (Convert.ToInt32(txtDesembolso.Text) * Convert.ToInt32(txtInteres.Text) / 100) + Convert.ToInt32(txtDesembolso.Text);
+    // NUEVO: Método para guardar localmente de forma asíncrona
+    private async Task GuardarCreditoLocalmenteAsync(
+        string codigoRuta,
+        int intNumeroCuotas,
+        int intSaldoActualCre,
+        int intNumCuoPag,
+        double dblValCuoPag,
+        int intNumCuoPen,
+        DateTime dteFechaVenCre,
+        double dblValorCuoPen,
+        int intPosCredito,
+        DateTime dteFechaUltCreOto,
+        string strCodPlaCre)
+    {
+        var rowid = LastRowID();
 
-    //            switch (cmbPlazo.SelectedIndex)
-    //            {
-    //                case 0: //Diario
-    //                    strCodPlaCre = "01";
-    //                    intNumeroCuotas = Convert.ToInt32(txtTiempo.Text);
-    //                    break;
+        Prestamos prestamo = new Prestamos
+        {
+            rowid = rowid,
+            NumPrestamo = rowid,
+            idCliente = txtidCliente.Text,
+            nombreCliente = txtNombreCli.Text,
+            fechaPrestamo = DateTime.Today.ToString("yyyy-MM-dd"),
+            codigoRuta = codigoRuta,
+            cantidadPrestada = Convert.ToDouble(txtDesembolso.Text),
+            interes = Convert.ToDouble(txtInteres.Text),
+            codigoPlan = strCodPlaCre,
+            numeroCuotas = intNumeroCuotas,
+            observaciones = txtNotas.Text,
+            vigente = 1,
+            activo = 1,
+            saldoActualCre = intSaldoActualCre,
+            numCuoPag = intNumCuoPag,
+            numCuoPen = intNumCuoPen,
+            fecUltPag = DateTime.Today.ToString("yyyy-MM-dd"),
+            valUltPag = 0,
+            fecVenCre = dteFechaVenCre.ToString("yyyy-MM-dd"),
+            numCuoAtra = 0,
+            valorAtrazo = 0,
+            valorCuoPen = dblValorCuoPen,
+            posRutCre = intPosCredito,
+            tiempoDias = Convert.ToInt32(txtTiempo.Text),
+            desDiaPago = cmbDias.Items[cmbDias.SelectedIndex],
+            valorMicroSeg = 0,
+            salTotPenCte = intSaldoActualCre,
+            fechaUltCreOto = dteFechaUltCreOto.ToString("yyyy-MM-dd"),
+            valCuotaPag = dblValCuoPag,
+            diaProPagCre = DateTime.Today.Day,
+            marAboCreDia = 0,
+            totalPagCre = Convert.ToDouble(txtDesembolso.Text) * (1 + Convert.ToDouble(txtInteres.Text) / 100),
+            verificado = 0,
+            IndicaRetaque = 0,
+            DiaSemana = cmbDias.Items[cmbDias.SelectedIndex],
+            nuevo = 1
+        };
 
-    //                case 1: //Semanal
-    //                    strCodPlaCre = "02";
-    //                    intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 7;
-    //                    break;
+        // ✅ CRÍTICO: Usar await aquí
+        await App.SQLiteDB.SavePrestamoAsync(prestamo);
+    }
 
-    //                case 2: //Quincenal
-    //                    strCodPlaCre = "03";
-    //                    intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 15;
-    //                    break;
-
-    //                case 3: //Mensual
-    //                    strCodPlaCre = "04";
-    //                    intNumeroCuotas = Convert.ToInt32(txtTiempo.Text) / 30;
-    //                    break;
-
-    //                default:
-    //                    break;
-    //            }
-
-    //            if (intNumeroCuotas < 1)
-    //                intNumeroCuotas = 1;
-
-    //            dblValCuoPag = intSaldoActualCre / intNumeroCuotas;
-    //            intNumCuoPen = intSaldoActualCre / dblValCuoPag;
-
-    //            dblValorCuoPen = intSaldoActualCre; // - Convert.ToInt32(txtAbono.Text);
-
-
-    //            switch (cmbPosicion.SelectedIndex)
-    //            {
-    //                case 0://primero
-    //                    intPosCredito = 1;
-    //                    break;
-    //                case 1://pos actual
-    //                    intPosCredito = BuscarPosicionActualDelCreditoEnRuta();
-    //                    break;
-    //                case 2: //ultimo
-    //                    intPosCredito = cmbPosicion.Items.Count + 1;
-    //                    break;
-
-    //                default:
-    //                    int intIndice = cmbPosicion.SelectedIndex;
-    //                    var cadena = cmbPosicion.Items[intIndice];
-    //                    string[] info = { cadena };
-    //                    foreach (string s in info)
-    //                    {
-    //                        found = s.IndexOf("-");
-    //                        strPosicion = s.Substring(found + 2);
-    //                    }
-    //                    intPosCredito = Convert.ToInt32(strPosicion);
-    //                    break;
-    //            }
-    //            dteFechaVenCre = DateTime.Today.AddDays(Convert.ToInt16(txtTiempo.Text.Trim()));
-
-    //            NetworkAccess accessType = Connectivity.Current.NetworkAccess;
-
-    //            if (accessType == NetworkAccess.Internet)
-    //            {
-    //                var dblNetoEnCre = Convert.ToInt64(txtDesembolso.Text.Trim());
-    //                var dblPorIntCre = Convert.ToInt64(txtInteres.Text.Trim());
-
-    //                Double dblTotPagCre = (((dblNetoEnCre * dblPorIntCre) / 100) + dblNetoEnCre);
-    //                CONEXIONMAESTRA.Abrir();
-    //                SqlCommand cmd = new SqlCommand("GrabaCredito", CONEXIONMAESTRA.conectar);
-    //                cmd.CommandType = CommandType.StoredProcedure;
-    //                cmd.Parameters.AddWithValue("@strCodigRut", Usuario.CodigoCobr); // "00001"); // 
-    //                cmd.Parameters.AddWithValue("@strNumIdeCte", txtidCliente.Text.Trim()); //   "01"); // txtidCliente.Text.Trim());//2
-    //                cmd.Parameters.AddWithValue("@dblNetoEnCre", dblNetoEnCre); //  dblNetoEnCre);//3
-    //                cmd.Parameters.AddWithValue("@dblPorIntCre", dblPorIntCre); //  dblPorIntCre);//4
-    //                cmd.Parameters.AddWithValue("@strCodPlaPac", strCodPlaCre); //   "01"); // cmbPlazo.SelectedIndex.ToString()); //5
-    //                cmd.Parameters.AddWithValue("@intNumCuoCre", intNumeroCuotas); //  intNumeroCuotas);//6
-    //                cmd.Parameters.AddWithValue("@intNumCreVig", "0"); //   0);//7
-    //                cmd.Parameters.AddWithValue("@dblSaldoAcCr", intSaldoActualCre); //  dblNetoEnCre);//8
-    //                cmd.Parameters.AddWithValue("@intNumCuoPag", intNumCuoPag); //  intNumCuoPag);//9
-    //                cmd.Parameters.AddWithValue("@intNumCuoPen", intNumCuoPen); //  intNumCuoPen);//10
-    //                cmd.Parameters.AddWithValue("@strFecUltPag", DateTime.Today.ToString("yyyy-MM-dd")); //11
-    //                cmd.Parameters.AddWithValue("@dblValUltPag", "0"); //   0);//12
-    //                cmd.Parameters.AddWithValue("@strFecVtoCre", dteFechaVenCre.ToString("yyyy-MM-dd")); //  dteFechaVenCre);//13
-    //                cmd.Parameters.AddWithValue("@intPosCreEnr", intPosCredito); //  intPosCredito);//14
-    //                cmd.Parameters.AddWithValue("@intTieDiaCre", "0"); //   0);//15
-    //                cmd.Parameters.AddWithValue("@strDesDiaPag", cmbDias.Items[cmbDias.SelectedIndex]+"-"+ txtGuiaPago.Text.Trim()); //16
-    //                cmd.Parameters.AddWithValue("@dblValMicSeg", "0"); //   0);//17
-    //                cmd.Parameters.AddWithValue("@sglSalAcuCte", dblTotPagCre); //  dblTotPagCre);//18
-    //                cmd.Parameters.AddWithValue("@strFecUltCre", DateTime.Today.ToString("yyyy-MM-dd")); //19
-    //                cmd.Parameters.AddWithValue("@dblValCuoPag", dblValCuoPag); //  dblValCuoPag);//20
-    //                cmd.Parameters.AddWithValue("@intNumDiaPPC", "0"); //   0);//21
-    //                cmd.Parameters.AddWithValue("@dblTotPagCre", dblTotPagCre); //  dblTotPagCre);//22
-    //                cmd.Parameters.AddWithValue("@strNomCteCre", txtNombreCli.Text.Trim()); //  txtNombreCli.Text.Trim());//23
-    //                cmd.Parameters.AddWithValue("@strLoginUsSe", Usuario.NombApel);  //24
-    //                cmd.Parameters.AddWithValue("@NotaCredit", txtNotas.Text.Trim()); 
-
-    //                cmd.ExecuteReader();
-    //                CONEXIONMAESTRA.Cerrar();
-    //                DisplayAlert("Credito creado", "Credito creado", "OK");
-
-
-
-    //            }
-    //            else
-    //            {
-    //                //DisplayAlert("Sin internet", "Esta trabajando sin internet (338)", "OK");
-
-    //                var rowid = LastRowID();
-
-    //                Prestamos prestamo = new Prestamos
-    //                {
-    //                    rowid = rowid,
-    //                    NumPrestamo = rowid,
-    //                    idCliente = txtidCliente.Text,
-    //                    nombreCliente = txtNombreCli.Text,
-    //                    fechaPrestamo = DateTime.Today.ToString("yyyy-MM-dd"),
-    //                    codigoRuta = codigoRuta,
-    //                    cantidadPrestada = Convert.ToDouble(txtDesembolso.Text),
-    //                    interes = Convert.ToDouble(txtInteres.Text),
-    //                    codigoPlan = strCodPlaCre,
-    //                    numeroCuotas = intNumeroCuotas,
-    //                    observaciones = txtNotas.Text,
-    //                    vigente = 1,
-    //                    activo = 1,
-    //                    saldoActualCre = intSaldoActualCre,
-    //                    numCuoPag = intNumCuoPag,
-    //                    numCuoPen = intNumCuoPen,
-    //                    fecUltPag = DateTime.Today.ToString("yyyy-MM-dd"),
-    //                    valUltPag = 0, //Convert.ToDouble(txtAbono.Text),
-    //                    fecVenCre = dteFechaVenCre.ToString("yyyy-MM-dd"),
-    //                    numCuoAtra = 0,
-    //                    valorAtrazo = 0,
-    //                    valorCuoPen = dblValorCuoPen,
-    //                    posRutCre = intPosCredito,
-    //                    tiempoDias = Convert.ToInt32(txtTiempo.Text),
-    //                    desDiaPago = cmbDias.Items[cmbDias.SelectedIndex],
-    //                    valorMicroSeg = 0, // Convert.ToDouble(txtMicroSeguro.Text),
-    //                    salTotPenCte = intSaldoActualCre,
-    //                    fechaUltCreOto = dteFechaUltCreOto.ToString("yyyy-MM-dd"),
-    //                    valCuotaPag = dblValCuoPag,
-    //                    diaProPagCre = DateTime.Today.Day,
-    //                    marAboCreDia = 0,
-    //                    totalPagCre = Convert.ToDouble(txtDesembolso.Text) * (1 + Convert.ToDouble(txtInteres.Text) / 100),
-    //                    verificado = 0,
-    //                    IndicaRetaque = 0,
-    //                    DiaSemana = cmbDias.Items[cmbDias.SelectedIndex],
-    //                    nuevo = 1
-    //                };
-    //                App.SQLiteDB.SavePrestamoAsync(prestamo);
-    //                DisplayAlert("Credito creado", "Credito creado localmente", "OK");
-    //                //btnGrabar.IsEnabled = true;
-    //            }
-    //            Navigation.PushAsync(new ListarClientes(Usuario));
-
-    //        }
-    //        else
-    //        {
-    //            DisplayAlert("Validar datos", "Por favor verifique que toda la informaci�n ingresada este completa y sea correcta", "OK");
-    //            btnGrabar.IsEnabled = true;
-    //        }
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        DisplayAlert("error", ex.Message, "OK");
-
-    //    }
-    //    finally { CONEXIONMAESTRA.Cerrar(); }
-    //}
     private int LastRowID()
     {
         var id = App.SQLiteDB.LastRowID() + 1;
         return id;
     }
+
     protected int BuscarPosicionActualDelCreditoEnRuta()
     {
         int intResult = 1;
@@ -783,7 +553,6 @@ public partial class Creditos : ContentPage
                 string.IsNullOrEmpty(txtTiempo.Text) ||
                 cmbDias.SelectedItem.Equals(-1) ||
                 cmbPlazo.SelectedItem.Equals(-1)
-
             )
             respuesta = false;
         else
@@ -795,16 +564,17 @@ public partial class Creditos : ContentPage
     private void btnRegresar_Clicked(object sender, EventArgs e)
     {
     }
+
     private void cmbPosicion_SelectedIndexChanged(object sender, EventArgs e)
     {
     }
 
     private void OnScrollViewScrolled(object sender, ScrolledEventArgs e)
     {
-        //if (e.ScrollY > _lastScrollY || e.ScrollY >= _maxScrollY)
         HideKeyboard();
         _lastScrollY = e.ScrollY;
     }
+
     private void HideKeyboard()
     {
 #if ANDROID
@@ -813,12 +583,13 @@ public partial class Creditos : ContentPage
         {
             var inputMethodManager = (Android.Views.InputMethods.InputMethodManager)activity.GetSystemService(Android.Content.Context.InputMethodService);
             inputMethodManager?.HideSoftInputFromWindow(activity.CurrentFocus.WindowToken, Android.Views.InputMethods.HideSoftInputFlags.None);
-            activity.CurrentFocus.ClearFocus(); // Asegurar que la vista pierde el foco
+            activity.CurrentFocus.ClearFocus();
         }
 #elif IOS
         //UIKit.UIApplication.SharedApplication.SendAction(new ObjCRuntime.Selector("resignFirstResponder"), null, null, null);
 #endif
     }
+
     private void OnScrollViewSizeChanged(object sender, EventArgs e)
     {
         if (sender is ScrollView scrollView)
@@ -826,6 +597,7 @@ public partial class Creditos : ContentPage
             _maxScrollY = scrollView.ContentSize.Height - scrollView.Height;
         }
     }
+
     private void OnTapGestureRecognizerTapped(object sender, TappedEventArgs e)
     {
         HideKeyboard();
