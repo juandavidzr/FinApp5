@@ -11,9 +11,9 @@ public partial class EnrrutarCartera : ContentPage
 {
     public string? ruta { get; set; }
     public string lngNumeroCre { get; set; }
-    public string NumeroCreCambiaPos { get; set; }    
+    public string NumeroCreCambiaPos { get; set; }
     /// <summary>
-    /// Posici�n anterior
+    /// Posición anterior
     /// </summary>
     public int? OldPosCre { get; set; }
     public int IntNuevaPosCre { get; set; } = 0;
@@ -22,95 +22,28 @@ public partial class EnrrutarCartera : ContentPage
     public List<Prestamos> prestamosOffLine = new List<Prestamos>();
 
     public EnrrutarCartera(Musuarios usuario)
-
     {
+        // CORREGIDO: InitializeComponent PRIMERO
+        InitializeComponent();
+
         Usuario = usuario;
         IntNuevaPosCre = 1;
-        InitializeComponent();
-        if (CONEXIONMAESTRA.VerificarCon())
-            prestamosOffLine = ConsultarCambioDeRutaOffline();
 
-        _ = CargarCreditosAsync();
-       
-
+        // CORREGIDO: Llamar de forma asíncrona para no bloquear
+        _ = InicializarAsync();
     }
+
+    // NUEVO: Método de inicialización asíncrona
+    private async Task InicializarAsync()
+    {
+        if (CONEXIONMAESTRA.VerificarCon())
+        {
+            prestamosOffLine = await ConsultarCambioDeRutaOfflineAsync();
+        }
+        await CargarCreditosAsync();
+    }
+
     public ObservableCollection<Prestamos> creditosCollection = new ObservableCollection<Prestamos>();
-    //public async Task CargarCreditosAsync()
-    //{
-    //    try
-    //    {
-    //        lstCreditos.ItemsSource = null;
-    //        lstCreditos1.ItemsSource = null;
-    //        creditosCollection.Clear();
-
-    //        ruta = Usuario.CodigoCobr;
-
-    //        if (CONEXIONMAESTRA.VerificarCon())
-    //        {
-
-    //            if (prestamosOffLine.Any())
-    //            {
-    //                List<Prestamos> prestamos = await App.SQLiteDB.ObtenerTodosCreditosPorRutaAsync(ruta);
-
-    //                if (prestamos.Any())
-    //                {
-    //                   await App.SQLiteDB.ReasignarPosicionesServerAsync(prestamos);
-    //                }
-    //                await App.SQLiteDB.ActualizarPosActualizada();
-    //            }
-
-    //            SqlCommand cmd = new SqlCommand("FiltrarCreditosDeRutaSegunCriterio", CONEXIONMAESTRA.conectar);
-    //            cmd.CommandType = CommandType.StoredProcedure;
-    //            cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-    //            cmd.Parameters.AddWithValue("@intSelector", 1);
-    //            CONEXIONMAESTRA.Abrir();
-    //            SqlDataReader rdr = cmd.ExecuteReader();
-
-    //            while (rdr.Read())
-    //            {
-    //                creditosCollection.Add(new Prestamos()
-    //                {
-    //                    nombreCliente = rdr["cteNombApel"].ToString().Trim(),
-    //                    NumPrestamo = Convert.ToInt32(rdr["pmoNumeroPre"].ToString()),
-    //                    posRutCre = Convert.ToInt32(rdr["pmoPosRutCre"].ToString().Trim())
-    //                });
-    //            }
-    //        }
-    //        else
-    //        {
-    //            var resultados = await App.SQLiteDB.FiltrarCreditosDeRutaSegunCriterio(ruta, 1);
-    //            foreach (var item in resultados)
-    //            {
-    //                creditosCollection.Add(new Prestamos()
-    //                {
-    //                    nombreCliente = item.nombreCliente,
-    //                    NumPrestamo = Convert.ToInt32(item.NumPrestamo),
-    //                    posRutCre = item.posRutCre
-    //                });
-    //            }
-
-    //            //await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta);
-
-    //        }
-
-    //        if (creditosCollection != null)
-    //        {
-    //            lstCreditos.ItemsSource = creditosCollection//.Where(p => p.activo == 1)
-    //                                                        .OrderBy(p => p.nombreCliente).ToList();
-
-    //            lstCreditos1.ItemsSource = creditosCollection//.Where(p => p.activo == 1)
-    //                                                       .OrderBy(p => p.posRutCre).ToList();
-    //        }
-    //        IntNuevaPosCre = 1;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await DisplayAlert("error", ex.Message, "OK");
-    //        throw;
-    //    }
-    //    finally { CONEXIONMAESTRA.Cerrar(); }
-
-    //}
 
     public async Task CargarCreditosAsync()
     {
@@ -232,11 +165,20 @@ public partial class EnrrutarCartera : ContentPage
         }
     }
 
-
-    public List<Prestamos> ConsultarCambioDeRutaOffline()
+    // CORREGIDO: Versión asíncrona sin .Result
+    private async Task<List<Prestamos>> ConsultarCambioDeRutaOfflineAsync()
     {
-        return App.SQLiteDB.ConsultarCambioDeRutaOffline().Result;
+        try
+        {
+            return await App.SQLiteDB.ConsultarCambioDeRutaOffline();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return new List<Prestamos>();
+        }
     }
+
     private void lstCreditos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         if (lstCreditos != null && e.SelectedItem != null)
@@ -249,10 +191,8 @@ public partial class EnrrutarCartera : ContentPage
         {
             DisplayAlert("error", "Por favor seleccione un credito", "OK");
         }
-
-
-
     }
+
     private void lstCreditos1_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         if (lstCreditos1 != null && e.SelectedItem != null)
@@ -266,11 +206,6 @@ public partial class EnrrutarCartera : ContentPage
             DisplayAlert("error", "Por favor seleccione un credito", "OK");
         }
     }
-
-    //private void lstCreditos2_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-    //{
-
-    //}
 
     private async void Button_Clicked(object sender, EventArgs e)
     {
@@ -321,46 +256,13 @@ public partial class EnrrutarCartera : ContentPage
         }
     }
 
+    // NUEVO: Limpiar recursos al salir
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
 
-    //private async void Button_Clicked(object sender, EventArgs e)
-    //{
-    //    // Validar si el credito ya existe en la ruta destino
-    //    try
-    //    {
-    //        if (lngNumeroCre != null)
-    //        {
-    //            if (CONEXIONMAESTRA.VerificarCon())
-    //            {
-    //                SqlCommand cmd = new SqlCommand("ActualizarPosicionDeCreditoEnRutaDestino", CONEXIONMAESTRA.conectar);
-    //                cmd.CommandType = CommandType.StoredProcedure;
-    //                cmd.Parameters.AddWithValue("@intNuePosCreRut", IntNuevaPosCre);
-    //                cmd.Parameters.AddWithValue("@lngNumeroCreAct", lngNumeroCre);
-    //                cmd.Parameters.AddWithValue("@strCodigoRuta", ruta);
-    //                CONEXIONMAESTRA.Abrir();
-    //                cmd.ExecuteReader();
-    //                CONEXIONMAESTRA.Cerrar();
-
-    //                if (!string.IsNullOrEmpty(ruta))
-    //                {
-    //                    await  App.SQLiteDB.SyncCobros(ruta, "Ruta");
-    //                }
-    //            }
-    //            else
-    //            {
-    //                await App.SQLiteDB.ActualizarPosicionDeCreditoEnRutaDestinoAsync(IntNuevaPosCre, lngNumeroCre, ruta, NumeroCreCambiaPos);
-    //            }
-    //            _ = CargarCreditosAsync();
-    //        }
-    //        else
-    //        {
-    //            DisplayAlert("error", "Por favor seleccione un credito", "OK");
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        DisplayAlert("error", ex.Message, "OK");
-    //        throw;
-    //    }
-    //    finally { CONEXIONMAESTRA.Cerrar(); }
-    //}
+        // Limpiar referencias para evitar bloqueos
+        lstCreditos.ItemsSource = null;
+        lstCreditos1.ItemsSource = null;
+    }
 }

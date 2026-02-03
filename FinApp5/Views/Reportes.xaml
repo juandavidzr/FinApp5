@@ -106,14 +106,16 @@
                          VerticalOptions="Center">
 
                 <!-- Informe Día -->
-                <Border BackgroundColor="Transparent" 
+                <Border x:Name="informeDiaBorder"
+                        BackgroundColor="Transparent" 
                         StrokeThickness="0" 
                         Padding="0"
                         HorizontalOptions="Center"
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}" />
+                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}"
+                                              Tapped="OnInformeDiaTapped" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -144,14 +146,16 @@
                 </Border>
 
                 <!-- Balance Actual -->
-                <Border BackgroundColor="Transparent" 
+                <Border x:Name="balanceActualBorder"
+                        BackgroundColor="Transparent" 
                         StrokeThickness="0" 
                         Padding="0"
                         HorizontalOptions="Center"
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}" />
+                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}"
+                                              Tapped="OnBalanceActualTapped" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
