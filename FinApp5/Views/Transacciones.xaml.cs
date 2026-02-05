@@ -6,10 +6,10 @@ using FinApp5.Conexiones;
 
 namespace FinApp5.Views;
 
-//El atributo debe estar en la clase
 [QueryProperty(nameof(Usuario), "usuario")]
 public partial class Transacciones : ContentPage
 {
+    // ============ PROPIEDADES Y CAMPOS ============
     private Musuarios _usuario;
     public Musuarios Usuario
     {
@@ -21,151 +21,84 @@ public partial class Transacciones : ContentPage
         }
     }
 
-    // 🔹 Constructor sin parámetros (requerido por Shell)
+    // ============ CONSTRUCTORES ============
     public Transacciones()
     {
         InitializeComponent();
     }
 
-    // 🔹 Constructor con parámetros (para instancias manuales)
-    public Transacciones(Musuarios usuario) : this() // Llama al constructor sin parámetros
+    public Transacciones(Musuarios usuario) : this()
     {
         Usuario = usuario;
         if (Usuario.CodigoCobr != null && CONEXIONMAESTRA.VerificarCon())
             App.SQLiteDB.SyncCobros(usuario.CodigoCobr, "Ruta");
     }
 
-    protected override void OnAppearing()
+    // ============ CICLO DE VIDA ============
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-        AnimateOnAppearing();
+        await AnimarSlideCascade();
     }
 
-    private async void AnimateOnAppearing()
+    // ============ MÉTODOS DE ANIMACIÓN - SLIDE CASCADE ============
+    private async Task AnimarSlideCascade()
     {
-        // Animar cards con efecto de entrada escalonado (SIN animar el logo)
-        creditoBorder.Opacity = 0;
-        creditoBorder.TranslationY = 50;
-        recaudoBorder.Opacity = 0;
-        recaudoBorder.TranslationY = 50;
-        enrutarBorder.Opacity = 0;
-        enrutarBorder.TranslationY = 50;
-        gastosBorder.Opacity = 0;
-        gastosBorder.TranslationY = 50;
+        // Inicializar estado inicial de las tarjetas
+        cardCredito.Opacity = 0;
+        cardCredito.TranslationY = 50;
 
+        cardRecaudo.Opacity = 0;
+        cardRecaudo.TranslationY = 50;
+
+        cardCartera.Opacity = 0;
+        cardCartera.TranslationY = 50;
+
+        cardGastos.Opacity = 0;
+        cardGastos.TranslationY = 50;
+
+        // Delay inicial antes de comenzar las animaciones
         await Task.Delay(100);
 
-        var fadeInTasks = new[]
-        {
-            AnimateCardIn(creditoBorder, 0),
-            AnimateCardIn(recaudoBorder, 100),
-            AnimateCardIn(enrutarBorder, 200),
-            AnimateCardIn(gastosBorder, 300)
-        };
+        // Animar primera tarjeta (Registrar Crédito)
+        var tarea1 = cardCredito.FadeTo(1, 400, Easing.CubicOut);
+        var tarea2 = cardCredito.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea1, tarea2);
 
-        await Task.WhenAll(fadeInTasks);
+        // Delay entre tarjetas para efecto cascada
+        await Task.Delay(150);
 
-        // Iniciar animación de hover continua
-        StartHoverAnimations();
+        // Animar segunda tarjeta (Realizar Recaudo)
+        var tarea3 = cardRecaudo.FadeTo(1, 400, Easing.CubicOut);
+        var tarea4 = cardRecaudo.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea3, tarea4);
+
+        // Delay entre tarjetas
+        await Task.Delay(150);
+
+        // Animar tercera tarjeta (Enrutar Cartera)
+        var tarea5 = cardCartera.FadeTo(1, 400, Easing.CubicOut);
+        var tarea6 = cardCartera.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea5, tarea6);
+
+        // Delay entre tarjetas
+        await Task.Delay(150);
+
+        // Animar cuarta tarjeta (Registrar Gastos)
+        var tarea7 = cardGastos.FadeTo(1, 400, Easing.CubicOut);
+        var tarea8 = cardGastos.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea7, tarea8);
     }
 
-    private async Task AnimateCardIn(Border border, uint delay)
+    // ============ EVENTOS ============
+    private async void btnInicio_Clicked(object sender, EventArgs e)
     {
-        await Task.Delay((int)delay);
-        await Task.WhenAll(
-            border.FadeTo(1, 400, Easing.CubicOut),
-            border.TranslateTo(0, 0, 500, Easing.CubicOut)
-        );
-    }
-
-    private void StartHoverAnimations()
-    {
-        // Animación flotante sutil para cada card
-        AnimateFloating(creditoBorder, 0);
-        AnimateFloating(recaudoBorder, 500);
-        AnimateFloating(enrutarBorder, 1000);
-        AnimateFloating(gastosBorder, 1500);
-    }
-
-    private async void AnimateFloating(Border border, int delay)
-    {
-        await Task.Delay(delay);
-
-        try
-        {
-            while (true)
-            {
-                await border.TranslateTo(0, -5, 1500, Easing.SinInOut);
-                await border.TranslateTo(0, 0, 1500, Easing.SinInOut);
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            // La animación se cancela cuando se navega fuera de la página
-        }
-    }
-
-    // Animaciones de tap para cada botón
-    private async void OnCreditoTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(creditoBorder);
-    }
-
-    private async void OnRecaudoTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(recaudoBorder);
-        ImageButton_Clicked(sender, e);
-    }
-
-    private async void OnEnrutarTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(enrutarBorder);
-    }
-
-    private async void OnGastosTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(gastosBorder);
-    }
-
-    private async Task AnimateButtonPress(Border border)
-    {
-        // Efecto de presión con escala y rotación
-        await Task.WhenAll(
-            border.ScaleTo(0.92, 100, Easing.CubicOut),
-            border.RotateTo(2, 100, Easing.CubicOut)
-        );
-
-        await Task.WhenAll(
-            border.ScaleTo(1.05, 150, Easing.CubicOut),
-            border.RotateTo(-1, 150, Easing.CubicOut)
-        );
-
-        await Task.WhenAll(
-            border.ScaleTo(1, 150, Easing.CubicOut),
-            border.RotateTo(0, 150, Easing.CubicOut)
-        );
-    }
-
-    // Tus métodos existentes
-    private void btn1_Tapped(object sender, EventArgs e)
-    {
+        await btnBack.ScaleTo(0.95, 100);
+        await btnBack.ScaleTo(1, 100);
+        await Navigation.PushAsync(new MenuPpal(Usuario));
     }
 
     private void ImageButton_Clicked(object sender, EventArgs e)
     {
-    }
-
-    private async void btnInicio_Clicked(object sender, EventArgs e)
-    {
-        // Animar salida de cards
-        await Task.WhenAll(
-            creditoBorder.FadeTo(0, 300),
-            recaudoBorder.FadeTo(0, 300),
-            enrutarBorder.FadeTo(0, 300),
-            gastosBorder.FadeTo(0, 300)
-        );
-
-        // Tu código de navegación existente
-        await Navigation.PushAsync(new MenuPpal(Usuario));
     }
 }

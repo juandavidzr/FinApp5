@@ -7,7 +7,7 @@
              Shell.NavBarIsVisible="False">
 
     <!-- Fondo con gradiente -->
-    <Grid>
+    <Grid RowDefinitions="180,*">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                 <GradientStop Color="#3949AB" Offset="0.0" />
@@ -15,17 +15,9 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="180" />
-            <!-- Header con logo -->
-            <RowDefinition Height="*" />
-            <!-- Contenido -->
-        </Grid.RowDefinitions>
-
         <!-- Header con Logo -->
         <StackLayout Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center" Padding="20,50,20,30">
-            <Border x:Name="logoBorder"
-                    BackgroundColor="White" 
+            <Border BackgroundColor="White" 
                     StrokeThickness="4" 
                     Stroke="#D4AF37" 
                     WidthRequest="70" 
@@ -46,242 +38,228 @@
             </Border>
         </StackLayout>
 
-        <!-- Contenido Principal -->
-        <StackLayout Grid.Row="1" Padding="25" Spacing="25">
+        <!-- Contenido Principal con ScrollView -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Botón de regreso -->
-            <Border BackgroundColor="Transparent" 
-                    StrokeThickness="2" 
-                    Stroke="#3949AB" 
-                    Padding="12,12"
-                    HorizontalOptions="Start">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="25" />
-                </Border.StrokeShape>
-                <Button x:Name="btnInicio" 
-                        Text="← Ir a menu principal" 
-                        Clicked="btnInicio_Clicked" 
-                        BackgroundColor="Transparent"
-                        TextColor="#3949AB"
-                        FontSize="14"
-                        FontAttributes="Bold"
-                        BorderWidth="0">
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroupList>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="Transparent"/>
-                                        <Setter Property="TextColor" Value="#3949AB"/>
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="Pressed">
-                                    <VisualState.Setters>
-                                        <Setter Property="BackgroundColor" Value="#3949AB"/>
-                                        <Setter Property="TextColor" Value="White"/>
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateGroupList>
-                    </VisualStateManager.VisualStateGroups>
-                </Button>
-            </Border>
-
-            <!-- Título de la sección -->
-            <Label Text="Transacciones" 
-                   TextColor="#2c3e50" 
-                   FontSize="20" 
-                   FontAttributes="Bold" 
-                   HorizontalTextAlignment="Center" 
-                   Margin="0,0,0,15" />
-
-            <!-- Indicador de actividad -->
-            <Grid IsVisible="{Binding IsBusy}" HorizontalOptions="Center">
-                <ActivityIndicator x:Name="acti" HeightRequest="25" WidthRequest="25"
-                        IsRunning="{Binding IsBusy}" Color="#3949AB" IsVisible="True" />
-            </Grid>
-
-            <!-- Cards de Transacciones en Grid 2x2 -->
-            <Grid RowDefinitions="*,*"
-                  ColumnDefinitions="*,*"
-                  RowSpacing="15"
-                  ColumnSpacing="15"
-                  HorizontalOptions="Center"
-                  VerticalOptions="Center">
-
-                <!-- Registrar Crédito -->
-                <Border x:Name="creditoBorder"
-                        Grid.Row="0" Grid.Column="0" 
+                <!-- Botón de regreso -->
+                <Border x:Name="btnBack"
                         BackgroundColor="Transparent" 
-                        StrokeThickness="0" 
-                        Padding="0"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        WidthRequest="160"
-                        HeightRequest="140">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ListarClientesCommand}" 
-                                              Tapped="OnCreditoTapped" />
-                    </Border.GestureRecognizers>
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#4CAF50" Offset="0.0" />
-                            <GradientStop Color="#388E3C" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
+                        StrokeThickness="2" 
+                        Stroke="#3949AB" 
+                        Padding="12,12"
+                        HorizontalOptions="Start">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
+                        <RoundRectangle CornerRadius="25" />
                     </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#4CAF50" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
-
-                    <StackLayout VerticalOptions="Center" 
-                                 HorizontalOptions="Center" 
-                                 Spacing="6">
-                        <Label Text="💰" 
-                               TextColor="White" 
-                               FontSize="28" 
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Registrar Crédito" 
-                               TextColor="White" 
-                               FontSize="11" 
-                               FontAttributes="Bold" 
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
+                    <Button x:Name="btnInicio" 
+                            Text="← Ir a menu principal" 
+                            Clicked="btnInicio_Clicked" 
+                            BackgroundColor="Transparent"
+                            TextColor="#3949AB"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            BorderWidth="0">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                            <Setter Property="TextColor" Value="#3949AB"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="#3949AB"/>
+                                            <Setter Property="TextColor" Value="White"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                    </Button>
                 </Border>
 
-                <!-- Realizar Recaudo -->
-                <Border x:Name="recaudoBorder"
-                        Grid.Row="0" Grid.Column="1" 
-                        BackgroundColor="Transparent" 
-                        StrokeThickness="0" 
-                        Padding="0"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        WidthRequest="160"
-                        HeightRequest="140">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ListarCreditosCommand}" 
-                                              Tapped="OnRecaudoTapped" />
-                    </Border.GestureRecognizers>
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#F44336" Offset="0.0" />
-                            <GradientStop Color="#C62828" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#F44336" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                <!-- Título de la sección -->
+                <Label Text="Transacciones" 
+                       TextColor="#2c3e50" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       HorizontalTextAlignment="Center" 
+                       Margin="0,0,0,10" />
 
-                    <StackLayout VerticalOptions="Center" 
-                                 HorizontalOptions="Center" 
-                                 Spacing="6">
-                        <Label Text="💵" 
-                               TextColor="White" 
-                               FontSize="28" 
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Realizar Recaudo" 
-                               TextColor="White" 
-                               FontSize="11" 
-                               FontAttributes="Bold" 
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Border>
+                <!-- Indicador de actividad -->
+                <ActivityIndicator x:Name="acti" 
+                                   HeightRequest="25" 
+                                   WidthRequest="25"
+                                   IsRunning="{Binding IsBusy}" 
+                                   Color="#3949AB" 
+                                   IsVisible="{Binding IsBusy}"
+                                   HorizontalOptions="Center" />
 
-                <!-- Enrutar Cartera -->
-                <Border x:Name="enrutarBorder"
-                        Grid.Row="1" Grid.Column="0" 
-                        BackgroundColor="Transparent" 
-                        StrokeThickness="0" 
-                        Padding="0"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        WidthRequest="160"
-                        HeightRequest="140">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding EnrrutarCommand}" 
-                                              Tapped="OnEnrutarTapped" />
-                    </Border.GestureRecognizers>
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#FF9800" Offset="0.0" />
-                            <GradientStop Color="#F57C00" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#FF9800" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                <!-- Cards de Transacciones en Grid 2x2 FIJO -->
+                <Grid RowDefinitions="120,120"
+                      ColumnDefinitions="*,*"
+                      RowSpacing="15"
+                      ColumnSpacing="15"
+                      HeightRequest="255">
 
-                    <StackLayout VerticalOptions="Center" 
-                                 HorizontalOptions="Center" 
-                                 Spacing="6">
-                        <Label Text="📋" 
-                               TextColor="White" 
-                               FontSize="28" 
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Enrutar Cartera" 
-                               TextColor="White" 
-                               FontSize="11" 
-                               FontAttributes="Bold" 
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Border>
+                    <!-- Registrar Crédito -->
+                    <Border x:Name="cardCredito" Grid.Row="0" Grid.Column="0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ListarClientesCommand}" />
+                        </Border.GestureRecognizers>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#4CAF50" Offset="0.0" />
+                                <GradientStop Color="#388E3C" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#4CAF50" Opacity="0.3" Radius="8" Offset="0,4" />
+                        </Border.Shadow>
 
-                <!-- Registrar Gastos -->
-                <Border x:Name="gastosBorder"
-                        Grid.Row="1" Grid.Column="1" 
-                        BackgroundColor="Transparent" 
-                        StrokeThickness="0" 
-                        Padding="0"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        WidthRequest="160"
-                        HeightRequest="140">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding RegistarGastosCommand}" 
-                                              Tapped="OnGastosTapped" />
-                    </Border.GestureRecognizers>
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#3b82f6"  Offset="0.0" />
-                            <GradientStop Color="#2563eb" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="15" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="#757575" Opacity="0.3" Radius="8" Offset="0,4" />
-                    </Border.Shadow>
+                        <VerticalStackLayout VerticalOptions="Center" 
+                                             HorizontalOptions="Center" 
+                                             Spacing="6">
+                            <Label Text="💰" 
+                                   FontSize="24" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Registrar" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Crédito" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
 
-                    <StackLayout VerticalOptions="Center" 
-                                 HorizontalOptions="Center" 
-                                 Spacing="6">
-                        <Label Text="📊" 
-                               TextColor="White" 
-                               FontSize="28" 
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Registrar Gasto(s)" 
-                               TextColor="White" 
-                               FontSize="11" 
-                               FontAttributes="Bold" 
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Border>
+                    <!-- Realizar Recaudo -->
+                    <Border x:Name="cardRecaudo" Grid.Row="0" Grid.Column="1">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ListarCreditosCommand}" 
+                                                  Tapped="ImageButton_Clicked" />
+                        </Border.GestureRecognizers>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#F44336" Offset="0.0" />
+                                <GradientStop Color="#C62828" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#F44336" Opacity="0.3" Radius="8" Offset="0,4" />
+                        </Border.Shadow>
 
-            </Grid>
+                        <VerticalStackLayout VerticalOptions="Center" 
+                                             HorizontalOptions="Center" 
+                                             Spacing="6">
+                            <Label Text="💵" 
+                                   FontSize="24" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Realizar" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Recaudo" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
 
-        </StackLayout>
+                    <!-- Enrutar Cartera -->
+                    <Border x:Name="cardCartera" Grid.Row="1" Grid.Column="0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding EnrrutarCommand}" />
+                        </Border.GestureRecognizers>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#FF9800" Offset="0.0" />
+                                <GradientStop Color="#F57C00" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#FF9800" Opacity="0.3" Radius="8" Offset="0,4" />
+                        </Border.Shadow>
 
-        <!-- Elementos decorativos flotantes -->
+                        <VerticalStackLayout VerticalOptions="Center" 
+                                             HorizontalOptions="Center" 
+                                             Spacing="6">
+                            <Label Text="📋" 
+                                   FontSize="24" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Enrutar" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Cartera" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Registrar Gastos -->
+                    <Border x:Name="cardGastos" Grid.Row="1" Grid.Column="1">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding RegistarGastosCommand}" />
+                        </Border.GestureRecognizers>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#3b82f6"  Offset="0.0" />
+                                <GradientStop Color="#2563eb" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="15" />
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#757575" Opacity="0.3" Radius="8" Offset="0,4" />
+                        </Border.Shadow>
+
+                        <VerticalStackLayout VerticalOptions="Center" 
+                                             HorizontalOptions="Center" 
+                                             Spacing="6">
+                            <Label Text="📊" 
+                                   FontSize="24" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Registrar" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Gasto(s)" 
+                                   TextColor="White" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Elementos decorativos -->
         <Ellipse Grid.RowSpan="2" 
                  Fill="#FFFFFF" 
                  Opacity="0.1" 

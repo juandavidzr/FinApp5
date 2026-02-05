@@ -46,10 +46,11 @@
         </StackLayout>
 
         <!-- Contenido Principal -->
-        <StackLayout Grid.Row="1" Padding="25" Spacing="25">
+        <StackLayout Grid.Row="1" Padding="25,0,25,25" Spacing="15">
 
             <!-- Botón de regreso -->
-            <Border BackgroundColor="Transparent" 
+            <Border x:Name="btnBack"
+                    BackgroundColor="Transparent" 
                     StrokeThickness="2" 
                     Stroke="#3949AB" 
                     Padding="12,12"
@@ -92,7 +93,7 @@
                    FontSize="20" 
                    FontAttributes="Bold" 
                    HorizontalTextAlignment="Center" 
-                   Margin="0,0,0,15" />
+                   Margin="0,5,0,10" />
 
             <!-- Indicador de actividad -->
             <Grid IsVisible="{Binding IsBusy}" HorizontalOptions="Center">
@@ -103,10 +104,10 @@
             <!-- Cards de Reportes en columna vertical -->
             <StackLayout Spacing="15"
                          HorizontalOptions="Center"
-                         VerticalOptions="Center">
+                         VerticalOptions="Start">
 
                 <!-- Informe Día -->
-                <Border x:Name="informeDiaBorder"
+                <Border x:Name="cardInformeDia"
                         BackgroundColor="Transparent" 
                         StrokeThickness="0" 
                         Padding="0"
@@ -114,8 +115,7 @@
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}"
-                                              Tapped="OnInformeDiaTapped" />
+                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -146,7 +146,7 @@
                 </Border>
 
                 <!-- Balance Actual -->
-                <Border x:Name="balanceActualBorder"
+                <Border x:Name="cardBalanceActual"
                         BackgroundColor="Transparent" 
                         StrokeThickness="0" 
                         Padding="0"
@@ -154,8 +154,7 @@
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}"
-                                              Tapped="OnBalanceActualTapped" />
+                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">

@@ -9,104 +9,50 @@ public partial class Reportes : ContentPage
     {
         InitializeComponent();
         BindingContext = new VMReportes(Navigation, usuario);
+
+        // Inicializar las tarjetas como invisibles y desplazadas
+        InicializarEstadoInicial();
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await AnimateOnAppearing();
+
+        // Ejecutar la animación Slide Cascade
+        await AnimarSlideCascade();
     }
 
-    private async Task AnimateOnAppearing()
+    private void InicializarEstadoInicial()
     {
-        // Configurar estado inicial de los cards
-        informeDiaBorder.Opacity = 0;
-        informeDiaBorder.TranslationY = 30;
-        balanceActualBorder.Opacity = 0;
-        balanceActualBorder.TranslationY = 30;
+        // Ocultar y desplazar las tarjetas hacia abajo
+        cardInformeDia.Opacity = 0;
+        cardInformeDia.TranslationY = 50;
 
-        // Pequeña espera antes de iniciar
+        cardBalanceActual.Opacity = 0;
+        cardBalanceActual.TranslationY = 50;
+    }
+
+    private async Task AnimarSlideCascade()
+    {
+        // Delay inicial antes de comenzar las animaciones
+        await Task.Delay(100);
+
+        // Animar primera tarjeta (Informe Día)
+        var tarea1 = cardInformeDia.FadeTo(1, 400, Easing.CubicOut);
+        var tarea2 = cardInformeDia.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea1, tarea2);
+
+        // Delay entre tarjetas para efecto cascada
         await Task.Delay(150);
 
-        // Animar cards de forma escalonada
-        var tasks = new[]
-        {
-            AnimateCardIn(informeDiaBorder, 0),
-            AnimateCardIn(balanceActualBorder, 100)
-        };
-
-        await Task.WhenAll(tasks);
-
-        // Iniciar animación flotante
-        _ = AnimateFloating(informeDiaBorder, 0);
-        _ = AnimateFloating(balanceActualBorder, 600);
-    }
-
-    private async Task AnimateCardIn(Border border, int delay)
-    {
-        if (delay > 0)
-            await Task.Delay(delay);
-
-        await Task.WhenAll(
-            border.FadeTo(1, 350, Easing.CubicOut),
-            border.TranslateTo(0, 0, 400, Easing.CubicOut)
-        );
-    }
-
-    private async Task AnimateFloating(Border border, int delay)
-    {
-        await Task.Delay(delay);
-
-        try
-        {
-            while (true)
-            {
-                await border.TranslateTo(0, -4, 1500, Easing.SinInOut);
-                await border.TranslateTo(0, 0, 1500, Easing.SinInOut);
-            }
-        }
-        catch (Exception)
-        {
-            // Animación cancelada
-        }
-    }
-
-    private async void OnInformeDiaTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(informeDiaBorder);
-    }
-
-    private async void OnBalanceActualTapped(object sender, EventArgs e)
-    {
-        await AnimateButtonPress(balanceActualBorder);
-    }
-
-    private async Task AnimateButtonPress(Border border)
-    {
-        await Task.WhenAll(
-            border.ScaleTo(0.93, 80, Easing.CubicOut),
-            border.RotateTo(1.5, 80, Easing.CubicOut)
-        );
-
-        await Task.WhenAll(
-            border.ScaleTo(1.04, 120, Easing.CubicOut),
-            border.RotateTo(-0.5, 120, Easing.CubicOut)
-        );
-
-        await Task.WhenAll(
-            border.ScaleTo(1, 120, Easing.CubicOut),
-            border.RotateTo(0, 120, Easing.CubicOut)
-        );
+        // Animar segunda tarjeta (Balance Actual)
+        var tarea3 = cardBalanceActual.FadeTo(1, 400, Easing.CubicOut);
+        var tarea4 = cardBalanceActual.TranslateTo(0, 0, 400, Easing.CubicOut);
+        await Task.WhenAll(tarea3, tarea4);
     }
 
     private async void btnInicio_Clicked(object sender, EventArgs e)
     {
-        // Animar salida de cards
-        await Task.WhenAll(
-            informeDiaBorder.FadeTo(0, 250),
-            balanceActualBorder.FadeTo(0, 250)
-        );
-
         await Shell.Current.GoToAsync("..");
     }
 }

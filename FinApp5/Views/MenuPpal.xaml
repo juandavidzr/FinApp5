@@ -52,7 +52,7 @@
                                FontAttributes="Bold"/>
                     </Border>
 
-                    <!-- Logo FA y texto FINAPP - MÁS ARRIBA -->
+                    <!-- Logo FA y texto FINAPP -->
                     <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*" Margin="0,20,0,0">
                         <Border BackgroundColor="White"
                                 StrokeShape="RoundRectangle 12"
@@ -81,22 +81,19 @@
                 </Grid>
             </Border>
 
-            <!-- Tarjeta Maestros - ESTRUCTURA MÁS SIMPLE -->
+            <!-- Tarjeta Maestros -->
             <Frame x:Name="frameMaestros"
                    CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
                    Margin="20,0"
-                   Scale="1">
+                   Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}"
-                                        Tapped="OnCardTapped" />
+                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
-                    <!-- Icono circular dorado usando Frame -->
-                    <Frame x:Name="iconMaestros"
-                           BackgroundColor="#FFB300"
+                    <Frame BackgroundColor="#FFB300"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -123,22 +120,19 @@
                 </Grid>
             </Frame>
 
-            <!-- Tarjeta Transacciones - ESTRUCTURA MÁS SIMPLE -->
+            <!-- Tarjeta Transacciones -->
             <Frame x:Name="frameTransacciones"
                    CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
                    Margin="20,0"
-                   Scale="1">
+                   Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}"
-                                        Tapped="OnCardTapped" />
+                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
-                    <!-- Icono circular verde usando Frame -->
-                    <Frame x:Name="iconTransacciones"
-                           BackgroundColor="#4CAF50"
+                    <Frame BackgroundColor="#4CAF50"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -163,22 +157,19 @@
                 </Grid>
             </Frame>
 
-            <!-- Tarjeta Reportes - ESTRUCTURA MÁS SIMPLE -->
+            <!-- Tarjeta Reportes -->
             <Frame x:Name="frameReportes"
                    CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
                    Margin="20,0"
-                   Scale="1">
+                   Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}"
-                                        Tapped="OnCardTapped" />
+                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
-                    <!-- Icono circular naranja usando Frame -->
-                    <Frame x:Name="iconReportes"
-                           BackgroundColor="#FF5722"
+                    <Frame BackgroundColor="#FF5722"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
@@ -203,21 +194,19 @@
                 </Grid>
             </Frame>
 
-            <!-- Botón Cerrar Sesión - ESTRUCTURA MÁS SIMPLE -->
+            <!-- Botón Cerrar Sesión -->
             <Frame x:Name="frameCerrarSesion"
                    CornerRadius="20"
                    Padding="20"
                    BackgroundColor="White"
                    HasShadow="True"
                    Margin="20,0,20,20"
-                   Scale="1">
+                   Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="btnInicio_Clicked_Animated" />
+                    <TapGestureRecognizer Tapped="btnInicio_Clicked" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
-                    <!-- Icono circular gris azulado usando Frame -->
-                    <Frame x:Name="iconCerrarSesion"
-                           BackgroundColor="#3b82f6"
+                    <Frame BackgroundColor="#3b82f6"
                            CornerRadius="25"
                            HeightRequest="50"
                            WidthRequest="50"
