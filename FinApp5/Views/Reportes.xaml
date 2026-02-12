@@ -115,7 +115,7 @@
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}" />
+                        <TapGestureRecognizer Command="{Binding IrAInformeDiaCommand}" Tapped="OnCardTapped_InformeDia" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -154,7 +154,7 @@
                         WidthRequest="320"
                         HeightRequest="140">
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}" />
+                        <TapGestureRecognizer Command="{Binding IrABalanceActualCommand}" Tapped="OnCardTapped_BalanceActual" />
                     </Border.GestureRecognizers>
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">

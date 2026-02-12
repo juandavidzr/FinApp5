@@ -108,7 +108,7 @@
                     <!-- Registrar Crédito -->
                     <Border x:Name="cardCredito" Grid.Row="0" Grid.Column="0">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ListarClientesCommand}" />
+                            <TapGestureRecognizer Command="{Binding ListarClientesCommand}" Tapped="OnCardTapped" />
                         </Border.GestureRecognizers>
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -146,7 +146,7 @@
                     <Border x:Name="cardRecaudo" Grid.Row="0" Grid.Column="1">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding ListarCreditosCommand}" 
-                                                  Tapped="ImageButton_Clicked" />
+                                                  Tapped="OnCardTapped_Recaudo" />
                         </Border.GestureRecognizers>
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -183,7 +183,7 @@
                     <!-- Enrutar Cartera -->
                     <Border x:Name="cardCartera" Grid.Row="1" Grid.Column="0">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding EnrrutarCommand}" />
+                            <TapGestureRecognizer Command="{Binding EnrrutarCommand}" Tapped="OnCardTapped_Cartera" />
                         </Border.GestureRecognizers>
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -220,7 +220,7 @@
                     <!-- Registrar Gastos -->
                     <Border x:Name="cardGastos" Grid.Row="1" Grid.Column="1">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding RegistarGastosCommand}" />
+                            <TapGestureRecognizer Command="{Binding RegistarGastosCommand}" Tapped="OnCardTapped_Gastos" />
                         </Border.GestureRecognizers>
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">

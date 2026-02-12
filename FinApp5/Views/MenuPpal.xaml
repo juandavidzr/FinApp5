@@ -90,7 +90,7 @@
                    Margin="20,0"
                    Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}" />
+                    <TapGestureRecognizer Command="{Binding subMenuClientesCommand}" Tapped="OnCardTapped_Maestros" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <Frame BackgroundColor="#FFB300"
@@ -129,7 +129,7 @@
                    Margin="20,0"
                    Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}" />
+                    <TapGestureRecognizer Command="{Binding IrATransaccionesCommand}" Tapped="OnCardTapped_Transacciones" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <Frame BackgroundColor="#4CAF50"
@@ -166,7 +166,7 @@
                    Margin="20,0"
                    Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}" />
+                    <TapGestureRecognizer Command="{Binding IrAReportesCommand}" Tapped="OnCardTapped_Reportes" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <Frame BackgroundColor="#FF5722"
@@ -203,7 +203,7 @@
                    Margin="20,0,20,20"
                    Opacity="0">
                 <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="btnInicio_Clicked" />
+                    <TapGestureRecognizer Tapped="OnCardTapped_CerrarSesion" />
                 </Frame.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*">
                     <Frame BackgroundColor="#3b82f6"

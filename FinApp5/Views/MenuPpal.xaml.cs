@@ -36,12 +36,35 @@ public partial class MenuPpal : ContentPage
         base.OnDisappearing();
     }
 
+    // ============ MÉTODOS DE ANIMACIÓN - SCALE DOWN ============
+    private async void OnCardTapped_Maestros(object sender, EventArgs e)
+    {
+        await frameMaestros.ScaleTo(0.9, 100);
+        await frameMaestros.ScaleTo(1, 100);
+    }
+
+    private async void OnCardTapped_Transacciones(object sender, EventArgs e)
+    {
+        await frameTransacciones.ScaleTo(0.9, 100);
+        await frameTransacciones.ScaleTo(1, 100);
+    }
+
+    private async void OnCardTapped_Reportes(object sender, EventArgs e)
+    {
+        await frameReportes.ScaleTo(0.9, 100);
+        await frameReportes.ScaleTo(1, 100);
+    }
+
+    private async void OnCardTapped_CerrarSesion(object sender, EventArgs e)
+    {
+        await frameCerrarSesion.ScaleTo(0.9, 100);
+        await frameCerrarSesion.ScaleTo(1, 100);
+        btnInicio_Clicked(sender, e);
+    }
+
     // ============ EVENTOS DE NAVEGACIÓN ============
     private async void btnInicio_Clicked(object sender, EventArgs e)
     {
-        await frameCerrarSesion.ScaleTo(0.95, 100);
-        await frameCerrarSesion.ScaleTo(1, 100);
-
         var mainPage = App.Services.GetRequiredService<MainPage>();
         await Navigation.PushAsync(mainPage);
     }
